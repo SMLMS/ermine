@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <boost/program_options.hpp>
-/*#include "header/ermineParser.hpp"*/
+#include "header/ermineParser.hpp"
 
 namespace po=boost::program_options;
 
@@ -51,6 +51,8 @@ int main(int argc, char *argv[]){
 	else{
 		std::cout<<vm["file"].as<std::string>()<<std::endl;
 	}
+	SMLMS::ErmineParser eVar;
+	eVar.printHelp();
 	return 0;
 }
 

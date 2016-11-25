@@ -14,7 +14,9 @@
 #ifndef Parser_hpp
 #define Parser_hpp
 #include <string>
+#include <boost/program_options.hpp>
 
+namespace po=boost::program_options;
 namespace SMLMS{
 
 class ErmineParser{
@@ -81,9 +83,9 @@ class ErmineParser{
 		int particleArgument();
 		// Functions of class InputParameter
 		void printHelp();
-		void parseArguments();
+		void parseArguments(po::variables_map &);
 		void proofArguments();
 		void writeErmineParser();
-}; // Input Parameer
+}; // ErmineParser
 } // SMLMS
 #endif /* Parser_hpp */

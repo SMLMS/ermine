@@ -178,13 +178,13 @@ int ErmineParser::particleArgument(){
 void ErmineParser::printHelp(){
 	std::string helpHeader, helpLine, line;
 	helpHeader = "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\n";
-	helpLine = "\n type\n.\ermine -h\nto view help\n";
+	helpLine = "\n type: ./ermine -h (to view help)\n\n";
 	line       = "\n-----------------------------------------------------------------------------------------\n";
 
 	std::cout<<line<< helpHeader<<helpLine<<line <<std::endl;
 }
 
-void ErmineParser::parseArguments(){
+void ErmineParser::parseArguments(po::variables_map &vm){
 	std::cout<<"so"<<std::endl;
 }
 }//SMLMS

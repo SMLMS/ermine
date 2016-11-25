@@ -1,8 +1,8 @@
 # Define required macros here
 CXXFLAGS = -Wall -fPIC -std=c++11
 CXX = g++
-INCLUDES = -I$(HOME)/Dokumente/Code/ermine/ermine1611
-LIBS = -L$(HOME)/Dokumente/Code/ermine/ermine1611/source
+INCLUDES = -I$(HOME)/Dokumente/Code/ermine
+LIBS = -L$(HOME)/Dokumente/Code/ermine/source
 LFLAGS := -shared
 
 BOOSTLIBS = -I/usr/include
@@ -21,10 +21,10 @@ EXECUTABLE := prog/ermine
 all:$(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CXX) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(INCLUDES) -o $@
+	$(CXX) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(LIBS) $(INCLUDES) -o $@
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LIBS) -c $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
 
 clean:
 	-rm *.o prog/ermine
