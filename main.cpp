@@ -27,7 +27,15 @@ int main(int argc, char *argv[]){
 	po::options_description parserOpt(ermineHeader.data());
 	parserOpt.add_options()
 			("help,h", "show this help message.")
-			("file,f", po::value<std::string>(), "input file needs to be .txt")
+			("file,f", po::value<std::string>(), "input file")
+			("algorithm,a", po::value<std::string>(), "analysis algorithm (type -h for help)")
+			("jumpInterval,j", po::value<int>(), "interval size of jump distances in pdf in [nm]")
+			("stopCrit,s", po::value<double>(), "stop criterion for model training")
+			("minDist", po::value<int>(), "minimal jump distance to analyze in [nm]")
+			("maxDist", po::value<int>(), "maximal jump distance to analyze in [nm]")
+			("time,t", po::value<double>(), "time between jump measurements in [s]")
+			("duration,d", po::value<int>(), "duration of simulation in [s]")
+			("particles,p", po::value<int>(), "number of particles to simulate")
 		;
 		po::variables_map vm;
 	try{
@@ -43,8 +51,13 @@ int main(int argc, char *argv[]){
 		std::cout<<parserOpt<<std::endl;
 		return 0;
 	}
+	if(vm.count("algorithm")<1){
+		std::cout<<"Parser Error: No algorithm selected."<<std::endl;
+		std::cout<<"Type --help (-h) to view help message."<<std::endl;
+		return 1;
+	}
 	if(vm.count("file")<1){
-		std::cout<<"User Error: No filename given."<<std::endl;
+		std::cout<<"Parser Error: No filename given."<<std::endl;
 		std::cout<<"Type --help (-h) to view help message."<<std::endl;
         	return 1;
 	}
@@ -52,7 +65,9 @@ int main(int argc, char *argv[]){
 		std::cout<<vm["file"].as<std::string>()<<std::endl;
 	}
 	SMLMS::ErmineParser eVar;
-	eVar.printHelp();
+	eVar.parseArguments(vm);
+	std::cout<<eVar.fileNameArgument()<<std::endl;
+	std::cout<<eVar.algorithmArgument()<<std::endl;
 	return 0;
 }
 

@@ -22,6 +22,7 @@ namespace SMLMS{
 class ErmineParser{
 	private:
 		// ErmineParser indicators
+		/*
 		int _algorithmIndicator;
 		int _stopCritIndicator;
 		int _filenameIndicator;
@@ -30,6 +31,7 @@ class ErmineParser{
 		int _maxDistIndicator;
 		int _lengthIndicator;
 		int _particleIndicator;
+		*/
 		// ErmineParser arguments
 		std::string _algorithmArgument; // a
 		double _stopCritArgument; // c
@@ -46,7 +48,7 @@ class ErmineParser{
 		// Destructor
 		~ErmineParser();
 		// Assessor functions of parser indicatiors
-		void setAlgorithmIndicator(int);
+		/*void setAlgorithmIndicator(int);
 		int algorithmIndicator();
 		void setStopCritIndicator(int);
 		int stopCritIndicator();
@@ -61,7 +63,7 @@ class ErmineParser{
 		void setLengthIndicator(int);
 		int lengthIndicator();
 		void setParticleIndicator(int);
-		int particleIndicator();
+		int particleIndicator();*/
 		// Assessor functions of programs arguments
 		void setAlgorithmArgument(std::string);
 		std::string algorithmArgument();
@@ -84,7 +86,7 @@ class ErmineParser{
 		// Functions of class InputParameter
 		void printHelp();
 		void parseArguments(po::variables_map &);
-		void proofArguments();
+		int proofArguments(std::string);
 		void writeErmineParser();
 }; // ErmineParser
 } // SMLMS

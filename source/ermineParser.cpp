@@ -25,6 +25,7 @@ namespace SMLMS{
 // default constructor
 ErmineParser::ErmineParser(){
 	// Initialize parser indicators
+/*
 	setAlgorithmIndicator(0);
 	setStopCritIndicator(0);
 	setFilenameIndicator(0);
@@ -33,6 +34,7 @@ ErmineParser::ErmineParser(){
 	setMaxDistIndicator(0);
 	setLengthIndicator(0);
 	setParticleIndicator(0);
+*/
 	// Initialize default parser arguments
 	setAlgorithmArgument("train");
 	setStopCritArgument(0.01);	
@@ -51,6 +53,7 @@ ErmineParser::~ErmineParser(){
 }// ~ErmineParser
 
 // Assessor functions for ErmienParser indicators
+/*
 void ErmineParser::setAlgorithmIndicator(int parserInd){
 	_algorithmIndicator = parserInd;
 }
@@ -108,7 +111,7 @@ void ErmineParser::setParticleIndicator(int parserInd){
 int ErmineParser::particleIndicator(){
 	return _particleIndicator;
 }
-
+*/
 // Assessor functions for ErmineParser arguments
 void ErmineParser::setAlgorithmArgument(std::string parserArg){
 	_algorithmArgument = parserArg;
@@ -185,6 +188,8 @@ void ErmineParser::printHelp(){
 }
 
 void ErmineParser::parseArguments(po::variables_map &vm){
-	std::cout<<"so"<<std::endl;
+	setFileNameArgument(vm["file"].as<std::string>());
+	setAlgorithmArgument(vm["algorithm"].as<std::string>());
+	//std::cout<<vm["file"].as<std::string>()<<std::endl;
 }
 }//SMLMS
