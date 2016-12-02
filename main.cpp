@@ -17,7 +17,9 @@
 #include <iomanip>
 #include <stdexcept>
 #include <boost/program_options.hpp>
+#include "header/ermineExceptions.hpp"
 #include "header/ermineParser.hpp"
+
 
 namespace po=boost::program_options;
 
@@ -29,21 +31,25 @@ int main(int argc, char *argv[]){
 			("help,h", "show this help message.")
 			("file,f", po::value<std::string>(), "input file")
 			("algorithm,a", po::value<std::string>(), "analysis algorithm (type -h for help)")
-			("jumpInterval,j", po::value<int>(), "interval size of jump distances in pdf in [nm]")
-			("stopCrit,s", po::value<double>(), "stop criterion for model training")
-			("minDist", po::value<int>(), "minimal jump distance to analyze in [nm]")
-			("maxDist", po::value<int>(), "maximal jump distance to analyze in [nm]")
-			("time,t", po::value<double>(), "time between jump measurements in [s]")
-			("duration,d", po::value<int>(), "duration of simulation in [s]")
-			("particles,p", po::value<int>(), "number of particles to simulate")
+			("jumpInterval,j", po::value<int>(), "interval size of jump distances in pdf in [nm] (int)")
+			("stopCrit,s", po::value<double>(), "stop criterion for model training (float)")
+			("minDist", po::value<int>(), "minimal jump distance to analyze in [nm] (int)")
+			("maxDist", po::value<int>(), "maximal jump distance to analyze in [nm] (int)")
+			("time,t", po::value<double>(), "time between jump measurements in [s] (float)")
+			("duration,d", po::value<double>(), "duration of simulation in [s] (float)" )
+			("particles,p", po::value<int>(), "number of particles to simulate (int)")
 		;
 		po::variables_map vm;
 	try{
 		po::store(po::parse_command_line(argc, argv, parserOpt),vm);
 		po::notify(vm);
 	}
+	catch(po::unknown_option& error){
+		std::cout << error.what() << std::endl;
+		return 1;
+	}
 	catch(...){
-		std::cout<<"User Error: Unkown."<<std::endl;
+		std::cout<<"User Error: Unkown parameters given to ermine."<<std::endl;
 		std::cout<<"Type --help (-h) to view help message."<<std::endl;
 		return 1;
 	}
@@ -65,9 +71,25 @@ int main(int argc, char *argv[]){
 		std::cout<<vm["file"].as<std::string>()<<std::endl;
 	}
 	SMLMS::ErmineParser eVar;
-	eVar.parseArguments(vm);
-	std::cout<<eVar.fileNameArgument()<<std::endl;
-	std::cout<<eVar.algorithmArgument()<<std::endl;
-	return 0;
+	try{
+		eVar.parseArguments(vm);
+	}
+ 	catch(SMLMS::NoFileName& error){
+		std::cout<<error.returnError()<<std::endl;
+		return 1;
+	}
+	catch (SMLMS::NoAlgorithm& error){
+		std::cout<<error.returnError()<<std::endl;
+		return 1;
+	}
+	catch (SMLMS::WrongAlgorithm& error){
+		std::cout<<error.returnError()<<std::endl;
+		return 1;
+	}
+	catch (...){
+		std::cout<<"oops, the ermine discovered an unexpected error and is going to rest"<<std::endl;
+		return 1;
+	}
+return 0;
 }
 

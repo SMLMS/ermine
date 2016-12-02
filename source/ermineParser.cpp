@@ -13,10 +13,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <unistd.h> /* for getopt */
 #include <boost/program_options.hpp>
 #include "header/ermineParser.hpp"
+#include "header/ermineExceptions.hpp"
 
 namespace po=boost::program_options;
 namespace SMLMS{
@@ -24,18 +26,17 @@ namespace SMLMS{
 // constructors
 // default constructor
 ErmineParser::ErmineParser(){
-	// Initialize parser indicators
-/*
-	setAlgorithmIndicator(0);
-	setStopCritIndicator(0);
-	setFilenameIndicator(0);
-	setJumpIntervalIndicator(0);
-	setMinDistIndicator(0);
-	setMaxDistIndicator(0);
-	setLengthIndicator(0);
-	setParticleIndicator(0);
-*/
 	// Initialize default parser arguments
+	std::map<std::string, int> alphabet;
+	//batch, mol2judi, initialize, simulate, estimate, train, viterbi
+	alphabet.insert(std::make_pair("batch",0));
+	alphabet.insert(std::make_pair("mol2judi",0));
+	alphabet.insert(std::make_pair("initialize",0));
+	alphabet.insert(std::make_pair("simulate",0));
+	alphabet.insert(std::make_pair("estimate",0));
+	alphabet.insert(std::make_pair("train",0));
+	alphabet.insert(std::make_pair("path",0));
+	setAlgorithmAlphabet(alphabet);
 	setAlgorithmArgument("train");
 	setStopCritArgument(0.01);	
 	setFileNameArgument("");
@@ -43,7 +44,8 @@ ErmineParser::ErmineParser(){
 	setJumpIntervalArgument(10);
 	setMinDistArgument(10);
 	setMaxDistArgument(500);
-	setLengthArgument(20);
+	setTimeIntervalArgument(0.0);
+	setTraceLengthArgument(20);
 	setParticleArgument(1000);
 }// ErmineParser()
 
@@ -52,67 +54,15 @@ ErmineParser::~ErmineParser(){
 	std::cout<< "ErmineParser removed from heap." <<std::endl;
 }// ~ErmineParser
 
-// Assessor functions for ErmienParser indicators
-/*
-void ErmineParser::setAlgorithmIndicator(int parserInd){
-	_algorithmIndicator = parserInd;
-}
-
-int ErmineParser::algorithmIndicator(){
-	return _algorithmIndicator;
-}
-
-void ErmineParser::setStopCritIndicator(int parserInd){
-	_stopCritIndicator = parserInd;
-}
-int ErmineParser::stopCritIndicator(){
-	return _stopCritIndicator;
-}
-
-void ErmineParser::setFilenameIndicator(int parserInd){
-	_filenameIndicator = parserInd;
-}
-int ErmineParser::filenameIndicator(){
-	return _filenameIndicator;
-}
-
-void ErmineParser::setJumpIntervalIndicator(int parserInd){
-	_jumpIntervalIndicator = parserInd;
-}
-int ErmineParser::jumpIntervalIndicator(){
-	return _jumpIntervalIndicator;
-}
-
-void ErmineParser::setMinDistIndicator(int parserInd){
-	_minDistIndicator = parserInd;
-}
-int ErmineParser::minDistIndicator(){
-	return _minDistIndicator;
-}
-
-void ErmineParser::setMaxDistIndicator(int parserInd){
-	_maxDistIndicator = parserInd;
-}
-int ErmineParser::maxDistIndicator(){
-	return _maxDistIndicator;
-}
-
-void ErmineParser::setLengthIndicator(int parserInd){
-	_lengthIndicator= parserInd;
-}
-int ErmineParser::lengthIndicator(){
-	return _lengthIndicator;
-}
-
-void ErmineParser::setParticleIndicator(int parserInd){
-	_particleIndicator=parserInd;
-}
-
-int ErmineParser::particleIndicator(){
-	return _particleIndicator;
-}
-*/
 // Assessor functions for ErmineParser arguments
+void ErmineParser::setAlgorithmAlphabet(std::map<std::string, int> parserArg){
+	_algorithmAlphabet = parserArg;
+}
+
+std::map<std::string, int> ErmineParser::algorithmAlphabet(){
+	return _algorithmAlphabet;
+}
+
 void ErmineParser::setAlgorithmArgument(std::string parserArg){
 	_algorithmArgument = parserArg;
 }
@@ -162,12 +112,28 @@ int ErmineParser::maxDistArgument(){
 	return _maxDistArgument;
 }
 
-void ErmineParser::setLengthArgument(int parserArg){
-	_lengthArgument = parserArg;
+void ErmineParser::setTimeIntervalArgument(double parserArg){
+	_timeIntervalArgument = parserArg;
 }
 
-int ErmineParser::lengthArgument(){
-	return _lengthArgument;
+double ErmineParser::timeIntervalArgument(){
+	return _timeIntervalArgument;
+}
+
+void ErmineParser::setDurationArgument(double parserArg){
+	_durationArgument = parserArg;
+}
+
+double ErmineParser::durationArgument(){
+	return _durationArgument;
+}
+
+void ErmineParser::setTraceLengthArgument(int parserArg){
+	_traceLengthArgument = parserArg;
+}
+
+int ErmineParser::traceLengthArgument(){
+	return _traceLengthArgument;
 }
 
 void ErmineParser::setParticleArgument(int parserArg){
@@ -188,8 +154,41 @@ void ErmineParser::printHelp(){
 }
 
 void ErmineParser::parseArguments(po::variables_map &vm){
-	setFileNameArgument(vm["file"].as<std::string>());
+	// parse filename
+	if(vm.count("file")<1){
+		SMLMS::NoFileName noFileNameError;
+		throw noFileNameError;
+	}
+	else{
+		setFileNameArgument(vm["file"].as<std::string>());
+	}
+
+	// parse algorithm
+	if(vm.count("algorithm")<1){
+		SMLMS::NoAlgorithm noAlgorithmError;
+		throw noAlgorithmError;
+	}
+
 	setAlgorithmArgument(vm["algorithm"].as<std::string>());
-	//std::cout<<vm["file"].as<std::string>()<<std::endl;
+
+	if(proofAlgorithmArgument()){
+		SMLMS::WrongAlgorithm wrongAlgorithmError(_algorithmArgument);
+		throw wrongAlgorithmError;
+	}
+}	
+
+int ErmineParser::proofAlgorithmArgument(){
+	if(_algorithmAlphabet.find(_algorithmArgument) != _algorithmAlphabet.end()){
+		std::cout<<0<<std::endl;
+		return 0;	
+	}	
+	else{
+		std::cout<<1<<std::endl;
+		return 1;
+	}
+}
+
+void ErmineParser::calcTraceLength(){
+	_traceLengthArgument = int(_durationArgument/_timeIntervalArgument);
 }
 }//SMLMS

@@ -14,6 +14,7 @@
 #ifndef Parser_hpp
 #define Parser_hpp
 #include <string>
+#include <map>
 #include <boost/program_options.hpp>
 
 namespace po=boost::program_options;
@@ -21,18 +22,8 @@ namespace SMLMS{
 
 class ErmineParser{
 	private:
-		// ErmineParser indicators
-		/*
-		int _algorithmIndicator;
-		int _stopCritIndicator;
-		int _filenameIndicator;
-		int _jumpIntervalIndicator;
-		int _minDistIndicator;
-		int _maxDistIndicator;
-		int _lengthIndicator;
-		int _particleIndicator;
-		*/
 		// ErmineParser arguments
+		std::map <std::string, int> _algorithmAlphabet;
 		std::string _algorithmArgument; // a
 		double _stopCritArgument; // c
 		std::string _fileNameArgument; // f
@@ -40,31 +31,18 @@ class ErmineParser{
 		int _jumpIntervalArgument; // i
 		int _minDistArgument; // m
 		int _maxDistArgument; // M
-		int _lengthArgument; // t
+		double  _timeIntervalArgument; // t
+		double _durationArgument; // d
+		int _traceLengthArgument;
 		int _particleArgument;// n
 	public:
 		// Constructor
 		ErmineParser();
 		// Destructor
 		~ErmineParser();
-		// Assessor functions of parser indicatiors
-		/*void setAlgorithmIndicator(int);
-		int algorithmIndicator();
-		void setStopCritIndicator(int);
-		int stopCritIndicator();
-		void setFilenameIndicator(int);
-		int filenameIndicator();
-		void setJumpIntervalIndicator(int);
-		int jumpIntervalIndicator();
-		void setMinDistIndicator(int);
-		int minDistIndicator();
-		void setMaxDistIndicator(int);
-		int maxDistIndicator();
-		void setLengthIndicator(int);
-		int lengthIndicator();
-		void setParticleIndicator(int);
-		int particleIndicator();*/
 		// Assessor functions of programs arguments
+		void setAlgorithmAlphabet(std::map<std::string, int>);
+		std::map<std::string, int> algorithmAlphabet();
 		void setAlgorithmArgument(std::string);
 		std::string algorithmArgument();
 		void setStopCritArgument(double);
@@ -79,14 +57,20 @@ class ErmineParser{
 		int minDistArgument();
 		void setMaxDistArgument(int);
 		int maxDistArgument();
-		void setLengthArgument(int);
-		int lengthArgument();
+		void setTimeIntervalArgument(double);
+		double timeIntervalArgument();
+		void setDurationArgument(double);
+		double durationArgument();
+		void setTraceLengthArgument(int);
+		int traceLengthArgument();
 		void setParticleArgument(int);
 		int particleArgument();
 		// Functions of class InputParameter
 		void printHelp();
 		void parseArguments(po::variables_map &);
 		int proofArguments(std::string);
+		int proofAlgorithmArgument();
+		void calcTraceLength();
 		void writeErmineParser();
 }; // ErmineParser
 } // SMLMS
