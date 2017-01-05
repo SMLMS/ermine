@@ -66,7 +66,7 @@ class ErmineParser{
 		void setParticleArgument(int);
 		int particleArgument();
 		// Functions of class InputParameter
-		void printHelp();
+		void printAlgorithmHelp();
 		void parseArguments(po::variables_map &);
 		int proofArguments(std::string);
 		int proofAlgorithmArgument();

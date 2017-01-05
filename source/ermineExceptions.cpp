@@ -49,7 +49,8 @@ std::string SMLMS::NoAlgorithm::returnError(){
 SMLMS::WrongAlgorithm::WrongAlgorithm(std::string &name){
 	_algorithmName=name;
 	std::stringstream message;
-	message<<_algorithmName<<" is not a valid algorithm for ermine!."<<std::endl<<"type --help (-h) for help."<<std::endl;
+	message<<_algorithmName<<" is not a valid algorithm for ermine!"<<std::endl<<std::endl
+	<<"type ./ermine -h (--help) for help!"<<std::endl;
 	_errorMessage = message.str();
 }
 

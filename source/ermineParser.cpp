@@ -33,7 +33,7 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("mol2judi",0));
 	alphabet.insert(std::make_pair("initialize",0));
 	alphabet.insert(std::make_pair("simulate",0));
-	alphabet.insert(std::make_pair("estimate",0));
+	alphabet.insert(std::make_pair("likelyhood",0));
 	alphabet.insert(std::make_pair("train",0));
 	alphabet.insert(std::make_pair("path",0));
 	setAlgorithmAlphabet(alphabet);
@@ -144,13 +144,22 @@ int ErmineParser::particleArgument(){
 	return _particleArgument;
 }
 
-void ErmineParser::printHelp(){
-	std::string helpHeader, helpLine, line;
-	helpHeader = "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\n";
-	helpLine = "\n type: ./ermine -h (to view help)\n\n";
+void ErmineParser::printAlgorithmHelp(){
+	std::string line;
 	line       = "\n-----------------------------------------------------------------------------------------\n";
+	
+	std::stringstream message;
+	message<<"possible algorithms in ermine are:"<<std::endl
+	<<"algorithm\t\tdescription\t\t\t\tessential parameters"<<std::endl
+	<<"batch:\t\tmerge several .trc data sets\t\t\t(-f, -a)"<<std::endl
+	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t(to be annonced)"<<std::endl
+	<<"initialize:\treturns an initial guess for a hmm.\t\t(to be announced)"<<std::endl
+	<<"simulate:\tcalculates a mchmm simulation.\t\t\t(to be announced)"<<std::endl
+	<<"likelyhood:\tcalculates the likelyhood of a given model\t(to be announced)"<<std::endl
+	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t(to be announced)"<<std::endl
+	<<"path:\t\testimates the most likely path by Viterbi.\t(to be announced)"<<std::endl;
 
-	std::cout<<line<< helpHeader<<helpLine<<line <<std::endl;
+	std::cout<<line<<message.str()<<std::endl;
 }
 
 void ErmineParser::parseArguments(po::variables_map &vm){

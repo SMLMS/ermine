@@ -24,13 +24,13 @@
 namespace po=boost::program_options;
 
 int main(int argc, char *argv[]){
-
+	SMLMS::ErmineParser eVar;
 	std::string ermineHeader( "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\nsingle molecule biophysics\nIPTC\nGoethe University Frankfurt");
 	po::options_description parserOpt(ermineHeader.data());
 	parserOpt.add_options()
 			("help,h", "show this help message.")
 			("file,f", po::value<std::string>(), "input file")
-			("algorithm,a", po::value<std::string>(), "analysis algorithm (type -h for help)")
+			("algorithm,a", po::value<std::string>(), "analysis algorithm (see below for help)")
 			("jumpInterval,j", po::value<int>(), "interval size of jump distances in pdf in [nm] (int)")
 			("stopCrit,s", po::value<double>(), "stop criterion for model training (float)")
 			("minDist", po::value<int>(), "minimal jump distance to analyze in [nm] (int)")
@@ -55,6 +55,7 @@ int main(int argc, char *argv[]){
 	}
 	if(vm.count("help")){
 		std::cout<<parserOpt<<std::endl;
+		eVar.printAlgorithmHelp();
 		return 0;
 	}
 	if(vm.count("algorithm")<1){
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]){
 	else{
 		std::cout<<vm["file"].as<std::string>()<<std::endl;
 	}
-	SMLMS::ErmineParser eVar;
+
 	try{
 		eVar.parseArguments(vm);
 	}
@@ -84,6 +85,7 @@ int main(int argc, char *argv[]){
 	}
 	catch (SMLMS::WrongAlgorithm& error){
 		std::cout<<error.returnError()<<std::endl;
+		eVar.printAlgorithmHelp();
 		return 1;
 	}
 	catch (...){
