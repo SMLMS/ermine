@@ -32,7 +32,7 @@ class WrongFileName{
 		std::string _fileName;
 		std::string _errorMessage;
 	public:
-		WrongFileName(std::string);
+		WrongFileName(std::string &);
 		std::string returnError();
 }; /* WrongFileName */
 
@@ -49,7 +49,7 @@ class WrongAlgorithm{
 		std::string _algorithmName;
 		std::string _errorMessage;
 	public:
-		WrongAlgorithm(std::string);
+		WrongAlgorithm(std::string &);
 		std::string returnError();
 }; /* WrongAlgorithm */
 
