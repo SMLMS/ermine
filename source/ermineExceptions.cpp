@@ -57,3 +57,16 @@ SMLMS::WrongAlgorithm::WrongAlgorithm(std::string &name){
 std::string SMLMS::WrongAlgorithm::returnError(){
 	return _errorMessage;
 }
+
+SMLMS::WrongDataType::WrongDataType(std::string &name){
+	_parserParameter = name;
+	std::stringstream message;
+	message<<"Error: got the wrong data type for parser parameter: "<<_parserParameter<<std::endl<<"type --help (-h) for help."<<std::endl;
+	_errorMessage = message.str();
+}
+
+std::string SMLMS::WrongDataType::returnError(){
+	return _errorMessage;
+}
+
+

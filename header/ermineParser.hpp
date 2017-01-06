@@ -16,6 +16,7 @@
 #include <string>
 #include <map>
 #include <boost/program_options.hpp>
+#include "header/smlmsFolder.hpp"
 
 namespace po=boost::program_options;
 namespace SMLMS{
@@ -27,7 +28,7 @@ class ErmineParser{
 		std::string _algorithmArgument; // a
 		double _stopCritArgument; // c
 		std::string _fileNameArgument; // f
-		std::string _folderNameArgument;
+		SMLMS::SMLMSFolder _folderArgument;
 		int _jumpIntervalArgument; // i
 		int _minDistArgument; // m
 		int _maxDistArgument; // M
@@ -49,8 +50,8 @@ class ErmineParser{
 		double stopCritArgument();
 		void setFileNameArgument(std::string);
 		std::string fileNameArgument();
-		void setFolderNameArgument(std::string);
-		std::string folderNameArgument();
+		void setFolderArgument(SMLMS::SMLMSFolder);
+		SMLMS::SMLMSFolder folderArgument();
 		void setJumpIntervalArgument(int);
 		int jumpIntervalArgument();
 		void setMinDistArgument(int);
@@ -72,6 +73,7 @@ class ErmineParser{
 		int proofAlgorithmArgument();
 		void calcTraceLength();
 		void writeErmineParser();
+		void printArguments();
 }; // ErmineParser
 } // SMLMS
 #endif /* Parser_hpp */

@@ -53,6 +53,15 @@ class WrongAlgorithm{
 		std::string returnError();
 }; /* WrongAlgorithm */
 
+class WrongDataType{
+	private:
+
+		std::string _parserParameter;
+		std::string _errorMessage;
+	public:
+		WrongDataType(std::string &);
+		std::string returnError();
+}; /* NegativeStopCriterium*/
 
 } /* SMLMS */
 #endif /* ermineExceptions_hpp */

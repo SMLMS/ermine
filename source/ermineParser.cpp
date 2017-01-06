@@ -19,6 +19,7 @@
 #include <boost/program_options.hpp>
 #include "header/ermineParser.hpp"
 #include "header/ermineExceptions.hpp"
+#include "header/smlmsFolder.hpp"
 
 namespace po=boost::program_options;
 namespace SMLMS{
@@ -28,19 +29,18 @@ namespace SMLMS{
 ErmineParser::ErmineParser(){
 	// Initialize default parser arguments
 	std::map<std::string, int> alphabet;
-	//batch, mol2judi, initialize, simulate, estimate, train, viterbi
+	//batch, mol2judi, initialize, simulate, likelihood, train, viterbi
 	alphabet.insert(std::make_pair("batch",0));
 	alphabet.insert(std::make_pair("mol2judi",0));
 	alphabet.insert(std::make_pair("initialize",0));
 	alphabet.insert(std::make_pair("simulate",0));
-	alphabet.insert(std::make_pair("likelyhood",0));
+	alphabet.insert(std::make_pair("likelihood",0));
 	alphabet.insert(std::make_pair("train",0));
 	alphabet.insert(std::make_pair("path",0));
 	setAlgorithmAlphabet(alphabet);
 	setAlgorithmArgument("train");
 	setStopCritArgument(0.01);	
 	setFileNameArgument("");
-	setFolderNameArgument("");
 	setJumpIntervalArgument(10);
 	setMinDistArgument(10);
 	setMaxDistArgument(500);
@@ -84,12 +84,12 @@ std::string ErmineParser::fileNameArgument(){
 	return _fileNameArgument;
 }
 
-void ErmineParser::setFolderNameArgument(std::string parserArg){
-	_folderNameArgument = parserArg;
+void ErmineParser::setFolderArgument(SMLMS::SMLMSFolder parserArg){
+	_folderArgument = parserArg;
 }
 
-std::string ErmineParser::folderNameArgument(){
-	return _folderNameArgument;
+SMLMS::SMLMSFolder ErmineParser::folderArgument(){
+	return _folderArgument;
 }
 
 void ErmineParser::setJumpIntervalArgument(int parserArg){
@@ -155,7 +155,7 @@ void ErmineParser::printAlgorithmHelp(){
 	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t(to be annonced)"<<std::endl
 	<<"initialize:\treturns an initial guess for a hmm.\t\t(to be announced)"<<std::endl
 	<<"simulate:\tcalculates a mchmm simulation.\t\t\t(to be announced)"<<std::endl
-	<<"likelyhood:\tcalculates the likelyhood of a given model\t(to be announced)"<<std::endl
+	<<"likelihood:\tcalculates the likelihood of a given model\t(to be announced)"<<std::endl
 	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t(to be announced)"<<std::endl
 	<<"path:\t\testimates the most likely path by Viterbi.\t(to be announced)"<<std::endl;
 
@@ -163,6 +163,7 @@ void ErmineParser::printAlgorithmHelp(){
 }
 
 void ErmineParser::parseArguments(po::variables_map &vm){
+	std::string parameter;
 	// parse filename
 	if(vm.count("file")<1){
 		SMLMS::NoFileName noFileNameError;
@@ -184,6 +185,76 @@ void ErmineParser::parseArguments(po::variables_map &vm){
 		SMLMS::WrongAlgorithm wrongAlgorithmError(_algorithmArgument);
 		throw wrongAlgorithmError;
 	}
+	
+	// parse stopCrit
+	if (vm.count("stopCrit")>0){
+		if (vm["stopCrit"].as<double>()<0.0) {
+			parameter = "stopCrit";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setStopCritArgument(vm["stopCrit"].as<double>());
+	}
+	// parse jumpInterval
+	if (vm.count("jumpInterval")>0){
+		
+		if (vm["jumpInterval"].as<int>()<0){
+			parameter = "jumpInterval";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setJumpIntervalArgument(vm["jumpInterval"].as<int>());
+	}
+	// parse minDist
+	if (vm.count("minDist")>0){
+		if (vm["minDist"].as<int>()<0.0){
+			parameter = "minDist";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setMinDistArgument(vm["minDist"].as<int>());
+	}
+	// parse maxdist
+	if (vm.count("maxDist")>0){
+		if(vm["maxDist"].as<int>()<0){
+			parameter = "maxDist";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setMaxDistArgument(vm["maxDist"].as<int>());
+	}
+	// parse time
+	if (vm.count("time")>0){
+		if (vm["time"].as<double>()<0){
+			parameter = "time";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setTimeIntervalArgument(vm["time"].as<double>());
+	}
+	// parse duration
+	if (vm.count("duration")>0){
+		if (vm["duration"].as<double>()<0){
+			parameter = "duration";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setDurationArgument(vm["duration"].as<double>());
+	}
+	// parse particles
+	if (vm.count("particles")>0){
+		if (vm["particles"].as<int>()<0){
+			parameter = "particles";
+			SMLMS::WrongDataType wrongDataTypeError(parameter);
+			throw wrongDataTypeError;
+		}
+		setParticleArgument(vm["particles"].as<int>());
+	}
+	// calculate _traceLength
+	calcTraceLength();
+	// create result Folder
+	_folderArgument.extractFolderName(_fileNameArgument, _algorithmArgument);
+	
 }	
 
 int ErmineParser::proofAlgorithmArgument(){
@@ -197,7 +268,27 @@ int ErmineParser::proofAlgorithmArgument(){
 	}
 }
 
+	
+
 void ErmineParser::calcTraceLength(){
 	_traceLengthArgument = int(_durationArgument/_timeIntervalArgument);
+}
+
+void ErmineParser::writeErmineParser(){
+	std::cout<<"writing parser"<<std::endl;
+}
+
+void ErmineParser::printArguments(){
+	std::cout<<"filename: "<<_fileNameArgument<<std::endl;
+	std::cout<<"algorithm: "<<_algorithmArgument<<std::endl;
+	std::cout<<"folder: "<<_folderArgument.folderName()<<std::endl;
+	std::cout<<"stopCrit: "<<_stopCritArgument<<std::endl;
+	std::cout<<"jump interval: "<<_jumpIntervalArgument<<std::endl;
+	std::cout<<"min Dist: "<<_minDistArgument<<std::endl;
+	std::cout<<"max Dist: "<<_maxDistArgument<<std::endl;
+	std::cout<<"time: "<<_timeIntervalArgument<<std::endl;
+	std::cout<<"duration: "<<_durationArgument<<std::endl;
+	std::cout<<"trace length: "<<_traceLengthArgument<<std::endl;
+	std::cout<<"particles: "<<_particleArgument<<std::endl;
 }
 }//SMLMS

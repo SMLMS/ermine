@@ -12,6 +12,7 @@ BOOSTFLAG = -lboost_program_options
 SOURCES = main.cpp
 SOURCES += source/ermineParser.cpp
 SOURCES += source/ermineExceptions.cpp
+SOURCES += source/smlmsFolder.cpp
 OBJECTS = $(SOURCES: .cpp=.o)
 
 
