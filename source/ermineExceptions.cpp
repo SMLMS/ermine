@@ -15,58 +15,25 @@
 #include <sstream>
 #include "header/ermineExceptions.hpp"
 
-SMLMS::NoFileName::NoFileName(){
-	std::stringstream message;
-	message<<"Error: No filename was given to ermine"<<std::endl<<"type --help(-h) for help."<<std::endl;
-	_errorMessage = message.str();
+SMLMS::ErmineParserError::ErmineParserError(std::string errorMessage){
+	_errorMessage = "Ermine Parser Error: ";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\ntype './ermine --help (-h)' for help!\n");
 }
 
-std::string SMLMS::NoFileName::returnError(){
+std::string SMLMS::ErmineParserError::what(){
 	return _errorMessage;
 }
 
-SMLMS::WrongFileName::WrongFileName(std::string &name){
-	_fileName=name;
-	std::stringstream message;
-	message<<"Error: Wrong filename \nermine could not open "<<_fileName<<"\nmake sure it does exist!"<<std::endl;
-	_errorMessage = message.str();
+SMLMS::SMLMSFolderError::SMLMSFolderError(std::string errorMessage){
+	_errorMessage = "SMLMS Folder Error: ";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\n");
 }
 
-std::string SMLMS::WrongFileName::returnError(){
+std::string SMLMS::SMLMSFolderError::what(){
 	return _errorMessage;
 }
 
-SMLMS::NoAlgorithm::NoAlgorithm(){
-	std::stringstream message;
-	message<<"Error: No algorithm was chosen by user"<<std::endl<<"type --help (-h) for help."<<std::endl;
-	_errorMessage = message.str();
-}
-
-std::string SMLMS::NoAlgorithm::returnError(){
-	return _errorMessage;
-}
-
-SMLMS::WrongAlgorithm::WrongAlgorithm(std::string &name){
-	_algorithmName=name;
-	std::stringstream message;
-	message<<_algorithmName<<" is not a valid algorithm for ermine!"<<std::endl<<std::endl
-	<<"type ./ermine -h (--help) for help!"<<std::endl;
-	_errorMessage = message.str();
-}
-
-std::string SMLMS::WrongAlgorithm::returnError(){
-	return _errorMessage;
-}
-
-SMLMS::WrongDataType::WrongDataType(std::string &name){
-	_parserParameter = name;
-	std::stringstream message;
-	message<<"Error: got the wrong data type for parser parameter: "<<_parserParameter<<std::endl<<"type --help (-h) for help."<<std::endl;
-	_errorMessage = message.str();
-}
-
-std::string SMLMS::WrongDataType::returnError(){
-	return _errorMessage;
-}
 
 

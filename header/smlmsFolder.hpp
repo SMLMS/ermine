@@ -30,7 +30,6 @@ class SMLMSFolder{
 		void setFolderName(std::string);
 		std::string folderName();
 		// specific Class Functions
-		void extractFolderName(std::string &fileName, std::string &algorithm);
 		void printFolderName();
 		int checkFolder();
 		void createFolder();

@@ -17,51 +17,22 @@
 
 namespace SMLMS{
 
-class NoFileName{
+class ErmineParserError{
 	private:
 		std::string _errorMessage;
 	public:
-		NoFileName();
-		std::string returnError();
+		ErmineParserError(std::string);
+		std::string what();
+}; /* ErmineParserError */
 
-}; /* NoFileName */
 
-
-class WrongFileName{
-	private:
-		std::string _fileName;
-		std::string _errorMessage;
-	public:
-		WrongFileName(std::string &);
-		std::string returnError();
-}; /* WrongFileName */
-
-class NoAlgorithm{
+class SMLMSFolderError{
 	private:
 		std::string _errorMessage;
 	public:
-		NoAlgorithm();
-		std::string returnError();
-}; /*  NoAlgorithm */
-
-class WrongAlgorithm{
-	private:
-		std::string _algorithmName;
-		std::string _errorMessage;
-	public:
-		WrongAlgorithm(std::string &);
-		std::string returnError();
-}; /* WrongAlgorithm */
-
-class WrongDataType{
-	private:
-
-		std::string _parserParameter;
-		std::string _errorMessage;
-	public:
-		WrongDataType(std::string &);
-		std::string returnError();
-}; /* NegativeStopCriterium*/
+		SMLMSFolderError(std::string);
+		std::string what();
+}; /* SMLMSFolderError */
 
 } /* SMLMS */
 #endif /* ermineExceptions_hpp */

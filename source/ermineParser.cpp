@@ -15,7 +15,9 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <fstream>
 #include <unistd.h> /* for getopt */
+#include <sys/stat.h>
 #include <boost/program_options.hpp>
 #include "header/ermineParser.hpp"
 #include "header/ermineExceptions.hpp"
@@ -27,6 +29,7 @@ namespace SMLMS{
 // constructors
 // default constructor
 ErmineParser::ErmineParser(){
+	std::cout<<"Ermine Parser created"<<std::endl;
 	// Initialize default parser arguments
 	std::map<std::string, int> alphabet;
 	//batch, mol2judi, initialize, simulate, likelihood, train, viterbi
@@ -90,6 +93,14 @@ void ErmineParser::setFolderArgument(SMLMS::SMLMSFolder parserArg){
 
 SMLMS::SMLMSFolder ErmineParser::folderArgument(){
 	return _folderArgument;
+}
+
+void ErmineParser::setFolderNameArgument(std::string parserArg){
+	_folderNameArgument = parserArg;
+}
+
+std::string ErmineParser::folderNameArgument(){
+	return _folderNameArgument;
 }
 
 void ErmineParser::setJumpIntervalArgument(int parserArg){
@@ -162,126 +173,202 @@ void ErmineParser::printAlgorithmHelp(){
 	std::cout<<line<<message.str()<<std::endl;
 }
 
-void ErmineParser::parseArguments(po::variables_map &vm){
-	std::string parameter;
-	// parse filename
+void ErmineParser::proofFilename(po::variables_map &vm){
 	if(vm.count("file")<1){
-		SMLMS::NoFileName noFileNameError;
-		throw noFileNameError;
+		std::stringstream errorMessage;
+		errorMessage<<"No filename was given!"<<std::endl;;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
 	}
-	else{
-		setFileNameArgument(vm["file"].as<std::string>());
-	}
-
-	// parse algorithm
-	if(vm.count("algorithm")<1){
-		SMLMS::NoAlgorithm noAlgorithmError;
-		throw noAlgorithmError;
-	}
-
-	setAlgorithmArgument(vm["algorithm"].as<std::string>());
-
-	if(proofAlgorithmArgument()){
-		SMLMS::WrongAlgorithm wrongAlgorithmError(_algorithmArgument);
-		throw wrongAlgorithmError;
-	}
-	
-	// parse stopCrit
-	if (vm.count("stopCrit")>0){
-		if (vm["stopCrit"].as<double>()<0.0) {
-			parameter = "stopCrit";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setStopCritArgument(vm["stopCrit"].as<double>());
-	}
-	// parse jumpInterval
-	if (vm.count("jumpInterval")>0){
-		
-		if (vm["jumpInterval"].as<int>()<0){
-			parameter = "jumpInterval";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setJumpIntervalArgument(vm["jumpInterval"].as<int>());
-	}
-	// parse minDist
-	if (vm.count("minDist")>0){
-		if (vm["minDist"].as<int>()<0.0){
-			parameter = "minDist";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setMinDistArgument(vm["minDist"].as<int>());
-	}
-	// parse maxdist
-	if (vm.count("maxDist")>0){
-		if(vm["maxDist"].as<int>()<0){
-			parameter = "maxDist";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setMaxDistArgument(vm["maxDist"].as<int>());
-	}
-	// parse time
-	if (vm.count("time")>0){
-		if (vm["time"].as<double>()<0){
-			parameter = "time";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setTimeIntervalArgument(vm["time"].as<double>());
-	}
-	// parse duration
-	if (vm.count("duration")>0){
-		if (vm["duration"].as<double>()<0){
-			parameter = "duration";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setDurationArgument(vm["duration"].as<double>());
-	}
-	// parse particles
-	if (vm.count("particles")>0){
-		if (vm["particles"].as<int>()<0){
-			parameter = "particles";
-			SMLMS::WrongDataType wrongDataTypeError(parameter);
-			throw wrongDataTypeError;
-		}
-		setParticleArgument(vm["particles"].as<int>());
-	}
-	// calculate _traceLength
-	calcTraceLength();
-	// create result Folder
-	_folderArgument.extractFolderName(_fileNameArgument, _algorithmArgument);
-	
-}	
-
-int ErmineParser::proofAlgorithmArgument(){
-	if(_algorithmAlphabet.find(_algorithmArgument) != _algorithmAlphabet.end()){
-		std::cout<<0<<std::endl;
-		return 0;	
-	}	
-	else{
-		std::cout<<1<<std::endl;
-		return 1;
+	struct stat buffer;
+	std::string name=vm["file"].as<std::string>();
+	if ((stat (name.c_str(), &buffer))){
+		std::stringstream errorMessage;
+		errorMessage<<vm["file"].as<std::string>()<<" does not exist!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
 	}
 }
 
+void ErmineParser::proofAlgorithm(po::variables_map &vm){
+	if(vm.count("algorithm")<1){
+		std::stringstream errorMessage;
+		errorMessage<<"No algorithm was given!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+	}
+}
 	
+void ErmineParser::proofAlgorithmArgument(){
+	if(_algorithmAlphabet.find(_algorithmArgument) == _algorithmAlphabet.end()){
+		std::stringstream errorMessage;
+		errorMessage<<_algorithmArgument<<" is not a valid algorithm!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;	
+	}	
+}
+
+void ErmineParser::proofStopCrit(po::variables_map &vm){
+	if ((vm.count("stopCrit")>0) && (vm["stopCrit"].as<double>()<0.0)){
+		std::stringstream errorMessage;
+		errorMessage<<"stopCrit needs to be a positive floating point number!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+	}
+}
+
+void ErmineParser::proofJumpInterval(po::variables_map &vm){
+	if ((vm.count("jumpInterval")>0) && (vm["jumpInterval"].as<int>()<0)){
+		std::stringstream errorMessage;
+		errorMessage<<"jumpInterval needs to be a positive integer!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+}
+
+void ErmineParser::proofMinDist(po::variables_map &vm){
+	if ((vm.count("minDist")>0) && (vm["minDist"].as<int>()<0.0)){
+		std::stringstream errorMessage;
+		errorMessage<<"minDist needs to be a positive integer!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+}
+
+void ErmineParser::proofMaxDist(po::variables_map &vm){
+	if ((vm.count("maxDist")>0) && (vm["maxDist"].as<int>()<0)){
+		std::stringstream errorMessage;
+		errorMessage<<"maxDist needs to be a positive integer!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+}
+
+void ErmineParser::proofTime(po::variables_map &vm){
+	if ((vm.count("time")>0) && (vm["time"].as<double>()<0)){
+		std::stringstream errorMessage;
+		errorMessage<<"time needs to be a positive floating point number!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+}
+
+void ErmineParser::proofDuration(po::variables_map &vm){
+	if ((vm.count("duration")>0) && (vm["duration"].as<double>()<0)){
+		std::stringstream errorMessage;
+		errorMessage<<"duration needs to be a positive floating point number!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+}
+
+void ErmineParser::proofParticles(po::variables_map &vm){
+	if ((vm.count("particles")>0) && (vm["particles"].as<int>()<0)){
+		std::stringstream errorMessage;
+		errorMessage<<"particles needs to be a positive integer!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+}
 
 void ErmineParser::calcTraceLength(){
 	_traceLengthArgument = int(_durationArgument/_timeIntervalArgument);
 }
 
-void ErmineParser::writeErmineParser(){
-	std::cout<<"writing parser"<<std::endl;
+
+void ErmineParser::parseArguments(po::variables_map &vm){
+	// parse filename
+	proofFilename(vm);
+	setFileNameArgument(vm["file"].as<std::string>());
+	// parse algorithm
+	proofAlgorithm(vm);
+	setAlgorithmArgument(vm["algorithm"].as<std::string>());
+	proofAlgorithmArgument();
+	// parse stopCrit
+	proofStopCrit(vm);
+	setStopCritArgument(vm["stopCrit"].as<double>());
+	// parse jumpInterval
+	proofJumpInterval(vm);
+	setJumpIntervalArgument(vm["jumpInterval"].as<int>());
+	// parse minDist
+	proofMinDist(vm);
+	setMinDistArgument(vm["minDist"].as<int>());
+	// parse maxDist
+	proofMaxDist(vm);
+	setMaxDistArgument(vm["maxDist"].as<int>());
+	// parse time
+	proofTime(vm);
+	setTimeIntervalArgument(vm["time"].as<double>());
+	// parse duration
+	proofDuration(vm);
+	setDurationArgument(vm["duration"].as<double>());
+	// parse particles
+	proofParticles(vm);
+	setParticleArgument(vm["particles"].as<int>());
+	// calc trace length
+	calcTraceLength();
+	// create result Folder
+	extractFolderName();
+	_folderArgument.setFolderName(_folderNameArgument);
+}
+	
+void ErmineParser::extractFolderName(){
+/* Extracts a foldername for the calculated results from the given input filename:
+ * it strips the filename suffix, that must be ".txt"
+ */
+	std::string suffix(".txt");
+	std::size_t found = _fileNameArgument.find(suffix);	
+	if (found!=std::string::npos){
+		_folderNameArgument=_fileNameArgument;
+		_folderNameArgument.erase(_fileNameArgument.find(suffix),4);
+		_folderNameArgument.append("_");
+		_folderNameArgument.append(_algorithmArgument);
+	}
+	else{
+		std::stringstream errorMessage;
+		errorMessage<<"Input file needs the suffix '.txt'!"<<std::endl;
+		SMLMS::SMLMSFolderError smlmsFolderError(errorMessage.str());
+		throw smlmsFolderError;
+	}
 }
 
+
+void ErmineParser::makeFolder(){
+	/* Proofs weather folder exists.
+ 	 *if not: Folder will be created.
+	*/ 	
+	_folderArgument.createFolder();
+}
+
+
+void ErmineParser::writeErmineParser(){
+	std::string outFileName;
+	outFileName = _folderNameArgument;
+	outFileName.append("/parserArgs.txt");
+	std::ofstream parserFile;
+  	parserFile.open (outFileName.data());
+  	parserFile << "# Ermine parser"<<std::endl
+	<<"# filename:\n"<<_fileNameArgument<<std::endl
+	<<"# algorithm:\n "<<_algorithmArgument<<std::endl
+	<<"# folder:\n"<<_folderNameArgument<<std::endl
+	<<"# stop criterium:\n"<<_stopCritArgument<<std::endl
+	<<"# jump interval [nm]:\n"<<_jumpIntervalArgument<<std::endl
+	<<"# min distance [nm]:\n"<<_minDistArgument<<std::endl
+	<<"# max distance [nm]:\n"<<_maxDistArgument<<std::endl
+	<<"# time interval [s]:\n"<<_timeIntervalArgument<<std::endl
+	<<"# following parameters are only of interest for algorithm 'simulate'!"<<std::endl
+	<<"# duration [s]:\n"<<_durationArgument<<std::endl
+	<<"# trace length:\n"<<_traceLengthArgument<<std::endl
+	<<"# particles:\n"<<_particleArgument<<std::endl;	
+  	parserFile.close();
+	std::cout<<"Writing parser to: "<<outFileName<<std::endl;
+}
+	
 void ErmineParser::printArguments(){
+	std::cout<<std::endl<<"GivenArguments:"<<std::endl;
 	std::cout<<"filename: "<<_fileNameArgument<<std::endl;
 	std::cout<<"algorithm: "<<_algorithmArgument<<std::endl;
-	std::cout<<"folder: "<<_folderArgument.folderName()<<std::endl;
+	std::cout<<"folder: "<<_folderNameArgument<<std::endl;
 	std::cout<<"stopCrit: "<<_stopCritArgument<<std::endl;
 	std::cout<<"jump interval: "<<_jumpIntervalArgument<<std::endl;
 	std::cout<<"min Dist: "<<_minDistArgument<<std::endl;
@@ -290,5 +377,6 @@ void ErmineParser::printArguments(){
 	std::cout<<"duration: "<<_durationArgument<<std::endl;
 	std::cout<<"trace length: "<<_traceLengthArgument<<std::endl;
 	std::cout<<"particles: "<<_particleArgument<<std::endl;
+	std::cout<<std::endl;
 }
 }//SMLMS

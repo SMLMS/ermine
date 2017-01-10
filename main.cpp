@@ -19,12 +19,14 @@
 #include "header/ermineExceptions.hpp"
 #include "header/ermineParser.hpp"
 
-
 namespace po=boost::program_options;
 
 int main(int argc, char *argv[]){
+	// initialize objects
 	SMLMS::ErmineParser eVar;
 	std::string ermineHeader( "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\nsingle molecule biophysics\nIPTC\nGoethe University Frankfurt");
+
+
 	// parse boost programm options for ermine
 	po::options_description parserOpt(ermineHeader.data());
 	parserOpt.add_options()
@@ -59,45 +61,38 @@ int main(int argc, char *argv[]){
 		eVar.printAlgorithmHelp();
 		return 0;
 	}
-	if(vm.count("algorithm")<1){
-		std::cout<<"Parser Error: No algorithm selected."<<std::endl;
-		std::cout<<"Type --help (-h) to view help message."<<std::endl;
-		return 1;
-	}
-	if(vm.count("file")<1){
-		std::cout<<"Parser Error: No filename given."<<std::endl;
-		std::cout<<"Type --help (-h) to view help message."<<std::endl;
-        	return 1;
-	}
-	else{
-		std::cout<<vm["file"].as<std::string>()<<std::endl;
-	}
+
 	// parse programm options to ErmineParser class
 	try{
 		eVar.parseArguments(vm);
+		eVar.printArguments();
 	}
- 	catch(SMLMS::NoFileName& error){
-		std::cout<<error.returnError()<<std::endl;
+	catch(SMLMS::ErmineParserError& error){
+		std::cout<<error.what()<<std::endl;
 		return 1;
 	}
-	catch (SMLMS::NoAlgorithm& error){
-		std::cout<<error.returnError()<<std::endl;
-		return 1;
-	}
-	catch (SMLMS::WrongAlgorithm& error){
-		std::cout<<error.returnError()<<std::endl;
-		eVar.printAlgorithmHelp();
-		return 1;
-	}
-	catch (SMLMS::WrongDataType& error){
-		std::cout<<error.returnError()<<std::endl;
+	catch(SMLMS::SMLMSFolderError& error){
+		std::cout<<error.what()<<std::endl;
 		return 1;
 	}
 	catch (...){
 		std::cout<<"oops, the ermine discovered an unexpected error and is going to rest"<<std::endl;
 		return 1;
 	}
-	eVar.printArguments();
-return 0;
+	// make directory
+	try{
+		eVar.makeFolder();
+	}
+	catch(SMLMS::SMLMSFolderError& error){
+		std::cout<<error.what()<<std::endl;
+		return 1;
+	}
+	catch(...){
+		std::cout<<"oops, the ermine discovered an unexpected error and is going to rest"<<std::endl;
+		return 1;
+	}
+	// write ermine parser
+	eVar.writeErmineParser();
+	return 0;
 }
 

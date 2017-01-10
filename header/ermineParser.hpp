@@ -29,6 +29,7 @@ class ErmineParser{
 		double _stopCritArgument; // c
 		std::string _fileNameArgument; // f
 		SMLMS::SMLMSFolder _folderArgument;
+		std::string _folderNameArgument;
 		int _jumpIntervalArgument; // i
 		int _minDistArgument; // m
 		int _maxDistArgument; // M
@@ -52,6 +53,8 @@ class ErmineParser{
 		std::string fileNameArgument();
 		void setFolderArgument(SMLMS::SMLMSFolder);
 		SMLMS::SMLMSFolder folderArgument();
+		void setFolderNameArgument(std::string);
+		std::string folderNameArgument();
 		void setJumpIntervalArgument(int);
 		int jumpIntervalArgument();
 		void setMinDistArgument(int);
@@ -68,10 +71,20 @@ class ErmineParser{
 		int particleArgument();
 		// Functions of class InputParameter
 		void printAlgorithmHelp();
-		void parseArguments(po::variables_map &);
-		int proofArguments(std::string);
-		int proofAlgorithmArgument();
+		void proofFilename(po::variables_map &);
+		void proofAlgorithm(po::variables_map &);
+		void proofAlgorithmArgument();
+		void proofStopCrit(po::variables_map &);
+		void proofJumpInterval(po::variables_map &);
+		void proofMinDist(po::variables_map &);
+		void proofMaxDist(po::variables_map &);
+		void proofTime(po::variables_map &);
+		void proofDuration(po::variables_map &);
+		void proofParticles(po::variables_map &);
 		void calcTraceLength();
+		void parseArguments(po::variables_map &);
+		void extractFolderName();
+		void makeFolder();
 		void writeErmineParser();
 		void printArguments();
 }; // ErmineParser
