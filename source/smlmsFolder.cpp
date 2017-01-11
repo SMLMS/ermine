@@ -14,11 +14,13 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <boost/filesystem.hpp>
+//#include <sys/types.h>
+//#include <sys/stat.h>
 #include "header/smlmsFolder.hpp"
 #include "header/ermineExceptions.hpp"
 
+namespace fs = boost::filesystem;
 namespace SMLMS{
 
 // Constructor
@@ -55,34 +57,49 @@ int SMLMSFolder::checkFolder(){
 		throw smlmsFolderError;
 	}
 
-	struct stat info;
-	stat(_folderName.c_str(), &info);
-	if( info.st_mode & S_IFDIR ){
-		// S_ISDIR() doesn't exist on my windows 
-		std::cout<<_folderName<<" already exists. Results will be replaced."<<std::endl;
-		return 1;
+	fs::path p (_folderName.c_str());   // p reads clearer than argv[1] in the following code
+
+  	if (exists(p)) {   
+		// does p actually exist?
+    	if (is_regular_file(p)) {
+			// is p a regular file?   
+      		std::stringstream errorMessage;
+			errorMessage<<p<<" is a file, expected a folder!"<<std::endl;
+			SMLMS::SMLMSFolderError smlmsFolderError(errorMessage.str());
+			throw smlmsFolderError;
+		}
+		else if (is_directory(p)){
+			// is p a directory?
+      		std::cout<<_folderName<<" already exists. Results will be replaced."<<std::endl;
+			return 1;
+		}
+		
+    	else{
+			std::stringstream errorMessage;
+			errorMessage<<p<<" exists, but is neither a regular file nor a directory!"<<std::endl;
+			SMLMS::SMLMSFolderError smlmsFolderError(errorMessage.str());
+			throw smlmsFolderError;
+  		}
 	}
 	else{
 		std::cout<<_folderName<<" does not exist."<<std::endl;
-		return 0;
+		return 0;	
 	}
-	
 }
 
 void SMLMSFolder::createFolder(){
-/* checks wether folder already exists. If not it creates it. */
+	/* checks wether folder already exists. If not it creates it. */
+	fs::path p (_folderName.c_str());   // p reads clearer than argv[1] in the following code
 	if (checkFolder()<1){
-		#ifdef __linux__
-			std::cout<<
-       			mkdir(_folderName.c_str(), 0777); 
-   		#else
-       			//need to implement for Windows
+	 	if(create_directory(p)){
+			std::cout<<p<<" has been cerated"<<std::endl;
+    	}
+		else{
 			std::stringstream errorMessage;
-			errorMessage<<"creating a directory is not yet implemented for Windows OS. Shame on the lazy developer!"<<std::endl;
+			errorMessage<<"oops! The ermine was not able to create "<<_folderName<<std::endl;
 			SMLMS::SMLMSFolderError smlmsFolderError(errorMessage.str());
 			throw smlmsFolderError;
-   		#endif
-		std::cout<<std::endl<<"created result Folder:"<<_folderName<<std::endl;
+		}
 	}
 }
 } /* SMLMS */

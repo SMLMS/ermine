@@ -8,8 +8,11 @@ LFLAGS := -shared
 BOOSTLIBS = -I/usr/include
 BOOSTSOURCE = -L/usr/include/boost
 BOOSTFLAG = -lboost_program_options
+BOOSTFLAG += -lboost_system
+BOOSTFLAG += -lboost_filesystem
 
 SOURCES = main.cpp
+SOURCES += source/ermineStatement.cpp
 SOURCES += source/ermineParser.cpp
 SOURCES += source/ermineExceptions.cpp
 SOURCES += source/smlmsFolder.cpp

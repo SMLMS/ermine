@@ -16,6 +16,7 @@
 #include <vector>
 #include <iomanip>
 #include <boost/program_options.hpp>
+#include "header/ermineStatement.hpp"
 #include "header/ermineExceptions.hpp"
 #include "header/ermineParser.hpp"
 
@@ -23,6 +24,7 @@ namespace po=boost::program_options;
 
 int main(int argc, char *argv[]){
 	// initialize objects
+	SMLMS::Statement statement;
 	SMLMS::ErmineParser eVar;
 	std::string ermineHeader( "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\nsingle molecule biophysics\nIPTC\nGoethe University Frankfurt");
 
@@ -76,7 +78,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	catch (...){
-		std::cout<<"oops, the ermine discovered an unexpected error and is going to rest"<<std::endl;
+		std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 		return 1;
 	}
 	// make directory
@@ -88,11 +90,21 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error and is going to rest"<<std::endl;
+		std::cout<<"oops, the ermine discovered an unexpected error during folder creation and is going to rest"<<std::endl;
 		return 1;
 	}
 	// write ermine parser
-	eVar.writeErmineParser();
+	try{
+		eVar.writeErmineParser();
+	}
+	catch(...){
+		std::cout<<"oops, the ermine discovered an unexpected error while writing the parser and is going to rest"<<std::endl;
+		return 1;
+	}
+	// choose algorithm
+	if (eVar.algorithmArgument()=="batch"){
+		statement.printBatch();
+	}
 	return 0;
 }
 
