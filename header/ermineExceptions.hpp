@@ -17,6 +17,14 @@
 
 namespace SMLMS{
 
+class ErmineError{
+	private:
+		std::string _errorMessage;
+	public:
+		ErmineError(std::string);
+		std::string what();
+};/* ErmineError */
+
 class ErmineParserError{
 	private:
 		std::string _errorMessage;
@@ -33,6 +41,14 @@ class SMLMSFolderError{
 		SMLMSFolderError(std::string);
 		std::string what();
 }; /* SMLMSFolderError */
+
+class ErmineFileNameError{
+	private:
+		std::string _errorMessage;
+	public:
+		ErmineFileNameError(std::string);
+		std::string what();
+};
 
 } /* SMLMS */
 #endif /* ermineExceptions_hpp */

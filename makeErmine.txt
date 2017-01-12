@@ -16,6 +16,7 @@ SOURCES += source/ermineStatement.cpp
 SOURCES += source/ermineParser.cpp
 SOURCES += source/ermineExceptions.cpp
 SOURCES += source/smlmsFolder.cpp
+SOURCES += source/ermineFilenames.cpp
 OBJECTS = $(SOURCES: .cpp=.o)
 
 

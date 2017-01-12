@@ -27,6 +27,7 @@ Statement::Statement(){
 	setEstimate();
 	setLearn();
 	setViterbi();
+	setTidy();
 }
 
 /* destructor */
@@ -93,42 +94,49 @@ void Statement::setViterbi(){
 	_viterbi.append("The ermine scurries in viterbi mode.");
 }
 
+void Statement::setTidy(){
+	_tidy.clear();
+	_tidy.append("\nThe ermine is clearing the heap.\n");
+}
 /* print functions */
-
 void Statement::printStart(){
-	std::cout<<_start<<std::endl;
+	std::cout<<std::endl<<_start<<std::endl;
 }
 
 void Statement::printFinished(){
-	std::cout<<_finished<<std::endl;
+	std::cout<<std::endl<<_finished<<std::endl;
 }
 
 void Statement::printBatch(){
-	std::cout<<_batch<<std::endl;
+	std::cout<<std::endl<<_batch<<std::endl;
 }
 
 void Statement::printMol2Judi(){
-	std::cout<<_mol2judi<<std::endl;
+	std::cout<<std::endl<<_mol2judi<<std::endl;
 }
 
 void Statement::printInitialize(){
-	std::cout<<_initialize<<std::endl;
+	std::cout<<std::endl<<_initialize<<std::endl;
 }
 
 void Statement::printSimulate(){
-	std::cout<<_simulate<<std::endl;
+	std::cout<<std::endl<<_simulate<<std::endl;
 }
 
 void Statement::printEstimate(){
-	std::cout<<_estimate<<std::endl;
+	std::cout<<std::endl<<_estimate<<std::endl;
 }
 
 void Statement::printLearn(){
-	std::cout<<_learn<<std::endl;
+	std::cout<<std::endl<<_learn<<std::endl;
 }
 
 void Statement::printViterbi(){
-	std::cout<<_viterbi<<std::endl;
+	std::cout<<std::endl<<_viterbi<<std::endl;
+}
+
+void Statement::printTidy(){
+	std::cout<<std::endl<<_tidy<<std::endl;
 }
 }/* SMLMS  */
 

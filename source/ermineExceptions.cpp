@@ -14,26 +14,47 @@
 #include <string>
 #include <sstream>
 #include "header/ermineExceptions.hpp"
-
-SMLMS::ErmineParserError::ErmineParserError(std::string errorMessage){
+namespace SMLMS{
+ErmineError::ErmineError(std::string errorMessage){
 	_errorMessage = "Ermine Parser Error: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\ntype './ermine --help (-h)' for help!\n");
 }
 
-std::string SMLMS::ErmineParserError::what(){
+std::string ErmineError::what(){
+	return _errorMessage;
+} 
+
+ErmineParserError::ErmineParserError(std::string errorMessage){
+	_errorMessage = "Ermine Parser Error: ";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\ntype './ermine --help (-h)' for help!\n");
+}
+
+std::string ErmineParserError::what(){
 	return _errorMessage;
 }
 
-SMLMS::SMLMSFolderError::SMLMSFolderError(std::string errorMessage){
+SMLMSFolderError::SMLMSFolderError(std::string errorMessage){
 	_errorMessage = "SMLMS Folder Error: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\n");
 }
 
-std::string SMLMS::SMLMSFolderError::what(){
+std::string SMLMSFolderError::what(){
+	return _errorMessage;
+}
+
+ErmineFileNameError::ErmineFileNameError(std::string errorMessage){
+	_errorMessage = "Ermine File Name Error: ";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\n");
+}
+
+std::string ErmineFileNameError::what(){
 	return _errorMessage;
 }
 
 
 
+}/* SMLMS */

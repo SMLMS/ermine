@@ -27,6 +27,7 @@ class Statement{
 		std::string _estimate;
 		std::string _learn;
 		std::string _viterbi;
+		std::string _tidy;
 	public:
 		/* constructor */
 		Statement();
@@ -44,7 +45,9 @@ class Statement{
 		void setEstimate();
 		void setLearn();
 		void setViterbi();
+		void setTidy();
 		/* print functions */
+		void printInit();
 		void printStart();
 		void printFinished();
 		void printBatch();
@@ -54,7 +57,7 @@ class Statement{
 		void printEstimate();
 		void printLearn();
 		void printViterbi();
-
+		void printTidy();
 };/* Satement */
 }/* SMLMS */
 #endif /* Name_hpp */

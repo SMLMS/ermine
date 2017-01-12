@@ -19,12 +19,14 @@
 #include "header/ermineStatement.hpp"
 #include "header/ermineExceptions.hpp"
 #include "header/ermineParser.hpp"
+#include "header/ermineFilenames.hpp"
 
 namespace po=boost::program_options;
 
 int main(int argc, char *argv[]){
 	// initialize objects
 	SMLMS::Statement statement;
+	statement.printStart();
 	SMLMS::ErmineParser eVar;
 	std::string ermineHeader( "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\nsingle molecule biophysics\nIPTC\nGoethe University Frankfurt");
 
@@ -81,6 +83,7 @@ int main(int argc, char *argv[]){
 		std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 		return 1;
 	}
+	
 	// make directory
 	try{
 		eVar.makeFolder();
@@ -101,10 +104,31 @@ int main(int argc, char *argv[]){
 		std::cout<<"oops, the ermine discovered an unexpected error while writing the parser and is going to rest"<<std::endl;
 		return 1;
 	}
+	
+	// read FileNames
+	SMLMS::FileNames fileNames;
+	fileNames.clearFileNames();
+	fileNames.setSourceFileName(eVar.fileNameArgument());
+	fileNames.setFolderName(eVar.folderNameArgument());	
+	try{
+		fileNames.readNamesFromSourceFile();
+	}
+	catch(SMLMS::ErmineFileNameError& error){
+		std::cout<<error.what()<<std::endl;
+		return 1;
+	}
+	catch(...){
+		std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+		return 1;
+	}
+
 	// choose algorithm
 	if (eVar.algorithmArgument()=="batch"){
 		statement.printBatch();
 	}
+	else{
+		std::cout<<std::endl<<eVar.algorithmArgument()<<" is still under construction"<<std::endl;
+	}
+	statement.printTidy();
 	return 0;
-}
-
+}/* main */
