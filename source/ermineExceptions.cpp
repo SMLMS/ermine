@@ -55,6 +55,33 @@ std::string ErmineFileNameError::what(){
 	return _errorMessage;
 }
 
+SMLMSMicroscopeError::SMLMSMicroscopeError(std::string errorMessage){
+	_errorMessage = "SMLMS Microscope Error: ";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\n");
+}
 
+std::string SMLMSMicroscopeError::what(){
+	return _errorMessage;
+}
 
+SMLMSMoleculesError::SMLMSMoleculesError(std::string errorMessage){
+	_errorMessage = "SMLMS Molecule List Error: ";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\n");
+}
+
+std::string SMLMSMoleculesError::what(){
+	return _errorMessage;
+}
+
+ErmineJudiError::ErmineJudiError(std::string errorMessage){
+	_errorMessage = "Ermine Jump Distribution Error";
+	_errorMessage.append(errorMessage);
+	_errorMessage.append("\n");
+}
+
+std::string  ErmineJudiError::what(){
+	return _errorMessage;
+}
 }/* SMLMS */

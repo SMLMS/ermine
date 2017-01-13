@@ -20,6 +20,9 @@
 #include "header/ermineExceptions.hpp"
 #include "header/ermineParser.hpp"
 #include "header/ermineFilenames.hpp"
+#include "header/smlmsMicroscope.hpp"
+#include "header/smlmsMolecules.hpp"
+#include "header/ermineJudi.hpp"
 
 namespace po=boost::program_options;
 
@@ -123,12 +126,126 @@ int main(int argc, char *argv[]){
 	}
 
 	// choose algorithm
+	// batch algorithm
 	if (eVar.algorithmArgument()=="batch"){
 		statement.printBatch();
+		//load microscope
+		SMLMS::Microscope microscope;
+		try{
+			microscope.loadMicroscope(fileNames.microscopeName());
+		}
+		catch(SMLMS::SMLMSMicroscopeError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		std::cout<<"int time: "<<microscope.intTime()<<std::endl;
+		std::cout<<"pxl size: "<<microscope.pxlSize()<<std::endl;
+		std::cout<<"loc prec: "<<microscope.locPrec()<<std::endl;
+		//load file list and roi
+		SMLMS::MoleculeList tempList, molList;
+		try{
+			molList.readROI(fileNames.roiName());
+			molList.readTrcList(microscope, fileNames.getTrcName(0));
+		}
+		catch(SMLMS::SMLMSMoleculesError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		// load trc and append files
+		for (int i=1; i<fileNames.trcNumber(); i++){
+			try{
+				tempList.readTrcList(microscope, fileNames.getTrcName(i));
+			}
+			catch(SMLMS::SMLMSMoleculesError& error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+				return 1;
+			}
+			molList.addMoleculeList(tempList);
+		}
+		//filter trc files
+		molList.filterMoleculeList();
+		// write results
+		microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
+		molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
+		// start tidy	
+		statement.printTidy();
+	}
+	// calculate judi from mol: mol2judi algorithm
+	else if(eVar.algorithmArgument()=="mol2judi"){
+		statement.printMol2Judi();
+		SMLMS::Microscope microscope;
+		try{
+			microscope.loadMicroscope(fileNames.microscopeName());
+		}
+		catch(SMLMS::SMLMSMicroscopeError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		SMLMS::MoleculeList molList;
+		try{
+			molList.readMoleculeList(fileNames.molListName(), fileNames.roiName());
+		}
+		catch(SMLMS::SMLMSMoleculesError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		//filter molecule List
+		molList.filterMoleculeList();
+		// calculate judi from molecule list
+		SMLMS::JumpDistanceList judi;
+		judi.calcJumpDistanceList(molList);
+		// write results
+		microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
+		molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
+		judi.writeJumpDistanceList(fileNames.folderName().append("/jumpDistance_list.jud"));
+		//start tidy
+		statement.printTidy();
+	}
+	// Initialize HMM
+	else if(eVar.algorithmArgument()=="initialize"){
+		statement.printInitialize();
+		// load microscope
+		SMLMS::Microscope microscope;
+		microscope.loadMicroscope(fileNames.microscopeName());
+		// load judi
+		SMLMS::JumpDistanceList judi;
+		judi.readJumpDistanceList(fileNames.judiName());
+		// read HMM
+		/*
+		SMLMS::HMM hmm;
+		hmm.initObsAlphabet((double) parser.jumpIntervalArgument(), (double) parser.minDistArgument(), (double) parser.maxDistArgument());
+		hmm.readHMM(fileNames.hmmName());
+		// init hmm
+		std::string outfilename= fileNames.sourceFolder();
+		hmm.initialize(judi, outfilename);
+		// write results
+		hmm.writeHMM(fileNames.sourceFolder().append("HMM_result.hmm"));
+		*/
+		// start tidy
+		statement.printTidy();
 	}
 	else{
 		std::cout<<std::endl<<eVar.algorithmArgument()<<" is still under construction"<<std::endl;
 	}
-	statement.printTidy();
 	return 0;
 }/* main */

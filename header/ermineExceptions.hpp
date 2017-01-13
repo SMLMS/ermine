@@ -48,7 +48,31 @@ class ErmineFileNameError{
 	public:
 		ErmineFileNameError(std::string);
 		std::string what();
-};
+}; /* SMLMSFileNameError*/
+
+class SMLMSMicroscopeError{
+	private:
+		std::string _errorMessage;
+	public:
+		SMLMSMicroscopeError(std::string);
+		std::string what();
+}; /* SMLMSMicroscopeError */
+
+class SMLMSMoleculesError{
+	private:
+		std::string _errorMessage;
+	public:
+		SMLMSMoleculesError(std::string);
+		std::string what();
+}; /* SMLMSMoleculesError */
+
+class ErmineJudiError{
+	private:
+		std::string _errorMessage;
+	public:
+		ErmineJudiError(std::string);
+		std::string what();
+}; /* ErmineJudiExceptions */
 
 } /* SMLMS */
 #endif /* ermineExceptions_hpp */

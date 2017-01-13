@@ -58,7 +58,7 @@ class FileNames{
 		void addTrcName(std::string);
 		void clearFileNames();
 		void readNamesFromSourceFile();
-	};/* FileNames */
+}; /* FileNames */
 }/* SMLMS */
 #endif /* ErmineFilenames_hpp */
 

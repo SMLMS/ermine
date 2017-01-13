@@ -187,4 +187,5 @@ void FileNames::readNamesFromSourceFile(){
 		std::cout<<getTrcName(i)<<std::endl;
 	}
 }
+
 }/* SMLMS */
