@@ -10,7 +10,6 @@
 * Single Molecule Biophysics
 ###################################################################### */
 
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -41,7 +40,7 @@ PhysicalModelBase::PhysicalModelBase(const std::vector<double> &xVal, int stateV
 	std::cout<<"Physical Model Base constructor called"<<std::endl;
 	_alphabet = xVal;
 	_stateNumber = stateVal;
-	_fileNameBase = name;
+	_folderName = name;
 	initModelByAlphabet();
 }
 
@@ -52,7 +51,7 @@ PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, int incVal, i
 	_maxValue = maxVal;
 	_incNumber = incVal;
 	_stateNumber = stateVal;
-	_fileNameBase = name;
+	_folderName = name;
 	initModelByParameter();
 }
 
@@ -83,7 +82,7 @@ PhysicalModelBase::PhysicalModelBase(const PhysicalModelBase &obj){
 	_resMatrix = obj._resMatrix;
 	_chiSquare = obj._chiSquare;
 	_pdfWeight = obj._pdfWeight;
-	_fileNameBase = obj._fileNameBase;
+	_folderName = obj._folderName;
 }
 
 /* elementary functions */
@@ -211,12 +210,12 @@ std::vector<double> PhysicalModelBase::pdfWeight(){
 	return _pdfWeight;
 }
 
-void PhysicalModelBase::setFileNameBase(std::string val){
-	_fileNameBase = val;
+void PhysicalModelBase::setFolderName(std::string val){
+	_folderName = val;
 }
 
-std::string PhysicalModelBase::fileNameBase(){
-	return _fileNameBase;
+std::string PhysicalModelBase::folderName(){
+	return _folderName;
 }
 
 /* description */
@@ -345,8 +344,8 @@ void PhysicalModelBase::printPdfWeight(){
 	std::cout<<std::endl;
 }
 
-void PhysicalModelBase::printFileNameBase(){
-	std::cout<<"File base name: "<<_fileNameBase.data()<<std::endl;
+void PhysicalModelBase::printFolderName(){
+	std::cout<<"File base name: "<<_folderName.data()<<std::endl;
 }
 /* check functions */
 void PhysicalModelBase::checkMinValue(){
@@ -607,8 +606,8 @@ void PhysicalModelBase::checkPdfWeight(){
 	}
 }
 
-void PhysicalModelBase::checkFileNameBase(){
-	if(_fileNameBase.size() < 1){
+void PhysicalModelBase::checkFolderName(){
+	if(_folderName.size() < 1){
 		std::stringstream errorMessage;
 		errorMessage<<"Physical Model Base instance:"<<std::endl;
 		errorMessage<<"no file base name defined."<<std::endl;
@@ -640,7 +639,7 @@ void PhysicalModelBase::checkPhysicalModelBase(){
 	checkResMatrix();
 	checkChiSquare();
 	checkPdfWeight();
-	checkFileNameBase();
+	checkFolderName();
 }
 
 /* init functions */
@@ -706,8 +705,8 @@ void PhysicalModelBase::initModelByAlphabet(){
 void PhysicalModelBase::writePdfSuperPos(){
 	int i,j;
 	std::string name;
-	name = _fileNameBase;
-	name.append("pdfSuperPos.txt");
+	name = _folderName;
+	name.append("/pdfSuperPos.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
 		outFile<<std::scientific;
@@ -734,8 +733,8 @@ void PhysicalModelBase::writePdfSuperPos(){
 void PhysicalModelBase::writePdfMatrix(){
 	int i,j;
 	std::string name;
-	name = _fileNameBase;
-	name.append("pdfMatrix.txt");
+	name = _folderName;
+	name.append("/pdfMatrix.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
 		outFile<<std::scientific;
@@ -766,8 +765,8 @@ void PhysicalModelBase::plotPhysicalModel(){
 	int i,j;
 	/* create Filename */
 	std::string name;
-	name = _fileNameBase;
-	name.append("ProbabilityDensityDistribution.pdf");
+	name = _folderName;
+	name.append("/ProbabilityDensityDistribution.pdf");
 	/* define and set style */
 	gStyle->SetOptStat(0);
 	gStyle->SetTitleFontSize(0.05);

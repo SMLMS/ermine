@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef SmlmsPhysModBase_hpp
-#define SmlmsPhysModBase_hpp
+#ifndef SMLMSPHYSMODBASE_HPP
+#define SMLMSPHYSMODBASE_HPP
 
 #include <vector>
 #include <string>
@@ -41,7 +41,7 @@ class PhysicalModelBase{
 		SMLMS::Matrix _resMatrix;
 		std::vector<double> _chiSquare;
 		std::vector<double> _pdfWeight;
-		std::string _fileNameBase;
+		std::string _folderName;
 	public:
 		/* Constructor */
 		PhysicalModelBase();
@@ -83,8 +83,8 @@ class PhysicalModelBase{
 		std::vector<double> chiSquare();
 		void setPdfWeight(std::vector<double>&);
 		std::vector<double> pdfWeight();
-		void setFileNameBase(std::string);
-		std::string fileNameBase();
+		void setFolderName(std::string);
+		std::string folderName();
 		/* description */
 		void description();
 		/* print functions */
@@ -107,7 +107,7 @@ class PhysicalModelBase{
 		void printResMatrix();
 		void printChiSquare();
 		void printPdfWeight();
-		void printFileNameBase();
+		void printFolderName();
 		/* check functions */
 		void checkMinValue();
 		void checkMaxValue();
@@ -131,7 +131,7 @@ class PhysicalModelBase{
 		void checkResMatrix();
 		void checkChiSquare();
 		void checkPdfWeight();
-		void checkFileNameBase();
+		void checkFolderName();
 		void checkPhysicalModelBase();
 		/* init functions */
 		void initModel();

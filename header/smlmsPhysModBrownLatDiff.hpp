@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Name_hpp
-#define Name_hpp
+#ifndef smlmsPhysModBrownLatDiff_hpp
+#define smlmsPhysModBrownLatDiff_hpp
 
 #include <string>
 #include <vector>
@@ -83,4 +83,4 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void viterbiFit();
 }; /* PhysicalModelBLD*/
 } /* SMLMS */
-#endif /* Name_hpp */
+#endif /* smlmsPhysModBrownLatDiff_hpp */

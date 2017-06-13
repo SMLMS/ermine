@@ -10,6 +10,11 @@ BOOSTSOURCE = -L/usr/include/boost
 BOOSTFLAG = -lboost_program_options
 BOOSTFLAG += -lboost_system
 BOOSTFLAG += -lboost_filesystem
+BOOSTFLAG += -lboost_random
+
+ROOTCFLAGS   := $(shell root-config --cflags)
+ROOTLIBS     := $(shell root-config --libs)
+ROOTGLIBS    := $(shell root-config --glibs)
 
 SOURCES = main.cpp
 SOURCES += source/ermineStatement.cpp
@@ -17,9 +22,18 @@ SOURCES += source/ermineParser.cpp
 SOURCES += source/ermineExceptions.cpp
 SOURCES += source/smlmsFolder.cpp
 SOURCES += source/ermineFilenames.cpp
+SOURCES += source/smlmsMatrix.cpp
+SOURCES += source/smlmsRandom.cpp
+SOURCES += source/smlmsExceptions.cpp
 SOURCES += source/smlmsMicroscope.cpp
 SOURCES += source/smlmsMolecules.cpp
-SOURCES += source/ermineJudi.cpp
+SOURCES += source/smlmsJudi.cpp
+SOURCES += source/smlmsPdfFunctions.cpp
+SOURCES += source/smlmsPhysModBase.cpp
+SOURCES += source/smlmsPhysModBrownLatDiff.cpp
+SOURCES += source/smlmsHmmBase.cpp
+SOURCES += source/smlmsHmmUnique.cpp
+SOURCES += source/smlmsHmmSequence.cpp
 OBJECTS = $(SOURCES: .cpp=.o)
 
 
@@ -29,10 +43,10 @@ EXECUTABLE := prog/ermine
 all:$(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CXX) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(LIBS) $(INCLUDES) -o $@
+	$(CXX) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(ROOTCFLAGS) $(ROOTGLIBS) $(LIBS) $(INCLUDES) -o $@
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(ROOTCFLAGS)  -c $<
 
 clean:
 	-rm *.o prog/ermine

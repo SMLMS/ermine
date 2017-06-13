@@ -9,7 +9,6 @@
 * Single Molecule Biophysics
 ###################################################################### */
 
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -74,7 +73,7 @@ PhysicalModelBLD::PhysicalModelBLD(const PhysicalModelBLD &obj){
 	_resMatrix = obj._resMatrix;
 	_chiSquare = obj._chiSquare;
 	_pdfWeight = obj._pdfWeight;
-	_fileNameBase = obj._fileNameBase;
+	_folderName = obj._folderName;
 	_paraMat = obj._paraMat;
 	_paraVect = obj._paraVect;
 	_contAreaSuperPos = obj._contAreaSuperPos;
@@ -203,8 +202,8 @@ void PhysicalModelBLD::printContArea(){
 void PhysicalModelBLD::writePhysMod(){
 	int i,j;
 	std::string name;
-	name = _fileNameBase;
-	name.append("physicalModelBLD.txt");
+	name = _folderName;
+	name.append("/physicalModelBLD.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
 		outFile<<std::scientific;

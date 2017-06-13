@@ -17,12 +17,14 @@
 #include <iomanip>
 #include <boost/program_options.hpp>
 #include "header/ermineStatement.hpp"
-#include "header/ermineExceptions.hpp"
 #include "header/ermineParser.hpp"
 #include "header/ermineFilenames.hpp"
+#include "header/ermineExceptions.hpp"
+#include "header/smlmsExceptions.hpp"
 #include "header/smlmsMicroscope.hpp"
 #include "header/smlmsMolecules.hpp"
-#include "header/ermineJudi.hpp"
+#include "header/smlmsJudi.hpp"
+#include "header/smlmsPhysModBrownLatDiff.hpp"
 
 namespace po=boost::program_options;
 
@@ -134,7 +136,7 @@ int main(int argc, char *argv[]){
 		try{
 			microscope.loadMicroscope(fileNames.microscopeName());
 		}
-		catch(SMLMS::SMLMSMicroscopeError& error){
+		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
 			return 1;
 		}
@@ -151,7 +153,7 @@ int main(int argc, char *argv[]){
 			molList.readROI(fileNames.roiName());
 			molList.readTrcList(microscope, fileNames.getTrcName(0));
 		}
-		catch(SMLMS::SMLMSMoleculesError& error){
+		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
 			return 1;
 		}
@@ -164,7 +166,7 @@ int main(int argc, char *argv[]){
 			try{
 				tempList.readTrcList(microscope, fileNames.getTrcName(i));
 			}
-			catch(SMLMS::SMLMSMoleculesError& error){
+			catch(SMLMS::SmlmsError& error){
 				std::cout<<error.what()<<std::endl;
 				return 1;
 			}
@@ -177,8 +179,18 @@ int main(int argc, char *argv[]){
 		//filter trc files
 		molList.filterMoleculeList();
 		// write results
-		microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
-		molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
+		try{
+			microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
+			molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
 		// start tidy	
 		statement.printTidy();
 	}
@@ -189,7 +201,7 @@ int main(int argc, char *argv[]){
 		try{
 			microscope.loadMicroscope(fileNames.microscopeName());
 		}
-		catch(SMLMS::SMLMSMicroscopeError& error){
+		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
 			return 1;
 		}
@@ -201,7 +213,7 @@ int main(int argc, char *argv[]){
 		try{
 			molList.readMoleculeList(fileNames.molListName(), fileNames.roiName());
 		}
-		catch(SMLMS::SMLMSMoleculesError& error){
+		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
 			return 1;
 		}
@@ -215,35 +227,69 @@ int main(int argc, char *argv[]){
 		SMLMS::JumpDistanceList judi;
 		judi.calcJumpDistanceList(molList);
 		// write results
+		try{
 		microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
 		molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
 		judi.writeJumpDistanceList(fileNames.folderName().append("/jumpDistance_list.jud"));
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
 		//start tidy
 		statement.printTidy();
 	}
-	// Initialize HMM
-	else if(eVar.algorithmArgument()=="initialize"){
-		statement.printInitialize();
-		// load microscope
+	// Initialize Physical Model
+	else if(eVar.algorithmArgument()=="initPhysMod"){
+		/* get state Number */
+		std::cout<<std::endl<<"Number of states:"<<std::endl;
+		int stateNumber = 0;
+		std::cin>>stateNumber;
+		if(std::cin.fail()){
+			std::cout << "User Error: State number needs to be of type integer.";
+			std::cin.clear();
+			return 1;
+		}
+		/* Loading microscope */
 		SMLMS::Microscope microscope;
-		microscope.loadMicroscope(fileNames.microscopeName());
-		// load judi
-		SMLMS::JumpDistanceList judi;
-		judi.readJumpDistanceList(fileNames.judiName());
-		// read HMM
-		/*
-		SMLMS::HMM hmm;
-		hmm.initObsAlphabet((double) parser.jumpIntervalArgument(), (double) parser.minDistArgument(), (double) parser.maxDistArgument());
-		hmm.readHMM(fileNames.hmmName());
-		// init hmm
-		std::string outfilename= fileNames.sourceFolder();
-		hmm.initialize(judi, outfilename);
-		// write results
-		hmm.writeHMM(fileNames.sourceFolder().append("HMM_result.hmm"));
-		*/
-		// start tidy
-		statement.printTidy();
+		try{
+			microscope.loadMicroscope(fileNames.microscopeName());
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		/* init PhysMod */
+		SMLMS::PhysicalModelBLD physMod;
+		physMod.setStateNumber(stateNumber);
+		physMod.setMinValue(eVar.minDistArgument());
+		physMod.setMaxValue(eVar.maxDistArgument());
+		physMod.setIncNumber(eVar.jumpIntervalArgument());
+		physMod.setFolderName(fileNames.folderName());
+		physMod.initModelByParameter();
+		physMod.initModelBLD(microscope);
+		/* save model */
+		try{
+			physMod.writePhysMod();
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
 	}
+	// Initialize HMM
 	else{
 		std::cout<<std::endl<<eVar.algorithmArgument()<<" is still under construction"<<std::endl;
 	}
