@@ -18,7 +18,7 @@
 #include <iomanip>
 #include "header/smlmsMicroscope.hpp"
 #include "header/smlmsMolecules.hpp"
-#include "header/ermineExceptions.hpp"
+#include "header/smlmsExceptions.hpp"
 
 namespace SMLMS{
 /* Constructor */
@@ -124,8 +124,8 @@ void MoleculeList::readLocList(std::string name){
 	else{
 		std::stringstream errorMessage;
 		errorMessage<<"Unable to red molecule list form: "<<name<<std::endl;
-		SMLMS::SMLMSMoleculesError smlmsMoleculesError(errorMessage.str());
-		throw smlmsMoleculesError;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
 	}
 
 }/* readLocList */
@@ -157,7 +157,8 @@ void MoleculeList::readROI(std::string name){
 	else{
 		std::stringstream errorMessage;
 		errorMessage<<"Unable to read roi from: "<<name<<std::endl;
-		SMLMS::SMLMSMoleculesError smlmsMoleculesError(errorMessage.str());
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
 		
 	}
 }/* readRoi */

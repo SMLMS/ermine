@@ -31,10 +31,13 @@ class Microscope{
 		/* Elementary functions */
 		void setPxlSize(double);
 		double pxlSize();
+		double pxlSize()const;
 		void setIntTime(double);
 		double intTime();
+		double intTime()const;
 		void setLocPrec(double);
 		double locPrec();
+		double locPrec()const;
 		/* Sprecial Functions */
 		void clearMicroscope();
 		void loadMicroscope(std::string name);

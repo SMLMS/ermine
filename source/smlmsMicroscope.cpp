@@ -17,7 +17,7 @@
 #include <sstream>
 #include <iomanip>
 #include "header/smlmsMicroscope.hpp"
-#include "header/ermineExceptions.hpp"
+#include "header/smlmsExceptions.hpp"
 
 namespace SMLMS{
 /* Constructor */
@@ -52,6 +52,10 @@ double Microscope::pxlSize(){
 	return _pxlSize;
 }
 
+double Microscope::pxlSize()const{
+	return _pxlSize;
+}
+
 void Microscope::setIntTime(double initIntTime){
 	_intTime = initIntTime;
 }
@@ -60,11 +64,19 @@ double Microscope::intTime(){
 	return _intTime;
 }
 
+double Microscope::intTime()const{
+	return _intTime;
+}
+
 void Microscope::setLocPrec(double initLocPrec){
 	_locPrec = initLocPrec;
 }
 
 double Microscope::locPrec(){
+	return _locPrec;
+}
+
+double Microscope::locPrec()const{
 	return _locPrec;
 }
 
@@ -96,8 +108,8 @@ void Microscope::loadMicroscope(std::string name){
 	else{
 		std::stringstream errorMessage;
 		errorMessage<<name<<" could not be opened!"<<std::endl;
-		SMLMSMicroscopeError smlmsMicroscopeError(errorMessage.str());
-		throw smlmsMicroscopeError;	
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;	
 	}	
 }
 
