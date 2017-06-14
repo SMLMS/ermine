@@ -40,6 +40,7 @@ FileNames::FileNames(const FileNames &obj){
 	setRoiName(obj._roiName);
 	setJudiName(obj._judiName);
 	setHmmName(obj._hmmName);
+	setModelName(obj._modelName);
 	setMolListName(obj._molListName);
 	setTrcNames(obj._trcNames);
 }
@@ -92,6 +93,14 @@ std::string FileNames::hmmName(){
 	return _hmmName;
 }
 
+void FileNames::setModelName(std::string name){
+	_modelName=name;
+}
+
+std::string FileNames::modelName(){
+	return _modelName;
+}
+
 void FileNames::setMolListName(std::string name){
 	_molListName=name;
 }
@@ -128,6 +137,7 @@ void FileNames::clearFileNames(){
 	_roiName.clear();
 	_judiName.clear();
 	_hmmName.clear();
+	_modelName.clear();
 	_molListName.clear();
 	_trcNames.clear();
 }
@@ -158,6 +168,10 @@ void FileNames::readNamesFromSourceFile(){
 				else if (tempFileName.find(".hmm")!= std::string::npos){
 					setHmmName(tempFileName);
 					std::cout<<"HMM file is: "<<_hmmName<<std::endl;
+				}
+				else if (tempFileName.find(".mod")!= std::string::npos){
+					setModelName(tempFileName);
+					std::cout<<"Physical Model file is: "<<_modelName<<std::endl;
 				}
 				else if (tempFileName.find(".mol")!= std::string::npos){
 					setMolListName(tempFileName);

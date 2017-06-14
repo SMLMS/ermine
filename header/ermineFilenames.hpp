@@ -25,6 +25,7 @@ class FileNames{
 		std::string _roiName;
 		std::string _judiName;
 		std::string _hmmName;
+		std::string _modelName;
 		std::string _molListName;
 		std::vector<std::string> _trcNames;
 
@@ -48,6 +49,8 @@ class FileNames{
 		std::string judiName();
 		void setHmmName(std::string);
 		std::string hmmName();
+		void setModelName(std::string);
+		std::string modelName();
 		void setMolListName(std::string);
 		std::string molListName();
 		void setTrcNames(std::vector<std::string>);

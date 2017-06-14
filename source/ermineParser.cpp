@@ -36,9 +36,9 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("batch",0));
 	alphabet.insert(std::make_pair("mol2judi",0));
 	alphabet.insert(std::make_pair("initPhysMod",0));
-	alphabet.insert(std::make_pair("initialize",0));
+	alphabet.insert(std::make_pair("initHMM",0));
 	alphabet.insert(std::make_pair("simulate",0));
-	alphabet.insert(std::make_pair("likelihood",0));
+	alphabet.insert(std::make_pair("evaluate",0));
 	alphabet.insert(std::make_pair("train",0));
 	alphabet.insert(std::make_pair("path",0));
 	setAlgorithmAlphabet(alphabet);
@@ -163,14 +163,14 @@ void ErmineParser::printAlgorithmHelp(){
 	std::stringstream message;
 	message<<"possible algorithms in ermine are:"<<std::endl
 	<<"algorithm\t\tdescription\t\t\t\tessential parameters"<<std::endl
-	<<"batch:\t\tmerge several .trc data sets\t\t\t(-f, -a)"<<std::endl
-	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t(-f, -a)"<<std::endl
-	<<"initPhysMod:\treturns an initial .mod file.\t\t\t(-f, -a)"<<std::endl
-	<<"initialize:\treturns an initial guess for a hmm.\t\t(to be announced)"<<std::endl
+	<<"batch:\t\tmerge several .trc data sets\t\t\t(-a, -f)"<<std::endl
+	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t(-a, -f)"<<std::endl
+	<<"initPhysMod:\treturns an initial .mod file.\t\t\t(-a, -f)"<<std::endl
+	<<"initHmm:\treturns an initial guess for a hmm.\t\t(-a -f -j --midDist --maxDist)"<<std::endl
 	<<"simulate:\tcalculates a mchmm simulation.\t\t\t(to be announced)"<<std::endl
-	<<"likelihood:\tcalculates the likelihood of a given model\t(to be announced)"<<std::endl
+	<<"evaluate:\tevaluates how well a given model fits a distinct data set\t(to be announced)"<<std::endl
 	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t(to be announced)"<<std::endl
-	<<"path:\t\testimates the most likely path by Viterbi.\t(to be announced)"<<std::endl;
+	<<"path:\t\testimates the most likely path of hidden states by Viterbi.\t(to be announced)"<<std::endl;
 
 	std::cout<<line<<message.str()<<std::endl;
 }

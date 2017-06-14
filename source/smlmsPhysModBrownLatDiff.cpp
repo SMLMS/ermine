@@ -203,7 +203,7 @@ void PhysicalModelBLD::writePhysMod(){
 	int i,j;
 	std::string name;
 	name = _folderName;
-	name.append("/physicalModelBLD.txt");
+	name.append("/physicalModelBLD.mod");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
 		outFile<<std::scientific;
@@ -375,6 +375,16 @@ void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
 void PhysicalModelBLD::updatePi(SMLMS::Matrix &pi){
 	int j;
 	for (j=0; j<_stateNumber; j++) pi(0,j)=_paraMat.at(j,0);
+}
+
+void PhysicalModelBLD::updateFixModelParameter(SMLMS::Microscope &microscope){
+	int i;
+	checkStateNumber();
+	checkParaMat();
+	for (i=0; i<_stateNumber; i++){
+		_paraMat(i,2) = microscope.intTime(); 
+		_paraMat(i,3) = microscope.locPrec();
+	}	
 }
 
 /* fit functions */

@@ -13,6 +13,7 @@
 
 #ifndef Microscope_hpp
 #define Microscope_hpp
+#include <string>
 
 namespace SMLMS{
 class Microscope{

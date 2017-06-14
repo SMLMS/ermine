@@ -275,7 +275,8 @@ int main(int argc, char *argv[]){
 		physMod.setIncNumber(eVar.jumpIntervalArgument());
 		physMod.setFolderName(fileNames.folderName());
 		physMod.initModelByParameter();
-		physMod.initModelBLD(microscope);
+		physMod.initModelBLD();
+		physMod.updateFixModelParameter(microscope);
 		/* save model */
 		try{
 			physMod.writePhysMod();
@@ -288,8 +289,40 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
+		// start tidy	
+		statement.printTidy();
 	}
 	// Initialize HMM
+	else if(eVar.algorithmArgument()=="initHmm"){
+		std::cout<<"under construction"<<std::endl;
+		// start tidy	
+		statement.printTidy();
+	}
+	// Simulate
+	else if(eVar.algorithmArgument()=="simulate"){
+		std::cout<<"\nunder construction"<<std::endl;
+		// start tidy	
+		statement.printTidy();
+	}
+	// evaluate
+	else if(eVar.algorithmArgument()=="evaluate"){
+		std::cout<<"\nunder construction"<<std::endl;
+		// start tidy	
+		statement.printTidy();
+	}
+	// train
+	else if(eVar.algorithmArgument()=="train"){
+		std::cout<<"\nunder construction"<<std::endl;
+		// start tidy	
+		statement.printTidy();
+	}
+	// path
+	else if(eVar.algorithmArgument()=="path"){
+		std::cout<<"\nunder construction"<<std::endl;
+		// start tidy	
+		statement.printTidy();
+	}
+	// no matching algorithm
 	else{
 		std::cout<<std::endl<<eVar.algorithmArgument()<<" is still under construction"<<std::endl;
 	}
