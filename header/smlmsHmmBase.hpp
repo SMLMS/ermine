@@ -22,6 +22,7 @@
 namespace SMLMS{
 class HMMBase{
 	protected:
+		std::string _folderName;
 		unsigned _stateNumber;
 		unsigned _symbolNumber;
 		unsigned _minValue;
@@ -49,6 +50,8 @@ class HMMBase{
 		/* copy Constructor */
 		HMMBase(const HMMBase &);
 		/* elementary functions */
+		void setFolderName(std::string);
+		std::string folderName();
 		void setStateNumber(unsigned);
 		unsigned stateNumber();
 		void setSymbolNumber(unsigned);
@@ -76,10 +79,11 @@ class HMMBase{
 		int maxIt();
         	/* load/save funCtions */
 		void readHMM(std::string const &);
-		void writeHMM(std::string const &);
+		void writeHMM();
 		/* clear functions */
 		void clearHMM();
 		/* proof functions */
+		void checkFolderName();
 		void checkStateNumber();
 		void checkSymbolNumber();
 		void checkEqui();
@@ -108,6 +112,7 @@ class HMMBase{
 		void normalizePDF(SMLMS::Matrix &);
 		void normalizeHMM();
 		/* calc functions */
+		void calcSymbolNumber();
 		void calcSymbolInterval();
 		void calcMinValue();
 		void calcMaxValue();
@@ -115,6 +120,7 @@ class HMMBase{
 		void calcParasFromObsAlphabet();
 		void calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf);
 		/* print functions */
+		void printFolderName();
 		void printStateNumber();
 		void printSymbolNumber();
 		void printEquiPDF();

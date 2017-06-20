@@ -53,6 +53,7 @@ HMMBase::~HMMBase (){
 /* copy constructor */
 HMMBase::HMMBase(const HMMBase &obj){
 	//std::cout<<"HMM copy constructor called."<<std::endl;
+	_folderName = obj._folderName;
 	_stateNumber = obj._stateNumber;
 	_symbolNumber  = obj._symbolNumber;
 	_symbolInterval = obj._symbolInterval;
@@ -71,6 +72,14 @@ HMMBase::HMMBase(const HMMBase &obj){
 }
 
 /* elementary functions */
+void HMMBase::setFolderName(std::string name){
+	_folderName = name;
+}
+
+std::string HMMBase::folderName(){
+	return _folderName;
+}
+
 void HMMBase::setStateNumber(unsigned numberOfStates){
 	_stateNumber = numberOfStates;
 }
@@ -234,7 +243,8 @@ void HMMBase::readHMM(std::string const &name){
 
 }
 
-void HMMBase::writeHMM(std::string const &name){
+void HMMBase::writeHMM(){
+	std::string name = _folderName.append("/hmm.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
 		outFile<<std::scientific;
@@ -290,6 +300,7 @@ void HMMBase::writeHMM(std::string const &name){
 
 /* clear functions */
 void HMMBase::clearHMM(){
+	_folderName.clear();
 	_stateNumber=0;
 	_symbolNumber=0;
 	_equiPDF.clearMatrix();
@@ -305,6 +316,15 @@ void HMMBase::clearHMM(){
 
 /* special functions */
 /* proof functions */
+void HMMBase::checkFolderName(){
+	if(_folderName.size()<1){
+		std::stringstream errorMessage;
+		errorMessage<<"Cannot write a HmmBase instance without a definite folder name!"<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+	}
+}
+
 void HMMBase::checkStateNumber(){
 	if(_stateNumber<1){
 		std::stringstream errorMessage;
@@ -374,6 +394,7 @@ void HMMBase::checkProbDen(SMLMS::Matrix & mat){
 }
 
 void HMMBase::checkHMM(){
+	checkFolderName();
 	checkStateNumber();
 	checkSymbolNumber();
 	checkEqui();
@@ -552,6 +573,10 @@ void HMMBase::normalizeHMM(){
 }
 
 /* calc functionc */	
+void HMMBase::calcSymbolNumber(){
+	_symbolNumber = int(_maxValue-_minValue)/int(_symbolInterval);
+}
+
 void HMMBase::calcSymbolInterval(){	
 	_symbolInterval = double(_maxValue-_minValue)/double(_symbolNumber);
 }
@@ -591,6 +616,10 @@ void HMMBase::calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf){
 
 
 /* print functions */
+void HMMBase::printFolderName(){
+	std::cout<<std::endl<<"Folder Name: "<<_folderName<<std::endl;
+}
+
 void HMMBase::printStateNumber(){
 	std::cout<<std::endl<<"Number of States: "<<_stateNumber<<std::endl;
 }
@@ -674,6 +703,7 @@ void HMMBase::printAic(){
 
 void HMMBase::printHMM(){
 	std::cout<<std::endl<<"HMM:"<<std::endl;
+	printFolderName();
 	printStateNumber();
 	printSymbolNumber();
 	printEquiPDF();

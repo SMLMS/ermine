@@ -25,6 +25,9 @@
 #include "header/smlmsMolecules.hpp"
 #include "header/smlmsJudi.hpp"
 #include "header/smlmsPhysModBrownLatDiff.hpp"
+#include "header/smlmsHmmBase.hpp"
+#include "header/smlmsHmmUnique.hpp"
+#include "header/smlmsHmmSequence.hpp"
 
 namespace po=boost::program_options;
 
@@ -293,10 +296,66 @@ int main(int argc, char *argv[]){
 		statement.printTidy();
 	}
 	// Initialize HMM
-	else if(eVar.algorithmArgument()=="initHmm"){
-		std::cout<<"under construction"<<std::endl;
-		// start tidy	
-		statement.printTidy();
+	else if(eVar.algorithmArgument()=="initHMM"){
+		SMLMS::HMMSequence hmm;	
+		hmm.setFolderName(fileNames.folderName());
+		/* test if model is provided */
+		if(fileNames.proofModel()){
+			/* init physical model */
+			SMLMS::PhysicalModelBLD physMod;
+			physMod.setMinValue(eVar.minDistArgument());
+			physMod.setMaxValue(eVar.maxDistArgument());
+			physMod.setIncNumber(eVar.jumpIntervalArgument());
+			physMod.setFolderName(fileNames.folderName());
+		try{
+			/* loading Model */
+			physMod.readPhysMod(fileNames.modelName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+
+			/* calc PDF */
+			physMod.calcFitMatrixFromPara();
+			physMod.writePhysMod();
+			physMod.writePdfMatrix();
+			/* init hmm */
+			hmm.initFromPhysMod(physMod);
+		}
+		/* else if model negative */
+		else{
+			/* get state Number */
+			std::cout<<std::endl<<"Number of states:"<<std::endl;
+			int stateNumber = 0;
+			std::cin>>stateNumber;
+			if(std::cin.fail()){
+				std::cout << "User Error: State number needs to be of type integer.";
+				std::cin.clear();
+				return 1;
+			}
+			/* initHMM */
+			hmm.setStateNumber(stateNumber);
+			hmm.setMinValue(eVar.minDistArgument());
+			hmm.setMaxValue(eVar.maxDistArgument());
+			hmm.setSymbolInterval(eVar.jumpIntervalArgument());
+			hmm.calcSymbolNumber();
+			hmm.initHMM(); //calcSymbolNumber, calcObsAlphabet to init HMM
+			//hmm.calcObsAlphabetFromParas();
+		}
+		/* save model */
+		hmm.printHMM();
+		//hmm.writeHMM();
+		/* start tidy */
+		//statement.printTidy();
 	}
 	// Simulate
 	else if(eVar.algorithmArgument()=="simulate"){

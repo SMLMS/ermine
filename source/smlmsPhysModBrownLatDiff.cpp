@@ -239,6 +239,7 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 			if (n==0){
 				lineContent>>_stateNumber;
 				initModelBLD();
+				initModelByParameter();
 			}
 			/* read model parameter to para mat */
 			if(n>0 && n<(1+_stateNumber)){

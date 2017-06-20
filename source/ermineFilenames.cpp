@@ -202,4 +202,16 @@ void FileNames::readNamesFromSourceFile(){
 	}
 }
 
+/* proof functions */
+int FileNames::proofModel(){
+	if (_modelName.find(".mod")!= std::string::npos){
+		std::cout<<"\nfound physical model: "<<_modelName<<std::endl;
+		return 1;
+	}
+	else{
+		std::cout<<"\nno physical model found!"<<std::endl;
+		return 0;
+	}
+}
+
 }/* SMLMS */
