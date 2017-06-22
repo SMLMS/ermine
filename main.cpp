@@ -32,14 +32,14 @@
 namespace po=boost::program_options;
 
 int main(int argc, char *argv[]){
-	// initialize objects
+	/* initialize objects */
 	SMLMS::Statement statement;
 	statement.printStart();
 	SMLMS::ErmineParser eVar;
 	std::string ermineHeader( "\nEstimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):\nsingle molecule biophysics\nIPTC\nGoethe University Frankfurt");
 
 
-	// parse boost programm options for ermine
+	/* parse boost programm options for ermine */
 	po::options_description parserOpt(ermineHeader.data());
 	parserOpt.add_options()
 			("help,h", "show this help message.")
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
 			("particles,p", po::value<int>()->default_value(1000), "number of particles to simulate (int)")
 		;
 		po::variables_map vm;
-	// proof for required inputs
+	/* proof for required inputs */
 	try{
 		po::store(po::parse_command_line(argc, argv, parserOpt),vm);
 		po::notify(vm);
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 		return 0;
 	}
 
-	// parse programm options to ErmineParser class
+	/* parse programm options to ErmineParser class */
 	try{
 		eVar.parseArguments(vm);
 		eVar.printArguments();
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	
-	// make directory
+	/* make directory */
 	try{
 		eVar.makeFolder();
 	}
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]){
 		std::cout<<"oops, the ermine discovered an unexpected error during folder creation and is going to rest"<<std::endl;
 		return 1;
 	}
-	// write ermine parser
+	/* write ermine parser */
 	try{
 		eVar.writeErmineParser();
 	}
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 	
-	// read FileNames
+	/* read FileNames */
 	SMLMS::FileNames fileNames;
 	fileNames.clearFileNames();
 	fileNames.setSourceFileName(eVar.fileNameArgument());
@@ -130,11 +130,11 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
-	// choose algorithm
-	// batch algorithm
+	/* choose algorithm */
+	/* batch algorithm */
 	if (eVar.algorithmArgument()=="batch"){
 		statement.printBatch();
-		//load microscope
+		/* load microscope */
 		SMLMS::Microscope microscope;
 		try{
 			microscope.loadMicroscope(fileNames.microscopeName());
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]){
 		std::cout<<"int time: "<<microscope.intTime()<<std::endl;
 		std::cout<<"pxl size: "<<microscope.pxlSize()<<std::endl;
 		std::cout<<"loc prec: "<<microscope.locPrec()<<std::endl;
-		//load file list and roi
+		/* load file list and roi */
 		SMLMS::MoleculeList tempList, molList;
 		try{
 			molList.readROI(fileNames.roiName());
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
-		// load trc and append files
+		/* load trc and append files */
 		for (int i=1; i<fileNames.trcNumber(); i++){
 			try{
 				tempList.readTrcList(microscope, fileNames.getTrcName(i));
@@ -179,9 +179,9 @@ int main(int argc, char *argv[]){
 			}
 			molList.addMoleculeList(tempList);
 		}
-		//filter trc files
+		/* filter trc files */
 		molList.filterMoleculeList();
-		// write results
+		/* write results */
 		try{
 			microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
 			molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
@@ -194,10 +194,10 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
-		// start tidy	
+		/* start tidy */
 		statement.printTidy();
 	}
-	// calculate judi from mol: mol2judi algorithm
+	/* calculate judi from mol: mol2judi algorithm */
 	else if(eVar.algorithmArgument()=="mol2judi"){
 		statement.printMol2Judi();
 		SMLMS::Microscope microscope;
@@ -224,12 +224,12 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
-		//filter molecule List
+		/* filter molecule List */
 		molList.filterMoleculeList();
-		// calculate judi from molecule list
+		/* calculate judi from molecule list */
 		SMLMS::JumpDistanceList judi;
 		judi.calcJumpDistanceList(molList);
-		// write results
+		/* write results */
 		try{
 		microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
 		molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
@@ -243,10 +243,10 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
-		//start tidy
+		/* start tidy */
 		statement.printTidy();
 	}
-	// Initialize Physical Model
+	/* Initialize Physical Model */
 	else if(eVar.algorithmArgument()=="initPhysMod"){
 		/* get state Number */
 		std::cout<<std::endl<<"Number of states:"<<std::endl;
@@ -292,10 +292,10 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
-		// start tidy	
+		/* start tidy */
 		statement.printTidy();
 	}
-	// Initialize HMM
+	/* Initialize HMM */
 	else if(eVar.algorithmArgument()=="initHMM"){
 		SMLMS::HMMSequence hmm;	
 		hmm.setFolderName(fileNames.folderName());
@@ -331,7 +331,7 @@ int main(int argc, char *argv[]){
 			/* init hmm */
 			hmm.initFromPhysMod(physMod);
 		}
-		/* else if model negative */
+		/* else if no model provided */
 		else{
 			/* get state Number */
 			std::cout<<std::endl<<"Number of states:"<<std::endl;
@@ -347,20 +347,103 @@ int main(int argc, char *argv[]){
 			hmm.setMinValue(eVar.minDistArgument());
 			hmm.setMaxValue(eVar.maxDistArgument());
 			hmm.setSymbolInterval(eVar.jumpIntervalArgument());
-			hmm.calcSymbolNumber();
-			hmm.initHMM(); //calcSymbolNumber, calcObsAlphabet to init HMM
-			//hmm.calcObsAlphabetFromParas();
+			try{
+				hmm.calcSymbolNumber();
+				hmm.initHMM(); //calcSymbolNumber, calcObsAlphabet to init HMM
+				hmm.calcObsAlphabetFromParas();
+			}
+			catch(SMLMS::SmlmsError &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(std::out_of_range &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"unkown error!"<<std::endl;
+				return 1;
+			}
 		}
 		/* save model */
-		hmm.printHMM();
-		//hmm.writeHMM();
+		try{
+			hmm.printHMM();
+			hmm.writeHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
 		/* start tidy */
-		//statement.printTidy();
+		statement.printTidy();
 	}
-	// Simulate
+	/* Simulate */
 	else if(eVar.algorithmArgument()=="simulate"){
-		std::cout<<"\nunder construction"<<std::endl;
-		// start tidy	
+		/* create hmm instance*/
+		SMLMS::HMMSequence hmm;	
+		hmm.setFolderName(fileNames.folderName()); // muss weg
+		/* load hmm */
+		try{
+			hmm.readHMM(fileNames.hmmName());
+			hmm.setTraceNumber(eVar.particleArgument());
+			hmm.initLoadedHMM();
+			hmm.checkHMM(); // fehler bei der berechnung vom Jump interval
+			hmm.printHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* create judi instance */
+		SMLMS::JumpDistanceList judi;
+		/* simulate */
+		try{
+			hmm.simulateSequence(eVar.traceLengthArgument(), judi);
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		try{
+			judi.writeJumpDistanceList(fileNames.folderName().append("/judi.txt"));
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* start tidy */
 		statement.printTidy();
 	}
 	// evaluate

@@ -123,6 +123,7 @@ class HMMBase{
 		void printFolderName();
 		void printStateNumber();
 		void printSymbolNumber();
+		void printSymbolInterval();
 		void printEquiPDF();
 		void printTransPDF();
 		void printObsPDF();

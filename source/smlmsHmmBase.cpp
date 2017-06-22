@@ -289,10 +289,11 @@ void HMMBase::writeHMM(){
 		/* close */
 		outFile<<"# go ermine!"<<std::endl;
 		outFile.close();
+		std::cout<<"\nwrote hmm to "<<name<<std::endl;
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"could not write hmm to file!"<<std::endl;
+		errorMessage<<"could not write hmm to "<<name<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -338,6 +339,12 @@ void HMMBase::checkSymbolNumber(){
 	if(_symbolNumber<1){
 		std::stringstream errorMessage;
 		errorMessage<<"Cannot setup a hmm without a definite symbol number!"<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+	}
+	if(((_maxValue-_minValue) % _symbolNumber)!=0){
+		std::stringstream errorMessage;
+		errorMessage<<"Jump Distance does not match the observation interval!!"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -500,6 +507,7 @@ void HMMBase::initHMM(){
 	initEqui();
 	initTrans();
 	initObs();
+	initObsAlphabet();
 }
 
 /* init from file */
@@ -575,6 +583,7 @@ void HMMBase::normalizeHMM(){
 /* calc functionc */	
 void HMMBase::calcSymbolNumber(){
 	_symbolNumber = int(_maxValue-_minValue)/int(_symbolInterval);
+	checkSymbolNumber();
 }
 
 void HMMBase::calcSymbolInterval(){	
@@ -590,7 +599,7 @@ void HMMBase::calcMaxValue(){
 }
 
 void HMMBase::calcObsAlphabetFromParas(){
-	// check Paras
+	checkAlphabet();
 	for (int i=0; i<_symbolNumber; i++){
 		_obsAlphabet.at(i) = _minValue+((i+1)*_symbolInterval);
 	}
@@ -626,6 +635,10 @@ void HMMBase::printStateNumber(){
 
 void HMMBase::printSymbolNumber(){
 	std::cout<<std::endl<<"Number of Symbols: "<<_symbolNumber<<std::endl;
+}
+
+void HMMBase::printSymbolInterval(){
+	std::cout<<std::endl<<"Distance between Symbols: "<<_symbolInterval<<std::endl;
 }
 
 void HMMBase::printEquiPDF(){
@@ -709,6 +722,7 @@ void HMMBase::printHMM(){
 	printEquiPDF();
 	printTransPDF();
 	printObsPDF();
+	printSymbolInterval();
 	printObsAlphabet();
 	printLogLikelihood();
 	printAic();

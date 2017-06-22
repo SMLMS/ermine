@@ -310,11 +310,11 @@ bool HMMSequence::benchmarkTrainingsResult(double llResult, int itStep){
 }
 
 /* core functions */
-SMLMS::JumpDistanceList HMMSequence::simulateSequence(unsigned obsNumber){
+void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &judi){
 	/* check stuff */
 	checkStateNumber();
 	/* run simulation */
-	SMLMS::JumpDistanceList judi;
+	SMLMS::JumpDistanceList tempJudi;
 	std::vector<int> tempStateList(obsNumber);
 	std::vector<double> tempObsList(obsNumber);
 	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
@@ -322,10 +322,10 @@ SMLMS::JumpDistanceList HMMSequence::simulateSequence(unsigned obsNumber){
 	//simulate
 	for (int i=0; i<_traceNumber; i++){
 		tempHMM.simulate(tempObsList, tempStateList);
-		increaseSimulationSequence(judi, i+1, tempObsList, tempStateList);
+		increaseSimulationSequence(tempJudi, i+1, tempObsList, tempStateList);
 	}
-	judi.calcTraceNumber();
-	return judi;
+	tempJudi.calcTraceNumber();
+	judi = tempJudi; 
 }
 
 void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){

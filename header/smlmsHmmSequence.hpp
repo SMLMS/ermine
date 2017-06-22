@@ -82,7 +82,7 @@ class HMMSequence: public HMMBase{
 		void reestimateHMM();
 		bool benchmarkTrainingsResult(double llResult, int itStep);
 		/* core functions */
-		SMLMS::JumpDistanceList simulateSequence(unsigned obsVal);
+		void simulateSequence(unsigned obsVal, SMLMS::JumpDistanceList &);
 		void estimateSeqLikelihood(const SMLMS::JumpDistanceList&);
 		void estimateSeqBic(unsigned obsNumber);
 		void estimateSeqAic();
