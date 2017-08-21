@@ -17,6 +17,8 @@ namespace SMLMS{
 /* jump Distance Distribution */
 double judiPdf(double *val, double *para);
 double judiSuperPosPdf(double *val, double *para);
+double expectedDiffCoeff(double dist, double dt, double sigma);
+double expectedDistance(double diffCoeff, double dt, double sigma);
 
 /* Normal Distribution */
 //double normalPdf(double *val, double *para);

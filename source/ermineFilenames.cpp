@@ -143,6 +143,7 @@ void FileNames::clearFileNames(){
 }
 
 void FileNames::readNamesFromSourceFile(){
+	int trcInd = 0;
 	std::cout<<std::endl<<"reading filenames from: "<<_sourceFileName<<std::endl;
 	std::string tempFileName;
 	std::string line;
@@ -153,32 +154,33 @@ void FileNames::readNamesFromSourceFile(){
 			else{
 				std::stringstream lineContent(line);
 				lineContent>>tempFileName;
-				if (tempFileName.find(".mic") !=std::string::npos){
+				if (tempFileName.find("microscope.txt") !=std::string::npos){
 					setMicroscopeName(tempFileName);
 					std::cout<<"Microscope file is: "<<_microscopeName<<std::endl;
 				}
-				else if (tempFileName.find(".roi")!= std::string::npos){
+				else if (tempFileName.find("roi.txt")!= std::string::npos){
 					setRoiName(tempFileName);
 					std::cout<<"ROI file is: "<<_roiName<<std::endl;
 				}
-				else if (tempFileName.find(".jud")!= std::string::npos){
+				else if (tempFileName.find("judi.txt")!= std::string::npos){
 					setJudiName(tempFileName);
 					std::cout<<"Judi file is: "<<_judiName<<std::endl;
 				}
-				else if (tempFileName.find(".hmm")!= std::string::npos){
+				else if (tempFileName.find("hmm.txt")!= std::string::npos){
 					setHmmName(tempFileName);
 					std::cout<<"HMM file is: "<<_hmmName<<std::endl;
 				}
-				else if (tempFileName.find(".mod")!= std::string::npos){
+				else if (tempFileName.find("physMod.txt")!= std::string::npos){
 					setModelName(tempFileName);
 					std::cout<<"Physical Model file is: "<<_modelName<<std::endl;
 				}
-				else if (tempFileName.find(".mol")!= std::string::npos){
+				else if (tempFileName.find("mol.txt")!= std::string::npos){
 					setMolListName(tempFileName);
 					std::cout<<"Mol file is: "<<_molListName<<std::endl;
 				}
 				else if (tempFileName.find(".trc")!= std::string::npos){
 					addTrcName(tempFileName);
+					trcInd = 1;
 				}
 				else{
 					std::stringstream errorMessage;
@@ -196,15 +198,17 @@ void FileNames::readNamesFromSourceFile(){
 		throw ermineFileNameError;
 	}
 	inFile.close();
-	std::cout<<std::endl<<"trc files are:"<<std::endl;
-	for (int i=0; i<trcNumber(); i++){
-		std::cout<<getTrcName(i)<<std::endl;
+	if (trcInd == 1){
+		std::cout<<"trc files are:"<<std::endl;
+			for (int i=0; i<trcNumber(); i++){
+				std::cout<<getTrcName(i)<<std::endl;
+			}
 	}
 }
 
 /* proof functions */
 int FileNames::proofModel(){
-	if (_modelName.find(".mod")!= std::string::npos){
+	if (_modelName.find("physMod.txt")!= std::string::npos){
 		std::cout<<"\nfound physical model: "<<_modelName<<std::endl;
 		return 1;
 	}

@@ -22,11 +22,14 @@ class Statement{
 		std::string _finished;
 		std::string _batch;
 		std::string _mol2judi;
-		std::string _initialize;
+		std::string _initPhysMod;
+		std::string _fitPhysMod;
+		std::string _initHMM;
 		std::string _simulate;
-		std::string _estimate;
-		std::string _learn;
-		std::string _viterbi;
+		std::string _evaluate;
+		std::string _train;
+		std::string _bestPath;
+		std::string _dwellTime;
 		std::string _tidy;
 	public:
 		/* constructor */
@@ -40,11 +43,14 @@ class Statement{
 		void setFinished();
 		void setBatch();
 		void setMol2Judi();
-		void setInitialize();
+		void setInitPhysMod();
+		void setFitPhysMod();
+		void setInitHMM();
 		void setSimulate();
-		void setEstimate();
-		void setLearn();
-		void setViterbi();
+		void setEvaluate();
+		void setTrain();
+		void setBestPath();
+		void setDwellTime();
 		void setTidy();
 		/* print functions */
 		void printInit();
@@ -52,11 +58,14 @@ class Statement{
 		void printFinished();
 		void printBatch();
 		void printMol2Judi();
-		void printInitialize();
+		void printInitPhysMod();
+		void printFitPhysMod();
+		void printInitHMM();
 		void printSimulate();
-		void printEstimate();
-		void printLearn();
-		void printViterbi();
+		void printEvaluate();
+		void printTrain();
+		void printBestPath();
+		void printDwellTime();
 		void printTidy();
 };/* Satement */
 }/* SMLMS */

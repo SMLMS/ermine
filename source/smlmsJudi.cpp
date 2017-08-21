@@ -225,7 +225,7 @@ std::vector<double> JumpDistanceList::getAllJumpsOfState(int state){
 	return jumpList;
 }
 
-void JumpDistanceList::readJumpDistanceList(std::string &name){
+void JumpDistanceList::readJumpDistanceList(std::string const &name){
 	clearJumpDistanceList();
 	SMLMS::Jump jump;
 	std::string line;

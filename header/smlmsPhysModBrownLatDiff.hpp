@@ -23,6 +23,7 @@
 namespace SMLMS{
 class PhysicalModelBLD: public PhysicalModelBase{
 	private:
+		SMLMS::Microscope _microscope;
 		SMLMS::Matrix _paraMat;
 		std::vector<double> _paraVect;
 		double _contAreaSuperPos;
@@ -30,13 +31,15 @@ class PhysicalModelBLD: public PhysicalModelBase{
 	public:
 		/* Constructor */
 		PhysicalModelBLD();
-		PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, std::string&);
-		PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, std::string&);
+		PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope, std::string&);
+		PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope, std::string&);
 		/* Destructor */
 		~PhysicalModelBLD();
 		/* Copy Constructor */
 		PhysicalModelBLD(const PhysicalModelBLD&);
 		/* elementary functions */
+		void setMicroscope(SMLMS::Microscope);
+		SMLMS::Microscope microscope();
 		void setParaMat(SMLMS::Matrix);
 		SMLMS::Matrix paraMat();
 		std::vector<double> paraVect();
@@ -48,6 +51,7 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void initParaVect();
 		void initContArea();
 		/* check functions */
+		void checkMicroscope();
 		void checkParaMat();
 		void checkParaVect();
 		void checkContArea();
@@ -73,7 +77,6 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void calcFitMatrixFromPara();
 		void updateWeight(const SMLMS::Matrix &pi);
 		void updatePi(SMLMS::Matrix &pi);
-		void updateFixModelParameter(SMLMS::Microscope &);
 		/* fit functions */
 		void fitPdfSuperPos();
 		void fitPdfMatState(int state, SMLMS::Matrix &pdf);

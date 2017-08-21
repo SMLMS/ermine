@@ -317,6 +317,7 @@ void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &
 	SMLMS::JumpDistanceList tempJudi;
 	std::vector<int> tempStateList(obsNumber);
 	std::vector<double> tempObsList(obsNumber);
+	std::cout<<_stateNumber<<" "<<_symbolNumber<<std::endl;
 	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
 	initHelpUniqueHMM(tempHMM, obsNumber);
 	//simulate

@@ -25,8 +25,8 @@ class HMMBase{
 		std::string _folderName;
 		unsigned _stateNumber;
 		unsigned _symbolNumber;
-		unsigned _minValue;
-		unsigned _maxValue;
+		double _minValue;
+		double _maxValue;
 		double _symbolInterval;
 		SMLMS::Matrix _equiPDF;
 		SMLMS::Matrix _transPDF;
@@ -56,10 +56,10 @@ class HMMBase{
 		unsigned stateNumber();
 		void setSymbolNumber(unsigned);
 		unsigned symbolNumber();
-		void setMinValue(unsigned);
-		unsigned minValue();
-		void setMaxValue(unsigned);
-		unsigned maxValue();
+		void setMinValue(double);
+		double minValue();
+		void setMaxValue(double);
+		double maxValue();
 		void setSymbolInterval(double);
 		double symbolInterval();
 		void setEquiPDF(SMLMS::Matrix);
@@ -114,14 +114,17 @@ class HMMBase{
 		/* calc functions */
 		void calcSymbolNumber();
 		void calcSymbolInterval();
-		void calcMinValue();
-		void calcMaxValue();
+		void extractMinValue();
+		void extractMaxValue();
+		void extractSymbolInterval();
 		void calcObsAlphabetFromParas();
-		void calcParasFromObsAlphabet();
+		void extractParasFromObsAlphabet();
 		void calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf);
 		/* print functions */
 		void printFolderName();
 		void printStateNumber();
+		void printMinValue();
+		void printMaxValue();
 		void printSymbolNumber();
 		void printSymbolInterval();
 		void printEquiPDF();

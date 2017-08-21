@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
 #include <map>
 #include <sstream>
 #include <fstream>
@@ -36,18 +37,20 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("batch",0));
 	alphabet.insert(std::make_pair("mol2judi",0));
 	alphabet.insert(std::make_pair("initPhysMod",0));
+	alphabet.insert(std::make_pair("fitPhysMod",0));
 	alphabet.insert(std::make_pair("initHMM",0));
 	alphabet.insert(std::make_pair("simulate",0));
 	alphabet.insert(std::make_pair("evaluate",0));
 	alphabet.insert(std::make_pair("train",0));
-	alphabet.insert(std::make_pair("path",0));
+	alphabet.insert(std::make_pair("bestPath",0));
+	alphabet.insert(std::make_pair("dwellTime",0));
 	setAlgorithmAlphabet(alphabet);
 	setAlgorithmArgument("train");
 	setStopCritArgument(0.01);	
 	setFileNameArgument("");
-	setJumpIntervalArgument(10);
-	setMinDistArgument(10);
-	setMaxDistArgument(500);
+	setJumpIntervalArgument(10.0);
+	setMinDistArgument(10.0);
+	setMaxDistArgument(500.0);
 	setTimeIntervalArgument(0.0);
 	setTraceLengthArgument(20);
 	setParticleArgument(1000);
@@ -104,23 +107,24 @@ std::string ErmineParser::folderNameArgument(){
 	return _folderNameArgument;
 }
 
-void ErmineParser::setJumpIntervalArgument(int parserArg){
+void ErmineParser::setJumpIntervalArgument(double parserArg){
 	_jumpIntervalArgument = parserArg;
 }
-int ErmineParser::jumpIntervalArgument(){
+double ErmineParser::jumpIntervalArgument(){
 	return _jumpIntervalArgument;
 }
-void ErmineParser::setMinDistArgument(int parserArg){
+void ErmineParser::setMinDistArgument(double parserArg){
 	_minDistArgument = parserArg;
 }
-int ErmineParser::minDistArgument(){
+double ErmineParser::minDistArgument(){
 	return _minDistArgument;
 }
 
-void ErmineParser::setMaxDistArgument(int parserArg){
+void ErmineParser::setMaxDistArgument(double parserArg){
 	_maxDistArgument = parserArg;
 }
-int ErmineParser::maxDistArgument(){
+
+double ErmineParser::maxDistArgument(){
 	return _maxDistArgument;
 }
 
@@ -166,11 +170,13 @@ void ErmineParser::printAlgorithmHelp(){
 	<<"batch:\t\tmerge several .trc data sets\t\t\t(-a, -f)"<<std::endl
 	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t(-a, -f)"<<std::endl
 	<<"initPhysMod:\treturns an initial .mod file.\t\t\t(-a, -f)"<<std::endl
-	<<"initHmm:\treturns an initial guess for a hmm.\t\t(-a -f -j --midDist --maxDist)"<<std::endl
+	<<"fitPhysMod:\tfits a physical model to a given judi.\t\t(to be announced)"<<std::endl
+	<<"initHMM:\treturns an initial guess for a hmm.\t\t(-a -f -j --midDist --maxDist)"<<std::endl
 	<<"simulate:\tcalculates a mchmm simulation.\t\t\t(to be announced)"<<std::endl
 	<<"evaluate:\tevaluates how well a given model fits a distinct data set\t(to be announced)"<<std::endl
 	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t(to be announced)"<<std::endl
-	<<"path:\t\testimates the most likely path of hidden states by Viterbi.\t(to be announced)"<<std::endl;
+	<<"bestPath:\t\testimates the most likely path of hidden states by Viterbi.\t(to be announced)"<<std::endl
+	<<"dwellTime:\t\tretimates the model transition rates form an optimized path."<<std::endl;
 
 	std::cout<<line<<message.str()<<std::endl;
 }
@@ -220,7 +226,7 @@ void ErmineParser::proofStopCrit(po::variables_map &vm){
 }
 
 void ErmineParser::proofJumpInterval(po::variables_map &vm){
-	if ((vm.count("jumpInterval")>0) && (vm["jumpInterval"].as<int>()<0)){
+	if ((vm.count("jumpInterval")>0) && (vm["jumpInterval"].as<double>()<0)){
 		std::stringstream errorMessage;
 		errorMessage<<"jumpInterval needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
@@ -229,7 +235,7 @@ void ErmineParser::proofJumpInterval(po::variables_map &vm){
 }
 
 void ErmineParser::proofMinDist(po::variables_map &vm){
-	if ((vm.count("minDist")>0) && (vm["minDist"].as<int>()<0.0)){
+	if ((vm.count("minDist")>0) && (vm["minDist"].as<double>()<0.0)){
 		std::stringstream errorMessage;
 		errorMessage<<"minDist needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
@@ -238,7 +244,7 @@ void ErmineParser::proofMinDist(po::variables_map &vm){
 }
 
 void ErmineParser::proofMaxDist(po::variables_map &vm){
-	if ((vm.count("maxDist")>0) && (vm["maxDist"].as<int>()<0)){
+	if ((vm.count("maxDist")>0) && (vm["maxDist"].as<double>()<0)){
 		std::stringstream errorMessage;
 		errorMessage<<"maxDist needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
@@ -264,6 +270,16 @@ void ErmineParser::proofDuration(po::variables_map &vm){
 		}
 }
 
+void ErmineParser::proofTraceLengthRest(double rest){
+	if ((rest != 0.0)){
+		std::stringstream errorMessage;
+		errorMessage<<"Given time and Duration do not match!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+		}
+
+}
+
 void ErmineParser::proofParticles(po::variables_map &vm){
 	if ((vm.count("particles")>0) && (vm["particles"].as<int>()<0)){
 		std::stringstream errorMessage;
@@ -273,8 +289,24 @@ void ErmineParser::proofParticles(po::variables_map &vm){
 		}
 }
 
+void ErmineParser::proofJumpIntervalValidity(){
+	double interval = (_maxDistArgument - _minDistArgument) / _jumpIntervalArgument;
+	double length;
+	double rest = std::modf(interval, &length); 
+	if ((rest != 0.0)){
+		std::stringstream errorMessage;
+		errorMessage<<"Given observation interval (min max) and jump distance interval do not match!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+	}
+}
+
 void ErmineParser::calcTraceLength(){
-	_traceLengthArgument = int(_durationArgument/_timeIntervalArgument);
+	double length = _durationArgument/_timeIntervalArgument;
+	double tempLength;
+	double rest = std::modf(length, &tempLength);
+	proofTraceLengthRest(rest);
+	_traceLengthArgument = int(tempLength);
 }
 
 
@@ -289,15 +321,16 @@ void ErmineParser::parseArguments(po::variables_map &vm){
 	// parse stopCrit
 	proofStopCrit(vm);
 	setStopCritArgument(vm["stopCrit"].as<double>());
-	// parse jumpInterval
-	proofJumpInterval(vm);
-	setJumpIntervalArgument(vm["jumpInterval"].as<int>());
 	// parse minDist
 	proofMinDist(vm);
-	setMinDistArgument(vm["minDist"].as<int>());
+	setMinDistArgument(vm["minDist"].as<double>());
 	// parse maxDist
 	proofMaxDist(vm);
-	setMaxDistArgument(vm["maxDist"].as<int>());
+	setMaxDistArgument(vm["maxDist"].as<double>());
+	// parse jumpInterval
+	proofJumpInterval(vm);
+	setJumpIntervalArgument(vm["jumpInterval"].as<double>());
+	proofJumpIntervalValidity();
 	// parse time
 	proofTime(vm);
 	setTimeIntervalArgument(vm["time"].as<double>());

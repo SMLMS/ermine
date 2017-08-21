@@ -104,19 +104,19 @@ double HMMBase::symbolInterval(){
 	return _symbolInterval;
 }
 
-void HMMBase::setMinValue(unsigned val){
+void HMMBase::setMinValue(double val){
 	_minValue = val;
 }
 
-unsigned HMMBase::minValue(){
+double HMMBase::minValue(){
 	return _minValue;
 }
 
-void HMMBase::setMaxValue(unsigned val){
+void HMMBase::setMaxValue(double val){
 	_maxValue = val;
 }
 
-unsigned HMMBase::maxValue(){
+double HMMBase::maxValue(){
 	return _maxValue;
 }
 
@@ -218,9 +218,10 @@ void HMMBase::readHMM(std::string const &name){
 			/* read observation alphabet */
 			if(n==3+_stateNumber){
 				for(int i=0; i<_symbolNumber; i++) lineContent>>_obsAlphabet.at(i);
-				calcMinValue();
-				calcMaxValue();
-				calcSymbolInterval();
+				extractParasFromObsAlphabet();
+				extractSymbolInterval();
+				extractMinValue();
+				extractMaxValue();
 			}
 			/* read observation parameter Matrix: B */
 			if(n>(3+_stateNumber) && n<(4+_stateNumber+_stateNumber)){
@@ -342,12 +343,6 @@ void HMMBase::checkSymbolNumber(){
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
-	if(((_maxValue-_minValue) % _symbolNumber)!=0){
-		std::stringstream errorMessage;
-		errorMessage<<"Jump Distance does not match the observation interval!!"<<std::endl;
-		SMLMS::SmlmsError error(errorMessage.str());
-		throw error;
-	}
 }
 
 void HMMBase::checkEqui(){
@@ -401,7 +396,7 @@ void HMMBase::checkProbDen(SMLMS::Matrix & mat){
 }
 
 void HMMBase::checkHMM(){
-	checkFolderName();
+	//checkFolderName();
 	checkStateNumber();
 	checkSymbolNumber();
 	checkEqui();
@@ -517,7 +512,7 @@ void HMMBase::initLoadedHMM(){
 	initTransCDF();
 	initObsCDF();
 	/* calc hmm members */
-	calcParasFromObsAlphabet();
+	extractParasFromObsAlphabet();
 	/* normalize */
 	normalizeHMM();
 	/* calc cdf */
@@ -590,12 +585,16 @@ void HMMBase::calcSymbolInterval(){
 	_symbolInterval = double(_maxValue-_minValue)/double(_symbolNumber);
 }
 
-void HMMBase::calcMinValue(){
+void HMMBase::extractMinValue(){
 	_minValue = _obsAlphabet.at(0)-_symbolInterval;
 }
 
-void HMMBase::calcMaxValue(){
+void HMMBase::extractMaxValue(){
 	_maxValue = _obsAlphabet.at(_symbolNumber-1);
+}
+
+void HMMBase::extractSymbolInterval(){
+	_symbolInterval = double(_obsAlphabet.at(1)-_obsAlphabet.at(0));
 }
 
 void HMMBase::calcObsAlphabetFromParas(){
@@ -605,11 +604,11 @@ void HMMBase::calcObsAlphabetFromParas(){
 	}
 }
 
-void HMMBase::calcParasFromObsAlphabet(){
+void HMMBase::extractParasFromObsAlphabet(){
 	checkAlphabet();
-	calcMinValue();
-	calcMaxValue();
-	calcSymbolInterval();
+	extractSymbolInterval();
+	extractMinValue();
+	extractMaxValue();
 }
 
 void HMMBase::calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf){
@@ -631,6 +630,14 @@ void HMMBase::printFolderName(){
 
 void HMMBase::printStateNumber(){
 	std::cout<<std::endl<<"Number of States: "<<_stateNumber<<std::endl;
+}
+
+void HMMBase::printMinValue(){
+	std::cout<<std::endl<<"Minimum Observation Value: "<<_minValue<<std::endl;
+}
+
+void HMMBase::printMaxValue(){
+	std::cout<<std::endl<<"Maximum Observation Value: "<<_maxValue<<std::endl;
 }
 
 void HMMBase::printSymbolNumber(){

@@ -22,11 +22,14 @@ Statement::Statement(){
 	setFinished();
 	setBatch();
 	setMol2Judi();
-	setInitialize();
+	setInitPhysMod();
+	setFitPhysMod();
+	setInitHMM();
 	setSimulate();
-	setEstimate();
-	setLearn();
-	setViterbi();
+	setEvaluate();
+	setTrain();
+	setBestPath();
+	setDwellTime();
 	setTidy();
 }
 
@@ -41,11 +44,15 @@ Statement::Statement(const Statement &obj){
 	_finished=obj._finished;
 	_batch=obj._batch;
 	_mol2judi=obj._mol2judi;
-	_initialize=obj._initialize;
+	_initPhysMod=obj._initPhysMod;
+	_fitPhysMod=obj._fitPhysMod;
+	_initHMM=obj._initHMM;
 	_simulate=obj._simulate;
-	_estimate=obj._estimate;
-	_learn=obj._learn;
-	_viterbi=obj._viterbi;
+	_evaluate=obj._evaluate;
+	_train=obj._train;
+	_bestPath=obj._bestPath;
+	_dwellTime = obj._dwellTime;
+	_tidy = obj._tidy;
 }
 
 /* elementary functions */
@@ -61,37 +68,52 @@ void Statement::setFinished(){
 
 void Statement::setBatch(){
 	_batch.clear();
-	_batch.append("The ermine scurries in batch mode.");
+	_batch.append("The ermine calculates a batch from single judi files.");
 }
 
 void Statement::setMol2Judi(){
 	_mol2judi.clear();
-	_mol2judi.append("The ermine scurries in mol2judi mode.");
+	_mol2judi.append("The ermine calculates a judi file from a trc file.");
 }
 
-void Statement::setInitialize(){
-	_initialize.clear();
-	_initialize.append("The ermine scurries in initialize mode.");
+void Statement::setInitPhysMod(){
+	_initPhysMod.clear();
+	_initPhysMod.append("The ermine initializes a physical model.");
+}
+
+void Statement::setFitPhysMod(){
+	_fitPhysMod.clear();
+	_fitPhysMod.append("The ermine fits a physical model to a judi data set.");
+}
+
+void Statement::setInitHMM(){
+	_initHMM.clear();
+	_initHMM.append("The ermine initializes an HMM.");
 }
 
 void Statement::setSimulate(){
 	_simulate.clear();
-	_simulate.append("The ermine scurries in simulate mode.");
+	_simulate.append("The ermine simulates a judi data set from an HMM.");
 }
 
-void Statement::setEstimate(){
-	_estimate.clear();
-	_estimate.append("The ermine scurries in estimate mode.");
+void Statement::setEvaluate(){
+	_evaluate.clear();
+	_evaluate.append("The ermine evaluates the likelihood of a judi data set to be described by an HMM.");
 }
 
-void Statement::setLearn(){
-	_learn.clear();
-	_learn.append("The ermine scurries in learn mode.");
+void Statement::setTrain(){
+	_train.clear();
+	_train.append("The ermine trains an HMM with a judi data set.");
 }
 
-void Statement::setViterbi(){
-	_viterbi.clear();
-	_viterbi.append("The ermine scurries in viterbi mode.");
+void Statement::setBestPath(){
+	_bestPath.clear();
+	_bestPath.append("The ermine evaluates the best state path through a given data set based on an HMM.");
+}
+
+void Statement::setDwellTime(){
+	_dwellTime.clear();
+	_dwellTime.append("The ermine evaluates the dwell times of all states based on the best path through a judi data set");
 }
 
 void Statement::setTidy(){
@@ -115,24 +137,36 @@ void Statement::printMol2Judi(){
 	std::cout<<std::endl<<_mol2judi<<std::endl;
 }
 
-void Statement::printInitialize(){
-	std::cout<<std::endl<<_initialize<<std::endl;
+void Statement::printInitPhysMod(){
+	std::cout<<std::endl<<_initPhysMod<<std::endl;
+}
+
+void Statement::printFitPhysMod(){
+	std::cout<<std::endl<<_fitPhysMod<<std::endl;
+}
+
+void Statement::printInitHMM(){
+	std::cout<<std::endl<<_initHMM<<std::endl;
 }
 
 void Statement::printSimulate(){
 	std::cout<<std::endl<<_simulate<<std::endl;
 }
 
-void Statement::printEstimate(){
-	std::cout<<std::endl<<_estimate<<std::endl;
+void Statement::printEvaluate(){
+	std::cout<<std::endl<<_evaluate<<std::endl;
 }
 
-void Statement::printLearn(){
-	std::cout<<std::endl<<_learn<<std::endl;
+void Statement::printTrain(){
+	std::cout<<std::endl<<_train<<std::endl;
 }
 
-void Statement::printViterbi(){
-	std::cout<<std::endl<<_viterbi<<std::endl;
+void Statement::printBestPath(){
+	std::cout<<std::endl<<_bestPath<<std::endl;
+}
+
+void Statement::printDwellTime(){
+	std::cout<<std::endl<<_dwellTime<<std::endl;
 }
 
 void Statement::printTidy(){

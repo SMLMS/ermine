@@ -45,10 +45,10 @@ int main(int argc, char *argv[]){
 			("help,h", "show this help message.")
 			("file,f", po::value<std::string>(), "input file")
 			("algorithm,a", po::value<std::string>(), "analysis algorithm (see below for help)")
-			("jumpInterval,j", po::value<int>()->default_value(10), "interval size of jump distances in pdf in [nm] (int)")
+			("jumpInterval,j", po::value<double>()->default_value(10.0), "interval size of jump distances in pdf in [nm] (int)")
 			("stopCrit,s", po::value<double>()->default_value(0.01), "stop criterion for model training (float)")
-			("minDist", po::value<int>()->default_value(0), "minimal jump distance to analyze in [nm] (int)")
-			("maxDist", po::value<int>()->default_value(100), "maximal jump distance to analyze in [nm] (int)")
+			("minDist", po::value<double>()->default_value(0.0), "minimal jump distance to analyze in [nm] (int)")
+			("maxDist", po::value<double>()->default_value(100.), "maximal jump distance to analyze in [nm] (int)")
 			("time,t", po::value<double>()->default_value(0.2), "time between jump measurements in [s] (float)")
 			("duration,d", po::value< double>()->default_value(300), "duration of simulation in [s] (float)" )
 			("particles,p", po::value<int>()->default_value(1000), "number of particles to simulate (int)")
@@ -183,8 +183,8 @@ int main(int argc, char *argv[]){
 		molList.filterMoleculeList();
 		/* write results */
 		try{
-			microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
-			molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
+			microscope.saveMicroscope(fileNames.folderName().append("/microscope.txt"));
+			molList.writeMoleculeList(fileNames.folderName().append("/mol.txt"), fileNames.folderName().append("/roi.txt"));
 		}
 		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
@@ -231,9 +231,9 @@ int main(int argc, char *argv[]){
 		judi.calcJumpDistanceList(molList);
 		/* write results */
 		try{
-		microscope.saveMicroscope(fileNames.folderName().append("/microscope.mic"));
-		molList.writeMoleculeList(fileNames.folderName().append("/molecule_list.mol"), fileNames.folderName().append("/region_of_interest.roi"));
-		judi.writeJumpDistanceList(fileNames.folderName().append("/jumpDistance_list.jud"));
+			microscope.saveMicroscope(fileNames.folderName().append("/microscope.txt"));
+			molList.writeMoleculeList(fileNames.folderName().append("/mol.txt"), fileNames.folderName().append("/roi.txt"));
+			judi.writeJumpDistanceList(fileNames.folderName().append("/jumpDistance_list.jud"));
 		}
 		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
@@ -248,6 +248,7 @@ int main(int argc, char *argv[]){
 	}
 	/* Initialize Physical Model */
 	else if(eVar.algorithmArgument()=="initPhysMod"){
+		statement.printInitPhysMod();
 		/* get state Number */
 		std::cout<<std::endl<<"Number of states:"<<std::endl;
 		int stateNumber = 0;
@@ -272,17 +273,33 @@ int main(int argc, char *argv[]){
 		}
 		/* init PhysMod */
 		SMLMS::PhysicalModelBLD physMod;
-		physMod.setStateNumber(stateNumber);
-		physMod.setMinValue(eVar.minDistArgument());
-		physMod.setMaxValue(eVar.maxDistArgument());
-		physMod.setIncNumber(eVar.jumpIntervalArgument());
-		physMod.setFolderName(fileNames.folderName());
-		physMod.initModelByParameter();
-		physMod.initModelBLD();
-		physMod.updateFixModelParameter(microscope);
+		try{
+			physMod.setStateNumber(stateNumber);
+			physMod.setMinValue(eVar.minDistArgument());
+			physMod.setMaxValue(eVar.maxDistArgument());
+			physMod.setBinSize(eVar.jumpIntervalArgument());
+			physMod.setFolderName(fileNames.folderName());
+			physMod.setMicroscope(microscope);
+			physMod.initModelByParameter();
+			physMod.initModelBLD();
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
 		/* save model */
+		physMod.printMinValue();
+		physMod.printMaxValue();
+		physMod.printBinSize();
+		physMod.printIncNumber();
+		physMod.printAlphabet();
 		try{
 			physMod.writePhysMod();
+			microscope.saveMicroscope(fileNames.folderName().append("/microscope.txt"));
 		}
 		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;
@@ -295,8 +312,92 @@ int main(int argc, char *argv[]){
 		/* start tidy */
 		statement.printTidy();
 	}
+	/* fit physMod to judi */
+	else if(eVar.algorithmArgument()=="fitPhysMod"){
+		statement.printFitPhysMod();
+		/* init physical model */
+		SMLMS::PhysicalModelBLD physMod;
+		physMod.setMinValue(eVar.minDistArgument());
+		physMod.setMaxValue(eVar.maxDistArgument());
+		physMod.setBinSize(eVar.jumpIntervalArgument());
+		physMod.setFolderName(fileNames.folderName());
+		/* load microscope */
+		SMLMS::Microscope microscope;
+		try{
+			microscope.loadMicroscope(fileNames.microscopeName());
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		physMod.setMicroscope(microscope);
+		try{
+			/* loading Model */
+			std::cout<<"reading physical model"<<std::endl;
+			physMod.readPhysMod(fileNames.modelName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while loading the physical model and is going to rest."<<std::endl;
+			return 1;
+		}
+		/* load judi */
+		SMLMS::JumpDistanceList judi;
+		try{
+			std::cout<<"reading judi."<<std::endl;
+			judi.readJumpDistanceList(fileNames.judiName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while loading judi data and is going to rest."<<std::endl;
+			return 1;
+		}
+		physMod.printMinValue();
+		physMod.printMaxValue();
+		physMod.printBinSize();
+		physMod.printIncNumber();
+		physMod.printAlphabet();
+		/* fit physMod to judi*/
+		physMod.calcPdf(judi);
+		physMod.normalizeModel();
+		physMod.fitPdfSuperPos();
+		physMod.calcFitSuperPosFromPara();
+		physMod.calcFitMatrixFromPara();
+		physMod.calcFitSuperPos();
+		physMod.calcResSuperPos();
+		physMod.calcChiSquareSuperPos();
+		physMod.printParaMat();
+		physMod.printChiSquareSuperPos();
+		/* save model */
+		try{
+			physMod.writePhysMod();
+			physMod.writePdfSuperPos();
+			physMod.plotPhysicalModel();
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while writing the physical model and is going to rest"<<std::endl;
+			return 1;
+		}
+		// start tidy	
+		statement.printTidy();
+	}
 	/* Initialize HMM */
 	else if(eVar.algorithmArgument()=="initHMM"){
+		statement.printInitHMM();
 		SMLMS::HMMSequence hmm;	
 		hmm.setFolderName(fileNames.folderName());
 		/* test if model is provided */
@@ -305,29 +406,59 @@ int main(int argc, char *argv[]){
 			SMLMS::PhysicalModelBLD physMod;
 			physMod.setMinValue(eVar.minDistArgument());
 			physMod.setMaxValue(eVar.maxDistArgument());
-			physMod.setIncNumber(eVar.jumpIntervalArgument());
+			physMod.setBinSize(eVar.jumpIntervalArgument());
 			physMod.setFolderName(fileNames.folderName());
-		try{
-			/* loading Model */
-			physMod.readPhysMod(fileNames.modelName());
-		}
-		catch(SMLMS::SmlmsError &error){
-			std::cout<<error.what()<<std::endl;
-			return 1;
-		}
-		catch(std::out_of_range &error){
-			std::cout<<error.what()<<std::endl;
-			return 1;
-		}
-		catch(...){
-			std::cout<<"unkown error!"<<std::endl;
-			return 1;
-		}
+			/* load microscope */
+			SMLMS::Microscope microscope;
+			try{
+				microscope.loadMicroscope(fileNames.microscopeName());
+			}
+			catch(SMLMS::SmlmsError& error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+				return 1;
+			}
+			physMod.setMicroscope(microscope);
 
+			/* loading Model */
+			try{
+				std::cout<<"reading physical model"<<std::endl;
+				physMod.readPhysMod(fileNames.modelName());
+			}
+			catch(SMLMS::SmlmsError &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(std::out_of_range &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error while loading the physical model and is going to rest."<<std::endl;
+				return 1;
+			}
 			/* calc PDF */
 			physMod.calcFitMatrixFromPara();
-			physMod.writePhysMod();
-			physMod.writePdfMatrix();
+			physMod.calcFitSuperPosFromPara();
+			physMod.setPdfSuperPos(physMod.fitSuperPos());
+			physMod.calcChiSquareSuperPos();
+			/* write model */
+			try{
+				physMod.writePhysMod();
+				physMod.writePdfSuperPos();
+				physMod.plotPhysicalModel();
+			}
+			catch(SMLMS::SmlmsError& error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error while writing the physical model and is going to rest"<<std::endl;
+				return 1;
+			}
 			/* init hmm */
 			hmm.initFromPhysMod(physMod);
 		}
@@ -361,7 +492,7 @@ int main(int argc, char *argv[]){
 				return 1;
 			}
 			catch(...){
-				std::cout<<"unkown error!"<<std::endl;
+				std::cout<<"oops, the ermine discovered an unexpected error while initializing the HMM and is going to rest."<<std::endl;
 				return 1;
 			}
 		}
@@ -379,7 +510,7 @@ int main(int argc, char *argv[]){
 			return 1;
 		}
 		catch(...){
-			std::cout<<"unkown error!"<<std::endl;
+			std::cout<<"oops, the ermine discovered an unexpected error while saving the HMM and is going to rest."<<std::endl;
 			return 1;
 		}
 		/* start tidy */
@@ -387,15 +518,15 @@ int main(int argc, char *argv[]){
 	}
 	/* Simulate */
 	else if(eVar.algorithmArgument()=="simulate"){
+		statement.printSimulate();
 		/* create hmm instance*/
 		SMLMS::HMMSequence hmm;	
-		hmm.setFolderName(fileNames.folderName()); // muss weg
 		/* load hmm */
 		try{
 			hmm.readHMM(fileNames.hmmName());
 			hmm.setTraceNumber(eVar.particleArgument());
 			hmm.initLoadedHMM();
-			hmm.checkHMM(); // fehler bei der berechnung vom Jump interval
+			hmm.checkHMM();
 			hmm.printHMM();
 		}
 		catch(SMLMS::SmlmsError &error){
@@ -448,18 +579,101 @@ int main(int argc, char *argv[]){
 	}
 	// evaluate
 	else if(eVar.algorithmArgument()=="evaluate"){
-		std::cout<<"\nunder construction"<<std::endl;
-		// start tidy	
+		statement.printEvaluate();
+		/* create hmm instance*/
+		SMLMS::HMMSequence hmm;	
+		/* load hmm */
+		try{
+			hmm.readHMM(fileNames.hmmName());
+			hmm.setFolderName(eVar.folderNameArgument());
+			hmm.setTraceNumber(eVar.particleArgument());
+			hmm.initLoadedHMM();
+			hmm.checkHMM();
+			hmm.printHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* create judi instance */
+		SMLMS::JumpDistanceList judi;
+		/* load judi */
+		try{
+			judi.readJumpDistanceList(fileNames.judiName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* estimate hmm */
+		try{
+			std::cout<<"The ermine is evaluating the likelihood of model fitting the given sequence."<<std::endl;
+			hmm.estimateSeqLikelihood(judi);
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* write hmm */
+		try{
+			hmm.printHMM();
+			hmm.writeHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while saving the HMM and is going to rest."<<std::endl;
+			return 1;
+		}
+		/* start tidy */
 		statement.printTidy();
 	}
 	// train
 	else if(eVar.algorithmArgument()=="train"){
+		statement.printTrain();
 		std::cout<<"\nunder construction"<<std::endl;
 		// start tidy	
 		statement.printTidy();
 	}
 	// path
-	else if(eVar.algorithmArgument()=="path"){
+	else if(eVar.algorithmArgument()=="bestPath"){
+		statement.printBestPath();
+		std::cout<<"\nunder construction"<<std::endl;
+		// start tidy	
+		statement.printTidy();
+	}
+	else if(eVar.algorithmArgument()=="dwellTime"){
+		statement.printDwellTime();
 		std::cout<<"\nunder construction"<<std::endl;
 		// start tidy	
 		statement.printTidy();
@@ -468,5 +682,6 @@ int main(int argc, char *argv[]){
 	else{
 		std::cout<<std::endl<<eVar.algorithmArgument()<<" is still under construction"<<std::endl;
 	}
+	statement.printFinished();
 	return 0;
 }/* main */

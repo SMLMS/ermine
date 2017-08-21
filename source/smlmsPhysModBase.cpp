@@ -45,7 +45,7 @@ PhysicalModelBase::PhysicalModelBase(const std::vector<double> &xVal, int stateV
 }
 
 
-PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, int incVal, int stateVal, std::string &name){
+PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal, std::string &name){
 	std::cout<<"Physical Model Base constructor called"<<std::endl;
 	_minValue = minVal;
 	_maxValue = maxVal;
@@ -100,6 +100,10 @@ void PhysicalModelBase::setMaxValue(double val){
 
 double PhysicalModelBase::maxValue(){
 	return _maxValue;
+}
+
+void PhysicalModelBase::setBinSize(double val){
+	_binSize = val;
 }
 
 double PhysicalModelBase::binSize(){
@@ -372,7 +376,16 @@ void PhysicalModelBase::checkBinSize(){
 	if (_binSize<=0.0){
 		std::stringstream errorMessage;
 		errorMessage<<"Physical Model Base instance:"<<std::endl;
-		errorMessage<<"binSize needs to be a positive float."<<std::endl;
+		errorMessage<<"BinSize needs to be a positive float."<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+	}
+	double doubleIncNumber = (_maxValue - _minValue) / _binSize;
+	double tempIncNumber;
+	double rest = std::modf(doubleIncNumber, &tempIncNumber); 
+	if(rest >  0.0){
+		std::stringstream errorMessage;
+		errorMessage<<"BinSize does not match the observation interval to receive a valid observation number!!"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -678,12 +691,12 @@ void PhysicalModelBase::initModel(){
 void PhysicalModelBase::initModelByParameter(){
 	int i;
 	/* check stuff */
-	checkIncNumber();
+	checkBinSize();
 	checkMinValue();
 	checkMaxValue();
 	/* init alphabet */
+	_incNumber =int((_maxValue - _minValue)/double(_binSize));
 	std::vector<double> tempVec(_incNumber, 0.0);
-	_binSize =double((_maxValue - _minValue)/double(_incNumber));
 	for (i=0; i<_incNumber; i++)tempVec.at(i) = _minValue+((i+1)*_binSize);
 	_alphabet = tempVec;
 	/* init model */
@@ -693,10 +706,10 @@ void PhysicalModelBase::initModelByParameter(){
 void PhysicalModelBase::initModelByAlphabet(){
 	/* init parameter */
 	_incNumber = _alphabet.size();
-	_minValue = _alphabet.at(0);
 	_maxValue = _alphabet.at(_incNumber-1);
 	_binSize = 0.0;
 	if (_incNumber>1)_binSize = _alphabet.at(1)-_alphabet.at(0);
+	_minValue = _alphabet.at(0)-_binSize;
 	/* init model */
 	initModel();
 }
@@ -791,7 +804,8 @@ void PhysicalModelBase::plotPhysicalModel(){
 	pdfHist->GetYaxis()->SetTitleSize(0.04);
 	pdfHist->GetYaxis()->SetTickLength(0.01);
 	pdfHist->GetYaxis()->SetLabelSize(0.04);
-	pdfHist->Draw();
+	pdfHist->SetBarOffset(+0.5);
+	pdfHist->Draw("b");
 	/* draw pdf super pos fit */
 	TGraph *grSuperFit = new TGraph(_incNumber, _alphabet.data(), _fitSuperPos.data());
 	grSuperFit->SetLineColor(1);
@@ -975,15 +989,16 @@ void PhysicalModelBase::calcPdfSingle(std::vector<double> &pdf, const SMLMS::Jum
 	unsigned j;
 	double tempDist;
 	SMLMS::Jump tempJump;
-	prec = -1 * std::numeric_limits<double>::max_digits10;
+	prec = -1 * std::numeric_limits<float>::max_digits10;
 	// make hist
 	jumpNumber = judi.getNumberOfJumps();
 	for (i=0; i<pdf.size(); i++) pdf.at(i)=0;
 	for (i=0; i<jumpNumber; i++){
 		tempJump = judi.getJump(i);
 		tempDist = tempJump.jumpDistance;
-		if ((tempDist<_maxValue)&&(tempDist>=_minValue)){
-			j = unsigned (floor((tempDist-(std::pow(1.0, prec)*_binSize))/_binSize));
+		if ((tempDist<=_maxValue)&&(tempDist>_minValue)){
+			j = unsigned (std::floor((tempDist-(std::pow(10.0, prec)))/_binSize));
+			j -= unsigned(_minValue/_binSize);
 			pdf.at(j) +=1;
 		}
 		

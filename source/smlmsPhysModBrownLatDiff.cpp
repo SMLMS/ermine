@@ -37,13 +37,15 @@ PhysicalModelBLD::PhysicalModelBLD(): SMLMS::PhysicalModelBase(){
 	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 }
 
-PhysicalModelBLD::PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, std::string &name): SMLMS::PhysicalModelBase(xVal, stateVal, name){
+PhysicalModelBLD::PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope, std::string &name): SMLMS::PhysicalModelBase(xVal, stateVal, name){
 	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
+	_microscope = microscope;
 }
 
 
-PhysicalModelBLD::PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, std::string &name): SMLMS::PhysicalModelBase(minVal, maxVal, incVal, stateVal, name){
+PhysicalModelBLD::PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope, std::string &name): SMLMS::PhysicalModelBase(minVal, maxVal, incVal, stateVal, name){
 	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
+	_microscope = microscope;
 }
 
 /* Destructor */
@@ -74,6 +76,7 @@ PhysicalModelBLD::PhysicalModelBLD(const PhysicalModelBLD &obj){
 	_chiSquare = obj._chiSquare;
 	_pdfWeight = obj._pdfWeight;
 	_folderName = obj._folderName;
+	_microscope = obj._microscope;
 	_paraMat = obj._paraMat;
 	_paraVect = obj._paraVect;
 	_contAreaSuperPos = obj._contAreaSuperPos;
@@ -81,6 +84,14 @@ PhysicalModelBLD::PhysicalModelBLD(const PhysicalModelBLD &obj){
 }
 
 /* elementary functions */
+void PhysicalModelBLD::setMicroscope(SMLMS::Microscope microscope){
+	_microscope = microscope;
+}
+
+SMLMS::Microscope PhysicalModelBLD::microscope(){
+	return _microscope;
+}
+
 void PhysicalModelBLD::setParaMat(SMLMS::Matrix val){
 	_paraMat = val;
 }
@@ -111,14 +122,14 @@ void PhysicalModelBLD::initModelBLD(){
 void PhysicalModelBLD::initParaMat(){
 	/* check stuff */
 	checkStateNumber();
-	SMLMS::Matrix tempMat(_stateNumber, 4);
+	SMLMS::Matrix tempMat(_stateNumber, 8);
 	_paraMat = tempMat;
 }
 
 void PhysicalModelBLD::initParaVect(){
 	/* check stuff */
 	checkStateNumber();
-	std::vector<double> tempVect((_stateNumber*4)+1,0.0);
+	std::vector<double> tempVect((_stateNumber*2)+1,0.0);
 	_paraVect = tempVect;
 }
 
@@ -133,6 +144,27 @@ void PhysicalModelBLD::initContArea(){
 }
 
 /* check functions */
+void PhysicalModelBLD::checkMicroscope(){
+	if (_microscope.pxlSize() <= 0){
+		std::stringstream errorMessage;
+		errorMessage<<"Physical Model Error: Pixel size in microscope class needs to be > 0."<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+	}
+	if (_microscope.intTime() <= 0){
+		std::stringstream errorMessage;
+		errorMessage<<"Physical Model Error: Integreation time in microscope class needs to be > 0."<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+	}
+	if (_microscope.locPrec() <= 0){
+		std::stringstream errorMessage;
+		errorMessage<<"Physical Model Error: Localization precision in microscope class needs to be > 0."<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+	}
+}
+
 void PhysicalModelBLD::checkParaMat(){
 	if(_paraMat.numberOfRows() != _stateNumber){
 		std::stringstream errorMessage;
@@ -140,16 +172,16 @@ void PhysicalModelBLD::checkParaMat(){
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
-	if(_paraMat.numberOfColumns() != 4){
+	if(_paraMat.numberOfColumns() != 8){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Brownial lateral diffusion parameter matrix needs 4 entries for each state."<<std::endl;
+		errorMessage<<"Physical Model Error: Brownial lateral diffusion parameter matrix needs 8 entries for each state."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 }
 
 void PhysicalModelBLD::checkParaVect(){
-	if(_paraVect.size() != (4*_stateNumber)+1){
+	if(_paraVect.size() != (2*_stateNumber)+1){
 		std::stringstream errorMessage;
 		errorMessage<<"Physical Model Error: Parmeter vector is of insufficient size."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
@@ -171,9 +203,9 @@ void PhysicalModelBLD::printParaMat(){
 	int i,j;
 	std::cout<<"\nBrownian lateral diffusion parameter matrix:"<<std::endl;
 	std::cout<<"Number of states: "<<_stateNumber<<std::endl<<_stateNumber<<std::endl;;
-	std::cout<<"Weight\tD[nm^2/s]\tdt[s]\tsigma[nm]"<<std::endl;
+	std::cout<<"Weight\tfix\tmin\tmax\tD[nm^2/s]\tfix\tmin\tmax"<<std::endl;
 	for (j=0; j<_stateNumber; j++){
-		for (i=0; i<4; i++)std::cout<<_paraMat.at(j,i)<<"\t";
+		for (i=0; i<8; i++)std::cout<<_paraMat.at(j,i)<<"\t";
 		std::cout<<std::endl;
 	}
 	std::cout<<std::endl;
@@ -203,7 +235,7 @@ void PhysicalModelBLD::writePhysMod(){
 	int i,j;
 	std::string name;
 	name = _folderName;
-	name.append("/physicalModelBLD.mod");
+	name.append("/physMod.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
 		outFile<<std::scientific;
@@ -215,12 +247,18 @@ void PhysicalModelBLD::writePhysMod(){
 		outFile<<"# Number of states:"<<std::endl;
 		outFile<<_stateNumber<<std::endl;
 		/* Model Parameter */
-		outFile<<"# Model parameter:\n# pi\tD[nm^2/s]\tdt[s]\tsigma"<<std::endl;
+		outFile<<"# Model parameter:\n# pi\tfix\tmin\tmax\tD[nm^2/s]\tfix\tmin\tmax"<<std::endl;
 		for(j=0; j<_stateNumber; j++){
-			for(i=0; i<4; i++)outFile<<_paraMat.at(j,i)<<"\t";
+			for(i=0; i<8; i++)outFile<<_paraMat.at(j,i)<<"\t";
 			outFile<<std::endl;
 		}
 		outFile.close();
+	}
+	else{
+		std::stringstream errorMessage;
+		errorMessage<<"Physical Model Error: The ermine can not write physMod to file."<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
 	}
 }
 
@@ -244,13 +282,19 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 			/* read model parameter to para mat */
 			if(n>0 && n<(1+_stateNumber)){
 				j=n-1;
-				for (i=0; i<4; i++)lineContent>>_paraMat(j, i);
+				for (i=0; i<8; i++)lineContent>>_paraMat(j, i);
 			}
 			n+=1;
 		}
 		inFile.close();
 		/* calc para Vector */
 		paraMat2paraVect();
+	}
+	else{
+		std::stringstream errorMessage;
+		errorMessage<<"Physical Model Error: The ermine could not read physMod from file."<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
 	}
 }
 
@@ -307,15 +351,17 @@ void PhysicalModelBLD::paraMat2paraVect(){
 	checkBinSize();
 	checkStateNumber();
 	checkParaMat();
-	int i,j;
+	checkMicroscope();
+	/* calculate expDist and transfer to paraVect */
+	int j;
+	double tempPi, tempDist;
 	_paraVect.clear();
 	_paraVect.push_back(_stateNumber);
-	SMLMS::Matrix tempMat = _paraMat;
-	for (j=0; j<_stateNumber; j++) tempMat(j,0) /= (_incNumber*_binSize);
-	for (j=0; j<tempMat.numberOfRows(); j++){
-		for (i=0; i<tempMat.numberOfColumns(); i++){
-			_paraVect.push_back(tempMat.at(j,i));
-		}
+	for (j=0; j<_paraMat.numberOfRows(); j++){
+		tempPi = _paraMat(j,0);
+		_paraVect.push_back(tempPi);
+		tempDist = SMLMS::expectedDistance(_paraMat(j,4), _microscope.intTime(), _microscope.locPrec()); 
+		_paraVect.push_back(tempDist);
 	}
 }
 
@@ -325,14 +371,16 @@ void PhysicalModelBLD::paraVect2paraMat(){
 	checkBinSize();
 	checkStateNumber();
 	checkParaVect();
-	int i,j;
-	_paraMat.clearMatrix();
-	SMLMS::Matrix tempMat(_stateNumber, 4);
+	checkMicroscope();
+	/* calculate expDiff and transfer to paraMat */
+	int j;
+	double tempPi, tempDiff;
 	for (j=0; j<_stateNumber; j++){
-		for(i=0; i<4; i++) tempMat(j,i)=_paraVect.at(1+(j*4)+i);
+		tempPi=_paraVect.at(1+(j*2));
+		_paraMat(j,0) = tempPi;
+		tempDiff = SMLMS::expectedDiffCoeff(_paraVect.at(1+(j*2)+1), _microscope.intTime(), _microscope.locPrec());
+		_paraMat(j,4) = tempDiff;
 	}
-	for (j=0; j<_stateNumber; j++) tempMat(j,0) *= (_incNumber*_binSize);
-	_paraMat = tempMat;
 }
 
 void PhysicalModelBLD::calcFitSuperPosFromPara(){
@@ -357,7 +405,7 @@ void PhysicalModelBLD::calcFitMatrixFromPara(){
 	int i,j;
 	for (j=0; j<_stateNumber; j++){
 		for (int i=0; i<_incNumber; i++){
-			_fitMatrix(j,i)=judiPdf(&_alphabet.at(i), &_paraVect[1+(j*4)]);
+			_fitMatrix(j,i)=judiPdf(&_alphabet.at(i), &_paraVect[1+(j*2)]);
 		}
 	}
 	/* normalize */
@@ -376,16 +424,6 @@ void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
 void PhysicalModelBLD::updatePi(SMLMS::Matrix &pi){
 	int j;
 	for (j=0; j<_stateNumber; j++) pi(0,j)=_paraMat.at(j,0);
-}
-
-void PhysicalModelBLD::updateFixModelParameter(SMLMS::Microscope &microscope){
-	int i;
-	checkStateNumber();
-	checkParaMat();
-	for (i=0; i<_stateNumber; i++){
-		_paraMat(i,2) = microscope.intTime(); 
-		_paraMat(i,3) = microscope.locPrec();
-	}	
 }
 
 /* fit functions */
@@ -408,47 +446,56 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 	/* create canvas */
 	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
 	/* create Histogramm */
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
+	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
+	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue,_maxValue);
 	for (i=0; i<_incNumber; i++){
 		pdfHist->SetBinContent(i, _pdfSuperPos.at(i));
 	}
 	/* normalize */
 	double histIntegral;
-	histIntegral = pdfHist->GetEntries()*pdfHist->GetBinWidth(0);
+	histIntegral = pdfHist->Integral();
 	double scale = 1/histIntegral;
 	pdfHist->Scale(scale);
 	pdfHist->Draw();
 	/* create fit function */
+	//TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue+_binSize,_maxValue+_binSize,_paraVect.size());
 	TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue,_maxValue,_paraVect.size());
 	fitFcn->SetParName(0, "states");
 	fitFcn->FixParameter(0,(double) _stateNumber);
 	std::string weightName, weightBaseName("weight");
-	std::string DName, DBaseName("D");
-	std::string dtName, dtBaseName("dt");
-	std::string sigmaName, sigmaBaseName("sigma");
+	std::string DistName, DistBaseName("distance");
+	printParaMat();
+	printParaVect();	
 	for (i=0; i<_stateNumber; i++){
 		weightName=weightBaseName;
 		weightName.append(std::to_string(i));
-		DName=DBaseName;
-		DName.append(std::to_string(i));
-		dtName=dtBaseName;
-		dtName.append(std::to_string(i));
-		sigmaName=sigmaBaseName;
-		sigmaName.append(std::to_string(i));
-		fitFcn->SetParName(1+(i*4), weightName.data());
- 		fitFcn->SetParName(2+(i*4), DName.data());
-          	fitFcn->SetParName(3+(i*4), dtName.data());
-          	fitFcn->SetParName(4+(i*4), sigmaName.data());
-	        fitFcn->SetParameter(1+(i*4),_paraVect.at(1+(i*4)));
-        	fitFcn->SetParameter(2+(i*4),_paraVect.at(2+(i*4)));
-        	fitFcn->FixParameter(3+(i*4),_paraVect.at(3+(i*4)));
-        	fitFcn->FixParameter(4+(i*4),_paraVect.at(4+(i*4)));
+		DistName=DistBaseName;
+		DistName.append(std::to_string(i));
+		fitFcn->SetParName(1+(i*2), weightName.data());
+ 		fitFcn->SetParName(2+(i*2), DistName.data());
+          	if (_paraMat.at(i,1)>0){
+        		fitFcn->FixParameter(1+(i*2),_paraVect.at(1+(i*2)));
+		}
+		else{
+	        	fitFcn->SetParameter(1+(i*2),_paraVect.at(1+(i*2)));
+			fitFcn->SetParLimits(1+(i*2), _paraMat.at(i,2), _paraMat.at(i,3));
+		}
+		if (_paraMat.at(i,5)>0){
+			fitFcn->FixParameter(2+(i*2),_paraVect.at(2+(i*2)));
+		}
+		else{
+			double minDist, maxDist;
+			fitFcn->SetParameter(2+(i*2),_paraVect.at(2+(i*2)));
+			minDist = SMLMS::expectedDistance(_paraMat(i,6), _microscope.intTime(), _microscope.locPrec()); 
+			maxDist = SMLMS::expectedDistance(_paraMat(i,7), _microscope.intTime(), _microscope.locPrec()); 
+			fitFcn->SetParLimits(2+(i*2), minDist, maxDist);
+		}
 	}
 	pdfHist->Fit("fitFcn", "I,L,M");
 	/* parse fit parameter to new rf1 */
 	TF1 *fit = pdfHist->GetFunction("fitFcn");
 	for (i=0; i<_paraVect.size(); i++){
-		_paraVect.at(i)=fit->GetParameter(i);
+		_paraVect.at(i)=std::abs(fit->GetParameter(i));
 	}
 	paraVect2paraMat();
 	double normFac = 0.0;
@@ -491,23 +538,36 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 	TF1 *fitFcn = new TF1("fitFcn", judiPdf ,_minValue,_maxValue,4);
 	std::string weightName("weight");
 	std::string DName("D");
-	std::string dtName("dt");
-	std::string sigmaName("sigma");
+	//std::string dtName("dt");
+	//std::string sigmaName("sigma");
 	fitFcn->SetParName(0, weightName.data());
 	fitFcn->SetParName(1, DName.data());
-	fitFcn->SetParName(2, dtName.data());
-	fitFcn->SetParName(3, sigmaName.data());
+	//fitFcn->SetParName(2, dtName.data());
+	//fitFcn->SetParName(3, sigmaName.data());
 	fitFcn->SetParameter(0,1.0/(_incNumber*_binSize));
-	fitFcn->SetParameter(1,_paraVect.at(2+(j*4)));
-	fitFcn->FixParameter(2,_paraVect.at(3+(j*4)));
-	fitFcn->FixParameter(3,_paraVect.at(4+(j*4)));
+	if (_paraMat.at(j, 5) > 0){
+		fitFcn->FixParameter(1,_paraVect.at(2+(j*2)));
+	}
+	else{
+		double minDist, maxDist;
+		fitFcn->SetParameter(1,_paraVect.at(2+(j*2)));
+		minDist = SMLMS::expectedDistance(_paraMat(j,6), _microscope.intTime(), _microscope.locPrec()); 
+		maxDist = SMLMS::expectedDistance(_paraMat(j,7), _microscope.intTime(), _microscope.locPrec()); 
+		fitFcn->SetParLimits(2+(j*2), minDist, maxDist);
+	}
+	//fitFcn->SetParameter(1,_paraVect.at(2+(j*2)));
+	//fitFcn->FixParameter(2,_paraVect.at(3+(j*4)));
+	//fitFcn->FixParameter(3,_paraVect.at(4+(j*4)));
 	/* fit */
 	pdfHist->Fit("fitFcn", "I,L,Q");
 	/* parse fit parameter to new rf1 */
 	TF1 *fit = pdfHist->GetFunction("fitFcn");
-	for (i=1; i<4; i++){
-		_paraVect.at(1+i+(j*4))=fit->GetParameter(i);
+	/*
+	for (i=1; i<2; i++){
+		_paraVect.at(1+i+(j*2))=fit->GetParameter(i);
 	}
+	*/
+	_paraVect.at(2+(j*2)) = fit->GetParameter(1);
 	/* delete root class instances */
 	delete fit;
 	delete pdfHist;

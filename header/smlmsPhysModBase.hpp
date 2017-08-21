@@ -46,7 +46,7 @@ class PhysicalModelBase{
 		/* Constructor */
 		PhysicalModelBase();
 		PhysicalModelBase(const std::vector<double> &xVal, int stateVal, std::string&);
-		PhysicalModelBase(double minVal, double maxVal, int incVal, int stateVal, std::string&);
+		PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal, std::string&);
 		/* Destructor */
 		virtual ~PhysicalModelBase();
 		/* Copy Constructor */
@@ -56,6 +56,7 @@ class PhysicalModelBase{
 		double minValue();
 		void setMaxValue(double);
 		double maxValue();
+		void setBinSize(double);
 		double binSize();
 		void setIncNumber(unsigned);
 		unsigned incNumber();
@@ -141,7 +142,7 @@ class PhysicalModelBase{
 		void writePdfSuperPos();
 		void writePdfMatrix();
 		/* plot functions */
-		void plotPhysicalModel();;
+		void plotPhysicalModel();
 		/* norm functions */
 		void intPdfSuperPos(double &area, const std::vector<double> &pdf);
 		void normPdfSuperPos(double &area, std::vector<double> &pdf);
