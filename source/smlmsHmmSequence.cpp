@@ -317,7 +317,6 @@ void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &
 	SMLMS::JumpDistanceList tempJudi;
 	std::vector<int> tempStateList(obsNumber);
 	std::vector<double> tempObsList(obsNumber);
-	std::cout<<_stateNumber<<" "<<_symbolNumber<<std::endl;
 	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
 	initHelpUniqueHMM(tempHMM, obsNumber);
 	//simulate
@@ -361,7 +360,7 @@ void HMMSequence::estimateSeqBic(unsigned obsNumber){
 
 void HMMSequence::estimateSeqAic(){
 	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
-	_bic = (-2.0 * _logLikelihood) + p * 2.0;
+	_aic = (-2.0 * _logLikelihood) + p * 2.0;
 }
 
 
@@ -392,13 +391,15 @@ void HMMSequence::trainSequence(const SMLMS::JumpDistanceList &judi){
 	int it = 0;
 	double llResult = 0.0;
 	double lastLl = 0.0;
+	// set trace Number
+	setTraceNumber(judi.traceNumber());
 	// test length
 	checkStateNumber();
 	checkTraceNumber();
 	judi.checkTraceNumber();
 	// init
 	std::cout<<std::endl<<"The ermine is training:"<<std::endl;
-	boost::progress_display show_progress(_maxIt);	
+	boost::progress_display show_progress(_maxIt+1);	
 	initTrainingSequences();
 	estimateSeqLikelihood(judi);
 	llResult = 0-_logLikelihood;
@@ -419,13 +420,15 @@ void HMMSequence::trainPhysModSequence(const SMLMS::JumpDistanceList &judi, SMLM
 	int it = 0;
 	double llResult = 0.0;
 	double lastLl = 0.0;
+	// set trace Number
+	setTraceNumber(judi.traceNumber());
 	// test length
 	checkStateNumber();
 	checkTraceNumber();
 	judi.checkTraceNumber();
 	// init
 	std::cout<<std::endl<<"The ermine is training:"<<std::endl;
-	boost::progress_display show_progress(_maxIt);	
+	boost::progress_display show_progress(_maxIt+1);	
 	initTrainingSequences();
 	estimateSeqLikelihood(judi);
 	llResult = 0-_logLikelihood;
@@ -449,7 +452,9 @@ void HMMSequence::estimateStateSequence(SMLMS::JumpDistanceList& judi){
 	std::vector<int> states;
 	std::vector<double> obs;
 	std::cout<<std::endl<<"The ermine is estimating states:"<<std::endl;
-	boost::progress_display show_progress(_traceNumber);	
+	// set trace number
+	setTraceNumber(judi.traceNumber());
+	boost::progress_display show_progress(_traceNumber+1);	
 	SMLMS::HMMUnique tempHmm(_stateNumber, _symbolNumber);
 	unsigned obsNumber = 0;
 	for (int i=1; i<_traceNumber+1; i++){

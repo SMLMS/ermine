@@ -83,7 +83,6 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void fitPdf(SMLMS::Matrix&);
 		void initFit(SMLMS::Matrix&);
 		void baumWelchFit(const SMLMS::Matrix &pi, SMLMS::Matrix &pdf);
-		void viterbiFit();
 }; /* PhysicalModelBLD*/
 } /* SMLMS */
 #endif /* smlmsPhysModBrownLatDiff_hpp */

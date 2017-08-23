@@ -46,7 +46,8 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("dwellTime",0));
 	setAlgorithmAlphabet(alphabet);
 	setAlgorithmArgument("train");
-	setStopCritArgument(0.01);	
+	setStopCritArgument(0.01);
+	setMaxItArgument(100);
 	setFileNameArgument("");
 	setJumpIntervalArgument(10.0);
 	setMinDistArgument(10.0);
@@ -82,6 +83,14 @@ void ErmineParser::setStopCritArgument(double parserArg){
 }
 double ErmineParser::stopCritArgument(){
 	return _stopCritArgument;
+}
+
+void ErmineParser::setMaxItArgument(int itArg){
+	_maxItArgument = itArg;
+}
+
+int ErmineParser::maxItArgument(){
+	return _maxItArgument;
 }
 
 void ErmineParser::setFileNameArgument(std::string parserArg){
@@ -225,6 +234,15 @@ void ErmineParser::proofStopCrit(po::variables_map &vm){
 	}
 }
 
+void ErmineParser::proofMaxIt(po::variables_map &vm){
+	if ((vm.count("maxIt")>0) && (vm["maxIt"].as<int>()<0)){
+		std::stringstream errorMessage;
+		errorMessage<<"maxIt needs to be a positive integer!"<<std::endl;
+		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
+		throw ermineParserError;
+	}
+}
+
 void ErmineParser::proofJumpInterval(po::variables_map &vm){
 	if ((vm.count("jumpInterval")>0) && (vm["jumpInterval"].as<double>()<0)){
 		std::stringstream errorMessage;
@@ -321,6 +339,9 @@ void ErmineParser::parseArguments(po::variables_map &vm){
 	// parse stopCrit
 	proofStopCrit(vm);
 	setStopCritArgument(vm["stopCrit"].as<double>());
+	// parse maxIt
+	proofMaxIt(vm);
+	setMaxItArgument(vm["maxIt"].as<int>());
 	// parse minDist
 	proofMinDist(vm);
 	setMinDistArgument(vm["minDist"].as<double>());
@@ -387,6 +408,7 @@ void ErmineParser::writeErmineParser(){
 	<<"# algorithm:\n "<<_algorithmArgument<<std::endl
 	<<"# folder:\n"<<_folderNameArgument<<std::endl
 	<<"# stop criterium:\n"<<_stopCritArgument<<std::endl
+	<<"# maximum iterations:\n"<<_maxItArgument<<std::endl
 	<<"# jump interval [nm]:\n"<<_jumpIntervalArgument<<std::endl
 	<<"# min distance [nm]:\n"<<_minDistArgument<<std::endl
 	<<"# max distance [nm]:\n"<<_maxDistArgument<<std::endl
@@ -405,6 +427,7 @@ void ErmineParser::printArguments(){
 	std::cout<<"algorithm: "<<_algorithmArgument<<std::endl;
 	std::cout<<"folder: "<<_folderNameArgument<<std::endl;
 	std::cout<<"stopCrit: "<<_stopCritArgument<<std::endl;
+	std::cout<<"maxIt: "<<_maxItArgument<<std::endl;
 	std::cout<<"jump interval: "<<_jumpIntervalArgument<<std::endl;
 	std::cout<<"min Dist: "<<_minDistArgument<<std::endl;
 	std::cout<<"max Dist: "<<_maxDistArgument<<std::endl;

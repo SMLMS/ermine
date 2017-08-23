@@ -524,27 +524,30 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 	/* create canvas */	
 	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
 	/* create histogram */
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
+	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
+	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue,_maxValue);
 	for (i=0; i<_incNumber; i++){
 		pdfHist->SetBinContent(i, pdf.at(j,i));
 	}
 	/* normalize */
 	double histIntegral;
-	histIntegral = pdfHist->GetEntries()*pdfHist->GetBinWidth(0);
+	histIntegral = pdfHist->Integral();
+	//histIntegral = pdfHist->GetEntries()*pdfHist->GetBinWidth(0);
 	double scale = 1/histIntegral;
 	pdfHist->Scale(scale);
 	pdfHist->Draw();
 	/* create fit function */
-	TF1 *fitFcn = new TF1("fitFcn", judiPdf ,_minValue,_maxValue,4);
+	TF1 *fitFcn = new TF1("fitFcn", judiPdf ,_minValue,_maxValue,2);
 	std::string weightName("weight");
-	std::string DName("D");
+	std::string distName("dist");
 	//std::string dtName("dt");
 	//std::string sigmaName("sigma");
 	fitFcn->SetParName(0, weightName.data());
-	fitFcn->SetParName(1, DName.data());
+	fitFcn->SetParName(1, distName.data());
 	//fitFcn->SetParName(2, dtName.data());
 	//fitFcn->SetParName(3, sigmaName.data());
-	fitFcn->SetParameter(0,1.0/(_incNumber*_binSize));
+	//fitFcn->SetParameter(0,1.0/(_incNumber*_binSize));
+	fitFcn->SetParameter(0,1.0);
 	if (_paraMat.at(j, 5) > 0){
 		fitFcn->FixParameter(1,_paraVect.at(2+(j*2)));
 	}
@@ -607,17 +610,4 @@ void PhysicalModelBLD::baumWelchFit(const SMLMS::Matrix &pi, SMLMS::Matrix &pdf)
 	/* return pdf fit */
 	pdf = _fitMatrix;
 }
-
-void PhysicalModelBLD::viterbiFit(){
-	//calc PdfMat from judi -> pdfMatrix
-	//calc pdfSuperPos from Judi -> pdfSuperPos
-	//calc pdfFitMat from para
-	//calc fitSuperPos by sum pdfFitMat
-	//calc resSuperPos
-	//calc resPdfMat
-	//calc chi Square
-	//plot
-	//save
-}
-
 } /* SMLMS */

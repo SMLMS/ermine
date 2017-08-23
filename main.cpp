@@ -47,6 +47,7 @@ int main(int argc, char *argv[]){
 			("algorithm,a", po::value<std::string>(), "analysis algorithm (see below for help)")
 			("jumpInterval,j", po::value<double>()->default_value(10.0), "interval size of jump distances in pdf in [nm] (int)")
 			("stopCrit,s", po::value<double>()->default_value(0.01), "stop criterion for model training (float)")
+			("maxIt,i", po::value<int>()->default_value(100), "maximum number of iterations for model training (int)")
 			("minDist", po::value<double>()->default_value(0.0), "minimal jump distance to analyze in [nm] (int)")
 			("maxDist", po::value<double>()->default_value(100.), "maximal jump distance to analyze in [nm] (int)")
 			("time,t", po::value<double>()->default_value(0.2), "time between jump measurements in [s] (float)")
@@ -586,7 +587,6 @@ int main(int argc, char *argv[]){
 		try{
 			hmm.readHMM(fileNames.hmmName());
 			hmm.setFolderName(eVar.folderNameArgument());
-			hmm.setTraceNumber(eVar.particleArgument());
 			hmm.initLoadedHMM();
 			hmm.checkHMM();
 			hmm.printHMM();
@@ -624,6 +624,7 @@ int main(int argc, char *argv[]){
 		/* estimate hmm */
 		try{
 			std::cout<<"The ermine is evaluating the likelihood of model fitting the given sequence."<<std::endl;
+			hmm.setTraceNumber(judi.traceNumber());
 			hmm.estimateSeqLikelihood(judi);
 		}
 		catch(SMLMS::SmlmsError &error){
@@ -661,15 +662,198 @@ int main(int argc, char *argv[]){
 	// train
 	else if(eVar.algorithmArgument()=="train"){
 		statement.printTrain();
-		std::cout<<"\nunder construction"<<std::endl;
-		// start tidy	
+		/* create hmm instance*/
+		SMLMS::HMMSequence hmm;	
+		/* load hmm */
+		try{
+			hmm.readHMM(fileNames.hmmName());
+			hmm.setFolderName(eVar.folderNameArgument());
+			hmm.setStopCrit(eVar.stopCritArgument());
+			hmm.setMaxIt(eVar.maxItArgument());
+			hmm.initLoadedHMM();
+			hmm.checkHMM();
+			hmm.normalizeHMM();
+			hmm.printHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* create judi instance */
+		SMLMS::JumpDistanceList judi;
+		/* load judi */
+		try{
+			judi.readJumpDistanceList(fileNames.judiName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* test if model is provided */
+		if(fileNames.proofModel()){
+			std::cout<<"moin"<<std::endl;
+			/* init physical model */
+			SMLMS::PhysicalModelBLD physMod;
+			physMod.setMinValue(eVar.minDistArgument());
+			physMod.setMaxValue(eVar.maxDistArgument());
+			physMod.setBinSize(eVar.jumpIntervalArgument());
+			physMod.setFolderName(fileNames.folderName());
+			/* load microscope */
+			SMLMS::Microscope microscope;
+			try{
+				microscope.loadMicroscope(fileNames.microscopeName());
+			}
+			catch(SMLMS::SmlmsError& error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+				return 1;
+			}
+			physMod.setMicroscope(microscope);
+
+			/* loading Model */
+			try{
+				std::cout<<"reading physical model"<<std::endl;
+				physMod.readPhysMod(fileNames.modelName());
+			}
+			catch(SMLMS::SmlmsError &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(std::out_of_range &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error while loading the physical model and is going to rest."<<std::endl;
+				return 1;
+			}
+			physMod.calcPdf(judi);
+			hmm.trainPhysModSequence(judi, physMod);
+			/* write model */
+			try{
+				physMod.writePhysMod();
+				physMod.writePdfSuperPos();
+				physMod.plotPhysicalModel();
+			}
+			catch(SMLMS::SmlmsError& error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error while writing the physical model and is going to rest"<<std::endl;
+				return 1;
+			}
+			
+		}
+		/* train hmm without physical model */
+		else{
+			hmm.trainSequence(judi);
+		}
+		/* write hmm */
+		try{
+			hmm.printHMM();
+			hmm.writeHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while saving the HMM and is going to rest."<<std::endl;
+			return 1;
+		}
+		/* start tidy */
 		statement.printTidy();
 	}
-	// path
+	// calculate best path
 	else if(eVar.algorithmArgument()=="bestPath"){
 		statement.printBestPath();
-		std::cout<<"\nunder construction"<<std::endl;
-		// start tidy	
+		/* create hmm instance*/
+		SMLMS::HMMSequence hmm;	
+		/* load hmm */
+		try{
+			hmm.readHMM(fileNames.hmmName());
+			hmm.setFolderName(eVar.folderNameArgument());
+			hmm.setStopCrit(eVar.stopCritArgument());
+			hmm.setMaxIt(eVar.maxItArgument());
+			hmm.initLoadedHMM();
+			hmm.checkHMM();
+			hmm.normalizeHMM();
+			hmm.printHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* create judi instance */
+		SMLMS::JumpDistanceList judi;
+		/* load judi */
+		try{
+			judi.readJumpDistanceList(fileNames.judiName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* Viterbi */
+		hmm.estimateStateSequence(judi);
+		/* write result */
+		try{
+			hmm.writeHMM();
+			judi.writeJumpDistanceList(fileNames.folderName().append("/judi.txt"));
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while saving the HMM and is going to rest."<<std::endl;
+			return 1;
+		}
+		/* start tidy */
 		statement.printTidy();
 	}
 	else if(eVar.algorithmArgument()=="dwellTime"){

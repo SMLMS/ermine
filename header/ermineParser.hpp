@@ -27,16 +27,17 @@ class ErmineParser{
 		std::map <std::string, int> _algorithmAlphabet;
 		std::string _algorithmArgument; // a
 		double _stopCritArgument; // c
+		int _maxItArgument; //i
 		std::string _fileNameArgument; // f
 		SMLMS::SMLMSFolder _folderArgument;
 		std::string _folderNameArgument;
-		double _jumpIntervalArgument; // i
+		double _jumpIntervalArgument; // j
 		double _minDistArgument; // m
 		double _maxDistArgument; // M
 		double  _timeIntervalArgument; // t
 		double _durationArgument; // d
 		int _traceLengthArgument;
-		int _particleArgument;// n
+		int _particleArgument;// p
 	public:
 		// Constructor
 		ErmineParser();
@@ -49,6 +50,8 @@ class ErmineParser{
 		std::string algorithmArgument();
 		void setStopCritArgument(double);
 		double stopCritArgument();
+		void setMaxItArgument(int);
+		int maxItArgument();
 		void setFileNameArgument(std::string);
 		std::string fileNameArgument();
 		void setFolderArgument(SMLMS::SMLMSFolder);
@@ -75,6 +78,7 @@ class ErmineParser{
 		void proofAlgorithm(po::variables_map &);
 		void proofAlgorithmArgument();
 		void proofStopCrit(po::variables_map &);
+		void proofMaxIt(po::variables_map &);
 		void proofJumpInterval(po::variables_map &);
 		void proofMinDist(po::variables_map &);
 		void proofMaxDist(po::variables_map &);
