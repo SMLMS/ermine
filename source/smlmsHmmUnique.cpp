@@ -662,7 +662,7 @@ void HMMUnique::estimateBic(){
 
 void HMMUnique::estimateAic(){
 	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
-	_bic = (-2.0 * _logLikelihood) + p * 2.0;
+	_aic = (-2.0 * _logLikelihood) + p * 2.0;
 }
 
 void HMMUnique::baumWelch(const std::vector<double> &obsSeq){
