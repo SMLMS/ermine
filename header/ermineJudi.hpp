@@ -52,7 +52,7 @@ class JumpDistanceList{
 		void readJumpDistanceList(std::string);
 		void writeJumpDistanceList(std::string);
 		void calcJumpDistanceList(MoleculeList &);
-		//void transferStatesToMoleculeList(MoleculeList &);
+		void transferStatesToMoleculeList(MoleculeList &);
 };/* JumpDistanceList  */
 }/* SMLMS */
 #endif /* Judi_hpp */

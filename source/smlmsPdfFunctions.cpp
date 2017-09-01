@@ -43,4 +43,10 @@ double expectedDistance(double diffCoeff, double dt, double sigma){
 	y = std::sqrt((4*diffCoeff*dt) + (4*std::pow(sigma,2)));
 	return y;
 }
+
+double monoExpDecFunc(double *t, double *para){
+	double y = 0;
+	y = para[0] * std::exp(-1.0*para[1]*t[0]);
+	return y;
+}
 }/* SMLMS */

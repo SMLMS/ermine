@@ -34,6 +34,7 @@ SOURCES += source/smlmsPhysModBrownLatDiff.cpp
 SOURCES += source/smlmsHmmBase.cpp
 SOURCES += source/smlmsHmmUnique.cpp
 SOURCES += source/smlmsHmmSequence.cpp
+SOURCES += source/smlmsDwellTime.cpp
 OBJECTS = $(SOURCES: .cpp=.o)
 
 

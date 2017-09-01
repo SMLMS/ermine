@@ -28,6 +28,7 @@
 #include "header/smlmsHmmBase.hpp"
 #include "header/smlmsHmmUnique.hpp"
 #include "header/smlmsHmmSequence.hpp"
+#include "header/smlmsDwellTime.hpp"
 
 namespace po=boost::program_options;
 
@@ -858,13 +859,125 @@ int main(int argc, char *argv[]){
 	}
 	else if(eVar.algorithmArgument()=="dwellTime"){
 		statement.printDwellTime();
-		std::cout<<"\nunder construction"<<std::endl;
-		// start tidy	
+		/* create HMM instance*/
+		SMLMS::HMMBase hmm;	
+		/* load hmm */
+		try{
+			hmm.readHMM(fileNames.hmmName());
+			hmm.setFolderName(eVar.folderNameArgument());
+			hmm.setStopCrit(eVar.stopCritArgument());
+			hmm.setMaxIt(eVar.maxItArgument());
+			hmm.initLoadedHMM();
+			hmm.checkHMM();
+			hmm.normalizeHMM();
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+		/* create judi instance */
+		SMLMS::JumpDistanceList judi;
+		/* load judi */
+		try{
+			judi.readJumpDistanceList(fileNames.judiName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"unkown error!"<<std::endl;
+			return 1;
+		}
+
+		/* create dwell time instance */
+		SMLMS::DwellTimeAnalysis dwellTime;
+		dwellTime.setFolderName(eVar.folderNameArgument());
+		dwellTime.setDt(eVar.jumpIntervalArgument());
+		try{
+			dwellTime.analyzeJudi(hmm, judi);
+		}
+		catch(SMLMS::SmlmsError &error) {std::cout<<error.what()<<std::endl;}
+		catch(std::out_of_range &error) {std::cout<<error.what()<<std::endl;}
+		catch(...) {std::cout<<"unkown error!"<<std::endl;}
+		/* start tidy */
 		statement.printTidy();
 	}
-	// no matching algorithm
+	else if(eVar.algorithmArgument()=="transferStates"){
+		statement.printTransferStates();
+		/* create mol list */
+		SMLMS::MoleculeList tempList, molList;
+		/* read mol list */
+		try{
+			std::cout<<"reading molecule list."<<std::endl;
+			molList.readLocList(fileNames.getTrcName(0));
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		/* create judi */
+		SMLMS::JumpDistanceList judi;
+		/* read judi */
+		try{
+			std::cout<<"reading judi."<<std::endl;
+			judi.readJumpDistanceList(fileNames.judiName());
+		}
+		catch(SMLMS::SmlmsError &error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error while loading judi data and is going to rest."<<std::endl;
+			return 1;
+		}
+		/* transfer states*/
+		try{
+			judi.transferStatesToMoleculeList(molList);
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		/* write mol list */
+		try{
+			molList.writeLocList(fileNames.folderName().append("/mol_with_trace.trc"));
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		/* start tidy */
+		statement.printTidy();
+	}	
+	/* no matching algorithm */
 	else{
-		std::cout<<std::endl<<eVar.algorithmArgument()<<" is still under construction"<<std::endl;
+		std::cout<<std::endl<<eVar.algorithmArgument()<<" is not a valid argument for ermine"<<std::endl;
+		std::cout<<"type -h for help"<<std::endl;
 	}
 	statement.printFinished();
 	return 0;

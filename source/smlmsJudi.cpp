@@ -280,4 +280,41 @@ void JumpDistanceList::calcJumpDistanceList(SMLMS::MoleculeList &molList){
 	}	
 }
 
+void JumpDistanceList::transferStatesToMoleculeList(SMLMS::MoleculeList &molList){
+	int i,j,k;
+	int start, stop;
+	int maxTrace;
+	std::vector<int> states;
+	maxTrace  = traceNumber();
+	for (i=1; i<maxTrace+1; i++){
+		if (molList.getTraceIndices(i, start, stop)){
+			states = getTraceStates(i);
+			if((stop-start) != states.size()){
+				std::stringstream errorMessage;
+				errorMessage<<"error: trace: "<<i<<" from judi does not fit the molecule lists correspondent."<<std::endl;
+				SMLMS::SmlmsError error(errorMessage.str());
+				throw error;
+			}
+			if((stop-start)==0){
+				std::cout<<"warning: ermine cannot determine any state information on trace "<<i<<" of length 1."<<std::endl;
+			}
+			else{
+				k=0;
+				molList.setMoleculeState(start, states.at(k));
+				for(j=start+1; j<stop+1; j++){
+					molList.setMoleculeState(j, states.at(k));
+					k +=1;
+				}
+			}
+		}
+		else{
+			std::cout<<"warning: ermine has no information about trace: "<<i<<"."<<std::endl;
+		}
+	}	
+	// judi get trace states
+	// molList get idices of trace
+	// compare traces
+	// if true: transfer states
+	// else: throw error
+}
 }/* namespace */

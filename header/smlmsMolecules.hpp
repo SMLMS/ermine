@@ -45,6 +45,8 @@ class MoleculeList{
 		void addMoleculeList(MoleculeList &);
 		void deleteMolecule(int);
 		int getNumberOfMolecules();
+		bool getTraceIndices(int trace, int &start, int &stop);
+		void setMoleculeState(int index, int state);
 		//load functions
 		void readMoleculeList(std::string locsName, std::string roiName);
 		void readTrcList(SMLMS::Microscope&, std::string);

@@ -30,6 +30,7 @@ Statement::Statement(){
 	setTrain();
 	setBestPath();
 	setDwellTime();
+	setTransferStates();
 	setTidy();
 }
 
@@ -52,6 +53,7 @@ Statement::Statement(const Statement &obj){
 	_train=obj._train;
 	_bestPath=obj._bestPath;
 	_dwellTime = obj._dwellTime;
+	_transferStates = obj._transferStates;
 	_tidy = obj._tidy;
 }
 
@@ -116,6 +118,11 @@ void Statement::setDwellTime(){
 	_dwellTime.append("The ermine evaluates the dwell times of all states based on the best path through a judi data set");
 }
 
+void Statement::setTransferStates(){
+	_transferStates.clear();
+	_transferStates.append("The ermine transfers all states from a judi to a trc data set.");
+}
+
 void Statement::setTidy(){
 	_tidy.clear();
 	_tidy.append("\nThe ermine is clearing the heap.\n");
@@ -167,6 +174,10 @@ void Statement::printBestPath(){
 
 void Statement::printDwellTime(){
 	std::cout<<std::endl<<_dwellTime<<std::endl;
+}
+
+void Statement::printTransferStates(){
+	std::cout<<std::endl<<_transferStates<<std::endl;
 }
 
 void Statement::printTidy(){

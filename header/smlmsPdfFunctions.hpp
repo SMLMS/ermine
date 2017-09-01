@@ -24,6 +24,8 @@ double expectedDistance(double diffCoeff, double dt, double sigma);
 //double normalPdf(double *val, double *para);
 //double normalSuperPos(double *val, double *para);
 
+/* dwell time analysis function */
+double monoExpDecFunc(double *val, double *para);
 }/*SMLMS*/
 #endif /* SmlmsPdfFunctions_hpp */
 

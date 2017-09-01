@@ -91,6 +91,35 @@ int MoleculeList::getNumberOfMolecules(){
 	return _moleculeList.size();
 }
 
+bool MoleculeList::getTraceIndices(int trace, int &start, int &stop){
+	bool exists = false;
+	Molecule mol;
+	int i;
+	int molNumber = getNumberOfMolecules();
+	for (i=0; i<molNumber; i++){
+		mol = getMolecule(i);
+		if (mol.trace == trace){
+			start = i;
+			exists = true;
+			break;
+		}
+	}
+	if (exists){
+		for(i=start; i<molNumber; i++){
+			mol = getMolecule(i);
+			if (mol.trace == trace){
+				stop = i;
+			}
+			else{break;}
+		}
+	}
+	return exists;
+}
+
+void MoleculeList::setMoleculeState(int index, int state){
+	_moleculeList.at(index).state = state;
+}
+
 /* load functions */
 void MoleculeList::readMoleculeList(std::string locListName, std::string roiName){
 	readLocList(locListName);

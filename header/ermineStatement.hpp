@@ -30,6 +30,7 @@ class Statement{
 		std::string _train;
 		std::string _bestPath;
 		std::string _dwellTime;
+		std::string _transferStates;
 		std::string _tidy;
 	public:
 		/* constructor */
@@ -51,6 +52,7 @@ class Statement{
 		void setTrain();
 		void setBestPath();
 		void setDwellTime();
+		void setTransferStates();
 		void setTidy();
 		/* print functions */
 		void printInit();
@@ -66,6 +68,7 @@ class Statement{
 		void printTrain();
 		void printBestPath();
 		void printDwellTime();
+		void printTransferStates();
 		void printTidy();
 };/* Satement */
 }/* SMLMS */
