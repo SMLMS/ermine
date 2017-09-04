@@ -235,7 +235,7 @@ int main(int argc, char *argv[]){
 		try{
 			microscope.saveMicroscope(fileNames.folderName().append("/microscope.txt"));
 			molList.writeMoleculeList(fileNames.folderName().append("/mol.txt"), fileNames.folderName().append("/roi.txt"));
-			judi.writeJumpDistanceList(fileNames.folderName().append("/jumpDistance_list.jud"));
+			judi.writeJumpDistanceList(fileNames.folderName().append("/judi.txt"));
 		}
 		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;

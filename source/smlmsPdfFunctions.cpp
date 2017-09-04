@@ -34,13 +34,15 @@ double judiSuperPosPdf(double *r, double *para){
 
 double expectedDiffCoeff(double dist, double dt, double sigma){
 	double y = 0;
-	y = (std::pow(dist, 2) - (4*std::pow(sigma,2))) / (4 * dt);
+	double R = 1.0/6.0;
+	y = (std::pow(dist, 2) - (4*std::pow(sigma,2))) / ((4* dt)-(8*R*dt));
 	return y;
 }
 
 double expectedDistance(double diffCoeff, double dt, double sigma){
 	double y=0;
-	y = std::sqrt((4*diffCoeff*dt) + (4*std::pow(sigma,2)));
+	double R = 1.0/6.0;
+	y = std::sqrt((4*diffCoeff*dt) + (4*std::pow(sigma,2))-8*R*diffCoeff*dt);
 	return y;
 }
 
