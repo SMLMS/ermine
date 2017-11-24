@@ -65,6 +65,7 @@ HMMBase::HMMBase(const HMMBase &obj){
 	_obsCDF = obj._obsCDF;
 	_obsAlphabet = obj._obsAlphabet;
 	_logLikelihood = obj._logLikelihood;
+	_dof = obj._dof;
 	_bic = obj._bic;
 	_aic = obj._aic;
 	_stopCrit = obj._stopCrit;
@@ -154,6 +155,10 @@ std::vector<double> HMMBase::obsAlphabet(){
 
 double HMMBase::logLikelihood(){
 	return _logLikelihood;
+}
+
+unsigned HMMBase::dof(){
+	return _dof;
 }
 
 double HMMBase::bic(){

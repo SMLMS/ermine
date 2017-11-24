@@ -791,7 +791,8 @@ void PhysicalModelBase::plotPhysicalModel(){
 	/* change TPad */
 	c1->cd(1);
 	/* draw pdf to Histogram */
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber, _minValue+(1*_binSize), _maxValue+(1*_binSize));
+	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber, _minValue+(1*_binSize), _maxValue+(1*_binSize));
+	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber, _minValue, _maxValue);
 	for (i=0; i<_incNumber; i++) pdfHist->SetBinContent(i, _pdfSuperPos.at(i));
 	pdfHist->SetLineColor(17);
 	pdfHist->SetFillColor(17);
@@ -804,18 +805,13 @@ void PhysicalModelBase::plotPhysicalModel(){
 	pdfHist->GetYaxis()->SetTitleSize(0.04);
 	pdfHist->GetYaxis()->SetTickLength(0.01);
 	pdfHist->GetYaxis()->SetLabelSize(0.04);
-	pdfHist->SetBarOffset(+0.5);
+	pdfHist->GetXaxis()->SetLimits(_minValue, _maxValue);
+	pdfHist->SetBarOffset(+1);
 	pdfHist->Draw("b");
-	/* draw pdf super pos fit */
-	TGraph *grSuperFit = new TGraph(_incNumber, _alphabet.data(), _fitSuperPos.data());
-	grSuperFit->SetLineColor(1);
-	grSuperFit->SetLineWidth(2);
-	grSuperFit->Draw("Csame");
 	/* set legend */
 	TLegend *leg1 = new TLegend(0.6,0.7,0.9,0.9);
    	leg1->SetHeader("jump distance dirtsibutions");
 	leg1->AddEntry(pdfHist, "judi distribution pdf", "L");
-   	leg1->AddEntry(grSuperFit,"model pdf super position", "L");
 	std::stringstream legendState;
 	/* draw single state judi */
 	std::vector<double> ySingleFit(_incNumber);
@@ -830,6 +826,13 @@ void PhysicalModelBase::plotPhysicalModel(){
    		leg1->AddEntry(grSingleFit,legendState.str().data(), "L");
 	}
    	leg1->Draw();
+	/* draw pdf super pos fit */
+	TGraph *grSuperFit = new TGraph(_incNumber, _alphabet.data(), _fitSuperPos.data());
+	grSuperFit->SetLineColor(1);
+	grSuperFit->SetLineWidth(2);
+	grSuperFit->SetLineStyle(2);
+	grSuperFit->Draw("Csame");
+   	leg1->AddEntry(grSuperFit,"model pdf super position", "L");
 	/* change TPad */
 	c1->cd(2);
 	/* draw Res Expextation value */
@@ -891,6 +894,8 @@ void PhysicalModelBase::intPdfSuperPos(double &area, const std::vector<double> &
 	int i;
 	area = 0.0;
 	for (i=0; i<_incNumber; i++) area += pdf.at(i);
+	//for (i=1; i<_incNumber; i++) area += (pdf.at(i)+pdf.at(i-1))/2.0;
+	area *= _binSize; 
 }
 
 void PhysicalModelBase::normPdfSuperPos(double &area, std::vector<double> &pdf){
@@ -905,6 +910,8 @@ void PhysicalModelBase::intPdfMatrix(std::vector<double> &area, const SMLMS::Mat
 	for (j=0; j<_stateNumber; j++){
 		area.at(j)=0.0;
 		for (i=0; i<_incNumber; i++) area.at(j) += pdf.at(j,i);
+		//for (i=1; i<_incNumber; i++) area.at(j) += (pdf.at(j,i-1)+pdf.at(j,i))/2.0;
+		area.at(j) *= _binSize;
 	}
 }
 
@@ -952,6 +959,7 @@ void PhysicalModelBase::calcFitSuperPos(){
 	checkPdfWeight();
 	/* calc Fit super pos */
 	for(i=0; i<_incNumber; i++){
+		_fitSuperPos.at(i)=0.0;
 		for(j=0; j<_stateNumber; j++)_fitSuperPos.at(i) += _fitMatrix.at(j,i) * _pdfWeight.at(j);
 	}
 	normPdfSuperPos(_areaFitSuperPos, _fitSuperPos);

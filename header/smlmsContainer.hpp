@@ -44,6 +44,28 @@ namespace SMLMS{
 		double jumpDistance;
 		int state;
 	};
+	
+	struct Settings{
+    		double pxl;
+    		double dt;
+    		double prec;
+	};
+
+	struct HmmStatistics{
+		unsigned states;
+		unsigned symbols;
+		double logLikelihood;
+		unsigned dof;
+		double bic;
+		double aic;
+	};
+
+	struct ModelState{
+		unsigned fix;
+		double value;
+		double min;
+		double max;
+	};
 }/* SMLMS */
 #endif /* Smlms_hpp */
 

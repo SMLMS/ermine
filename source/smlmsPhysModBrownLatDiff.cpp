@@ -133,15 +133,19 @@ void PhysicalModelBLD::initParaVect(){
 	_paraVect = tempVect;
 }
 
+
 void PhysicalModelBLD::initContArea(){
-	/* check stuff */
+	// check stuff
 	checkStateNumber();
 	int i;
 	_contAreaSuperPos = 0.0;
+	_areaPdfSuperPos = 0.0;
 	std::vector<double> tempVec(_stateNumber,0.0);
 	for(i=0; i<_stateNumber; i++)tempVec.at(i)=0.0;
 	_contArea = tempVec;
+	//_areaPdf = tempVec;
 }
+
 
 /* check functions */
 void PhysicalModelBLD::checkMicroscope(){
@@ -198,6 +202,7 @@ void PhysicalModelBLD::checkContArea(){
 	}
 }
 
+
 /* print functions */
 void PhysicalModelBLD::printParaMat(){
 	int i,j;
@@ -229,6 +234,7 @@ void PhysicalModelBLD::printContArea(){
 	for (i=0; i<_stateNumber; i++) std::cout<<_contArea.at(i)<<"\t";
 	std::cout<<std::endl;
 }
+
 
 /* read and write functions */
 void PhysicalModelBLD::writePhysMod(){
@@ -299,12 +305,18 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 }
 
 /* contineous normalization function */
+
 void PhysicalModelBLD::contIntSuperPos(double &area, const std::vector<double> &pdf){
 	int i;
 	area=0.0;
- 	/* integrate TrapZ way */
+ 	// integrate TrapZ way
+ 	/*
 	for (i=0; i<_incNumber-1; i++){
 		 area+= (pdf.at(i)*_binSize) - (0.5*_binSize*(pdf.at(i)-pdf.at(i+1)));
+	}
+	*/
+	for(i=1; i<_incNumber; i++){
+		area += 0.5*_binSize*(pdf.at(i-1)+pdf.at(i));
 	}
 }
 
@@ -319,9 +331,14 @@ void PhysicalModelBLD::contIntPdfMat(std::vector<double> &area, const SMLMS::Mat
 	int i,j;
 	for (j=0; j<_stateNumber; j++){
 		area.at(j)=0.0;
- 		/* integrate TrapZ way */
+ 		// integrate TrapZ way
+ 		/*
 		for (i=0; i<_incNumber-1; i++){
 		 	area.at(j)+= (pdf.at(j,i)*_binSize) - (0.5*_binSize*(pdf.at(j,i)-pdf.at(j,i+1)));
+		}
+		*/
+		for(i=1; i<_incNumber; i++){
+			area.at(j) += 0.5*_binSize*(pdf.at(j,i-1)+pdf.at(j,i));
 		}
 	}
 }
@@ -336,10 +353,10 @@ void PhysicalModelBLD::contNormPdfMat(std::vector<double> &area, SMLMS::Matrix &
 }
 
 void PhysicalModelBLD::contNormModel(){
-	/* fit Matrix */
+	// fit Matrix 
 	contNormPdfMat(_contArea, _fitMatrix);
 	contNormSuperPos(_contAreaSuperPos, _fitSuperPos);
-	/* pdf Matrix */
+	// pdf Matrix
 	contNormPdfMat(_contArea, _pdfMatrix);
 	contNormSuperPos(_contAreaSuperPos, _pdfSuperPos);
 }
@@ -393,7 +410,8 @@ void PhysicalModelBLD::calcFitSuperPosFromPara(){
 		_fitSuperPos.at(i)=judiSuperPosPdf(&_alphabet.at(i), _paraVect.data());
 	}
 	/* normalize */
-	contNormSuperPos(_contAreaSuperPos, _fitSuperPos);
+	normPdfSuperPos(_areaPdfSuperPos, _fitSuperPos);
+	//contNormSuperPos(_contAreaSuperPos, _fitSuperPos);
 }
 
 void PhysicalModelBLD::calcFitMatrixFromPara(){
@@ -409,7 +427,8 @@ void PhysicalModelBLD::calcFitMatrixFromPara(){
 		}
 	}
 	/* normalize */
-	contNormPdfMat(_contArea, _fitMatrix);
+	normPdfMatrix(_areaPdf, _fitMatrix);
+	//contNormPdfMat(_contArea, _fitMatrix);
 }
 
 void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
@@ -441,13 +460,14 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 	checkMaxValue();
 	checkBinSize();
 	/* normalize pdf SuperPos */
-	contNormSuperPos(_contAreaSuperPos, _pdfSuperPos);
+	//contNormSuperPos(_contAreaSuperPos, _pdfSuperPos);
+	normPdfSuperPos(_areaPdfSuperPos, _pdfSuperPos);
 	paraMat2paraVect();
 	/* create canvas */
 	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
 	/* create Histogramm */
-	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue,_maxValue);
+	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
+	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue,_maxValue);
 	for (i=0; i<_incNumber; i++){
 		pdfHist->SetBinContent(i, _pdfSuperPos.at(i));
 	}
@@ -458,8 +478,8 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 	pdfHist->Scale(scale);
 	pdfHist->Draw();
 	/* create fit function */
-	//TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue+_binSize,_maxValue+_binSize,_paraVect.size());
-	TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue,_maxValue,_paraVect.size());
+	TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue+_binSize,_maxValue+_binSize,_paraVect.size());
+	//TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue,_maxValue,_paraVect.size());
 	fitFcn->SetParName(0, "states");
 	fitFcn->FixParameter(0,(double) _stateNumber);
 	std::string weightName, weightBaseName("weight");
@@ -517,6 +537,7 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 	checkPdfMatrix();
 	checkFitMatrix();
 	checkContArea();
+	checkAreaPdf();
 	checkIncNumber();
 	checkMinValue();
 	checkMaxValue();
@@ -524,8 +545,7 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 	/* create canvas */	
 	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
 	/* create histogram */
-	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue,_maxValue);
+	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,(_minValue+_binSize),(_maxValue+_binSize));
 	for (i=0; i<_incNumber; i++){
 		pdfHist->SetBinContent(i, pdf.at(j,i));
 	}
@@ -580,6 +600,7 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 void PhysicalModelBLD::fitPdf(SMLMS::Matrix &pdf){
 	/* normalize pdf SuperPos */
 	contNormPdfMat(_contArea, pdf);
+	//normPdfMatrix(_areaPdf, pdf);
 	int j;
 	for (j=0; j<_stateNumber; j++) fitPdfMatState(j, pdf);
 	paraVect2paraMat();
@@ -596,6 +617,7 @@ void PhysicalModelBLD::baumWelchFit(const SMLMS::Matrix &pi, SMLMS::Matrix &pdf)
 	paraMat2paraVect();
 	_pdfMatrix = pdf;
 	contNormPdfMat(_contArea, _pdfMatrix);
+	//normPdfMatrix(_areaPdf, _pdfMatrix);
 	fitPdf(_pdfMatrix);
 	updateWeight(pi);
 	calcFitMatrixFromPara();

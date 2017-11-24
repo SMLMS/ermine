@@ -64,7 +64,7 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		/* read and write functions */
 		void writePhysMod();
 		void readPhysMod(const std::string&);
-		/* contineous normalization  Functions */
+		/* numerical normalization  Functions */
 		void contIntSuperPos(double &area, const std::vector<double> &pdf);
 		void contNormSuperPos(double &area, std::vector<double> &pdf);
 		void contIntPdfMat(std::vector<double> &area, const SMLMS::Matrix &pdf);

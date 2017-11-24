@@ -139,6 +139,10 @@ unsigned Matrix::numberOfElements()const{
 	return _numberOfElements;
 }
 
+double* Matrix::data(void){
+	return _entries.data(); 
+}
+
 /* special functions */
 void Matrix::calcNumberOfElements(){
 	_numberOfElements = numberOfRows()*numberOfColumns();

@@ -45,6 +45,7 @@ class Matrix{
 		unsigned numberOfColumns() const;
 		unsigned numberOfElements();
 		unsigned numberOfElements() const;
+		double* data(void);
 		/* special functions */
        	 	void calcNumberOfElements();
 		void initMatrix();

@@ -146,6 +146,8 @@ void MoleculeList::readLocList(std::string name){
 			if (!line.find("#")) continue;
 			std::stringstream lineContent(line);
 			lineContent>>mol.trace>>mol.frame>>mol.x>>mol.y>>mol.state>>mol.intensity;
+			// precision not implemented yet
+			mol.precision = 0.0;
 			addMoleculeToEnd(mol);
 		}
 		inFile.close();

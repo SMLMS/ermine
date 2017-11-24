@@ -36,6 +36,7 @@ class HMMBase{
 		SMLMS::Matrix _obsCDF;
 		std::vector<double> _obsAlphabet;
 		double _logLikelihood;
+		unsigned _dof;
 		double _bic;
 		double _aic;
 		double _stopCrit;
@@ -71,6 +72,7 @@ class HMMBase{
 		void setObsAlphabet(std::vector<double>);
 		std::vector<double> obsAlphabet();
 		double logLikelihood();
+		unsigned dof();
 		double bic();
 		double aic();
 		void setStopCrit(double);
