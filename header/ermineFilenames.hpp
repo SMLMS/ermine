@@ -27,6 +27,7 @@ class FileNames{
 		std::string _hmmName;
 		std::string _modelName;
 		std::string _molListName;
+		std::string _archiveName;
 		std::vector<std::string> _trcNames;
 
 	public:
@@ -55,6 +56,8 @@ class FileNames{
 		std::string molListName();
 		void setTrcNames(std::vector<std::string>);
 		std::vector<std::string> trcNames();
+		void setArchiveName(std::string);
+		std::string archiveName();
 		/* special functions */
 		int trcNumber();
 		std::string getTrcName(int);

@@ -348,11 +348,12 @@ void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
 		_seqLogLikelihood += tempHmm.logLikelihood();
 	}
 	_logLikelihood = _seqLogLikelihood;
-	estimateSeqBic(cummulativeObsNumber);
-	estimateSeqAic();
+	calcModelSelection(cummulativeObsNumber);
+	//estimateSeqBic(cummulativeObsNumber);
+	//estimateSeqAic();
 }
 
-
+/*
 void HMMSequence::estimateSeqBic(unsigned obsNumber){
 	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
 	_bic = (-2.0 * _logLikelihood) + p * log(obsNumber);
@@ -362,7 +363,7 @@ void HMMSequence::estimateSeqAic(){
 	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
 	_aic = (-2.0 * _logLikelihood) + p * 2.0;
 }
-
+*/
 
 void HMMSequence::baumWelchSequence(const SMLMS::JumpDistanceList &judi){
 	// test length
@@ -391,6 +392,8 @@ void HMMSequence::trainSequence(const SMLMS::JumpDistanceList &judi){
 	int it = 0;
 	double llResult = 0.0;
 	double lastLl = 0.0;
+	/* calc dof */
+	calcDof();
 	// set trace Number
 	setTraceNumber(judi.traceNumber());
 	// test length
@@ -420,6 +423,8 @@ void HMMSequence::trainPhysModSequence(const SMLMS::JumpDistanceList &judi, SMLM
 	int it = 0;
 	double llResult = 0.0;
 	double lastLl = 0.0;
+	/* calc dof from physical Model */
+	calcDofFromPhysMod(physMod);
 	// set trace Number
 	setTraceNumber(judi.traceNumber());
 	// test length

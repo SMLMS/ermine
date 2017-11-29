@@ -29,6 +29,7 @@ namespace SMLMS{
 HMMBase::HMMBase (){
 	//std::cout<<"HMM constructor called."<<std::endl;
 	_logLikelihood = 0.0;
+	_dof = 0;
 	_bic = 0.0;
 	_aic = 0.0;
 }
@@ -40,6 +41,7 @@ HMMBase::HMMBase(unsigned states, unsigned symbols){
 	setSymbolNumber(symbols);
 	initHMM();
 	checkHMM();
+	calcDof();
 	_logLikelihood = 0.0;
 	_bic = 0.0;
 	_aic = 0.0;
@@ -153,16 +155,32 @@ std::vector<double> HMMBase::obsAlphabet(){
 	return _obsAlphabet;
 }
 
+void HMMBase::setLogLikelihood(double data){
+	_logLikelihood = data;
+}
+
 double HMMBase::logLikelihood(){
 	return _logLikelihood;
+}
+
+void HMMBase::setDof(unsigned data){
+	_dof = data;
 }
 
 unsigned HMMBase::dof(){
 	return _dof;
 }
 
+void HMMBase::setBic(double data){
+	_bic = data;
+}
+
 double HMMBase::bic(){
 	return _bic;
+}
+
+void HMMBase::setAic(double data){
+	_aic = data;
 }
 
 double HMMBase::aic(){
@@ -290,6 +308,7 @@ void HMMBase::writeHMM(){
 		}
 		/* print LogLikelihood and BIC */
 		outFile<<"# LogLikelihood: "<<_logLikelihood<<std::endl;
+		outFile<<"# DOF: "<<_dof<<std::endl;
 		outFile<<"# AIC: "<<_aic<<std::endl;
 		outFile<<"# BIC: "<<_bic<<std::endl;
 		/* close */
@@ -317,6 +336,7 @@ void HMMBase::clearHMM(){
 	_transCDF.clearMatrix();
 	_obsCDF.clearMatrix();
 	_logLikelihood = 0.0;
+	_dof = 0;
 	_bic = 0.0;
 	_aic = 0.0;
 }
@@ -627,6 +647,48 @@ void HMMBase::calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf){
 	}
 }
 
+void HMMBase::calcDof(){
+	_dof = 0;
+	/* add equilibrium degrees of freedom */
+	_dof += _stateNumber-1;
+	/* add transition Matrix degrees of freedom based upon Sriraman et al. J. Phys Chem. 2005 */
+	_dof += (_stateNumber+2)*(_stateNumber-1)/2;
+	/* add observation degrees of freedom */
+	_dof += (_symbolNumber-1)*_stateNumber;
+}
+
+void HMMBase::calcDofFromPhysMod(SMLMS::PhysicalModelBLD& model){
+	SMLMS::Matrix tempMat = model.paraMat();
+	_dof = 0;
+	/* add equilibrium degrees of freedom */
+	for (int i=0; i<_stateNumber; i++){
+		if (tempMat.at(i,1)<1.0){_dof+=1;}
+	}
+	if (_dof>0){_dof -= 1;}
+	/* add transition Matrix degrees of freedom based upon Sriraman et al. J. Phys Chem. 2005 */
+	_dof += (_stateNumber+2)*(_stateNumber-1)/2;
+	/* add observation degrees of freedom */
+	for (int i=0; i<_stateNumber; i++){
+		if (tempMat.at(i,5)<1.0){_dof+=1;}
+	}
+
+}
+
+void HMMBase::calcBic(unsigned n){
+	/* Bayesian information criterion (BIC) */
+	_bic = (_dof*log(n))-(2.0*_logLikelihood);
+}
+
+void HMMBase::calcAic(unsigned n){
+	/* second order Akaike information criterion (AIC) */
+	_aic = (2.0*_dof)-(2.0*_logLikelihood);
+	_aic += (2.0*_dof*(_dof + 1))/(n - _dof - 1);
+}
+
+void HMMBase::calcModelSelection(unsigned n){
+	calcBic(n);
+	calcAic(n);
+}
 
 /* print functions */
 void HMMBase::printFolderName(){
@@ -716,6 +778,10 @@ void HMMBase::printObsAlphabet(){
 
 void HMMBase::printLogLikelihood(){
 	std::cout<<std::endl<<"Log Likelihood: "<<_logLikelihood<<std::endl;
+}
+
+void HMMBase::printDof(){
+	std::cout<<std::endl<<"DOF: "<<_dof<<std::endl;
 }
 
 void HMMBase::printBic(){

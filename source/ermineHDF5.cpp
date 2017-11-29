@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <boost/filesystem.hpp>
 #include "header/smlmsContainer.hpp"
 #include "header/smlmsMicroscope.hpp"
@@ -45,6 +46,13 @@ HDF5::HDF5(){
 	_dsWeightMat = H5std_string("weight matrix");
 	_dsModelWeight = H5std_string("weigth coefficient");
 	_dsModelDiff = H5std_string("diffusion coefficient");
+	/* HDF5 attributes */
+	_dims[0] = 1;
+	_start[0] = 1;
+	_stride[0] = 1;
+	_count[0] = 1;
+	_block[0] = 1;
+	_entries = 1;
 }
 
 /* destructor */
@@ -53,6 +61,7 @@ HDF5::~HDF5(){
 	delete _group;
 	delete _data;
 	delete _space;
+	delete _memSpace;
 	delete _compType;
 	std::cout<<"HDF5 removed from Heap!"<<std::endl;
 }
@@ -83,7 +92,14 @@ HDF5::HDF5(const HDF5 &obj){
 	_group = obj._group;
 	_data = obj._data;
 	_space = obj._space;
+	_memSpace = obj._memSpace;
 	_compType = obj._compType;
+	_dims[0] = obj._dims[0];
+	_start[0] = obj._start[0];
+	_stride[0] = obj._stride[0];
+	_count[0] = obj._count[0];
+	_block[0] = obj._block[0];
+	_entries = obj._entries;
 }
 
 /* elementary functions */
@@ -95,209 +111,265 @@ std::string HDF5::fileName(void){
 	return _fileName;
 }
 
-/* read functions */
+/* HDF functions */
+int HDF5::archiveModel(const SMLMS::Microscope& mic,
+			const SMLMS::MoleculeList& mol,
+			const SMLMS::JumpDistanceList& judi,
+			SMLMS::HMMSequence& hmm,
+			SMLMS::PhysicalModelBLD& model){
 
-/* write functions */
-int HDF5::writeMicroscopeData(SMLMS::Microscope &microscope){
-	try{
-	H5::Exception::dontPrint();
-	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnSettings));
-	_data =  new H5::DataSet(_group->openDataSet(_dsMicroscope));
-	_compType = new H5::CompType(_data->getCompType());
-	_space = new H5::DataSpace(_data->getSpace());
-	int rank = _space->getSimpleExtentNdims();
-	hsize_t dims[1]={1}; 
-	SMLMS::Settings data={microscope.pxlSize(), microscope.intTime(), microscope.locPrec()};
-	H5::DataSpace *dspace = new H5::DataSpace(rank, dims);
-
-	hsize_t start[]  = {0};
-	hsize_t stride[] = {1};
-	hsize_t count[]  = {1};
-	hsize_t block[]  = {1};
-
-	_space->selectHyperslab( H5S_SELECT_SET, count, start, stride, block );
-	_data->write(&data, *_compType, *dspace, *_space);
-
-	_space->close();
-	_compType->close();
-	_data->close();
-	_group->close();
-	_file->close();
-	}
-	catch(H5::FileIException& error){
-		std::cout<<"could not open file "<<_fileName<<std::endl;
-		return -1;
-	}
-	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group settings"<<std::endl;
-		return -1;
-	}
+	SMLMS::ROI roi = mol.roi();
+	/* create file */
+	if (createFile()<0){return -1;}
+	/* create groups */
+	if (createDataGroup()<0){return -1;}
+	if (createHmmGroup()<0){return -1;}
+	if (createModelGroup()<0){return -1;}
+	if (createSettingsGroup()<0){return -1;}
+	/* create Data */
+ 	if (createMicroscopeData()<0){return -1;}
+	if (createRoiData()<0){return -1;}
+	if (createMolData(mol)<0){return -1;}
+	if (createJudiData(judi)<0){return -1;}
+	if (createStatisticData()<0){return -1;}
+	if (createWeightMatData(hmm)<0){return -1;}
+	if (createTransMatData(hmm)<0){return -1;}
+	if (createObsMatData(hmm)<0){return -1;}
+	if (createAlphabetData(hmm)<0){return -1;}
+	if (createModelWeightData(model)<0){return -1;}
+	if (createModelDiffData(model)<0){return -1;}
+	/* write data */
+	if (writeMicroscopeData(mic)<0){return -1;}
+	if (writeRoiData(roi)<0){return -1;}
+	if (writeMolData(mol)<0){return -1;}
+	if (writeJudiData(judi)<0){return -1;}
+	if (writeHmmData(hmm)<0){return -1;}
+	if (writePhysModData(model)<0){return -1;}
+	/* read data */
 	return 0;
 }
 
-int HDF5::writeRoiData(SMLMS::ROI &roi){
-	try{
-	H5::Exception::dontPrint();
-	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnSettings));
-	_data =  new H5::DataSet(_group->openDataSet(_dsRoi));
-	_compType = new H5::CompType(_data->getCompType());
-	_space = new H5::DataSpace(_data->getSpace());
-	int rank = _space->getSimpleExtentNdims();
-	hsize_t dims[1]={1}; 
-	SMLMS::ROI data={roi.minX, roi.maxX, roi.minY, roi.maxY, roi.minFrame, roi.maxFrame, roi.minIntensity, roi.maxIntensity};
-	H5::DataSpace *dspace = new H5::DataSpace(rank, dims);
+int HDF5::extractModel(SMLMS::Microscope& mic,
+			SMLMS::MoleculeList& mol,
+			SMLMS::JumpDistanceList& judi,
+			SMLMS::HMMSequence& hmm,
+			SMLMS::PhysicalModelBLD& model){
+	/* load hdf5 */
+	if (readMicroscopeData(mic)<0){return -1;}
+	SMLMS::ROI roi;
+	if (readRoiData(roi)<0){return -1;}
+	if (readMolData(mol)<0){return-1;}
+	mol.setRoi(roi);
+	if (readJudiData(judi)<0){return -1;}
+	if (readHmmData(hmm)<0){return -1;}
+	if (readPhysModData(model)<0){return -1;}
+	/* create out file name base*/
+	std::size_t index = _fileName.find_last_of("/");
+	std::string baseName = _fileName.substr(0,index);
+	std::string outName;
+	/* write data*/
+	outName = baseName;
+	outName.append("/names.txt");
+	/* open names file */
+	std::ofstream outFile;
+	outFile.open(outName.data());
 
-	hsize_t start[]  = {0};
-	hsize_t stride[] = {1};
-	hsize_t count[]  = {1};
-	hsize_t block[]  = {1};
-
-	_space->selectHyperslab( H5S_SELECT_SET, count, start, stride, block );
-	_data->write(&data, *_compType, *dspace, *_space);
-
-	_space->close();
-	_compType->close();
-	_data->close();
-	_group->close();
-	_file->close();
-	}
-	catch(H5::FileIException& error){
-		std::cout<<"could not open file "<<_fileName<<std::endl;
-		return -1;
-	}
-	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group settings"<<std::endl;
-		return -1;
-	}
-	return 0;
-}
-
-int HDF5::writeMolData(SMLMS::MoleculeList &mol){
-	try{
-	H5::Exception::dontPrint();
-	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnData));
-	_data =  new H5::DataSet(_group->openDataSet(_dsMol));
-	_compType = new H5::CompType(_data->getCompType());
-	_space = new H5::DataSpace(_data->getSpace());
-	int rank = _space->getSimpleExtentNdims();
-	hsize_t dims[1]={1}; 
-	H5::DataSpace *dspace = new H5::DataSpace(rank, dims);
-	SMLMS::Molecule data;
+	outName = baseName;
+	outName.append("/microscope.txt");
+	outFile<<outName.data()<<std::endl;
+	mic.saveMicroscope(outName);
 	
-	for(hsize_t i=0; i<mol.getNumberOfMolecules(); i++){
-		data = mol.getMolecule(i);
+	outName = baseName;
+	outName.append("/roi.txt");
+	outFile<<outName.data()<<std::endl;
+	mol.writeROI(outName);
 
-		hsize_t start[]  = {i};
-		hsize_t stride[] = {1};
-		hsize_t count[]  = {1};
-		hsize_t block[]  = {1};
+	outName = baseName;
+	outName.append("/mol.txt");
+	outFile<<outName.data()<<std::endl;
+	mol.writeLocList(outName);
 
-		_space->selectHyperslab( H5S_SELECT_SET, count, start, stride, block );
-		_data->write(&data, *_compType, *dspace, *_space);
-	}
+	outName = baseName;
+	outName.append("/judi.txt");
+	outFile<<outName.data()<<std::endl;
+	judi.writeJumpDistanceList(outName);
+	
+	outName = baseName;
+	outName.append("/hmm.txt");
+	outFile<<outName.data()<<std::endl;
+	hmm.setFolderName(baseName);
+	hmm.writeHMM();
 
+	outName = baseName;
+	outName.append("/physMod.txt");
+	outFile<<outName.data()<<std::endl;
+	model.setFolderName(baseName);
+	model.writePhysMod();
+
+	/* close name file */
+	outFile.close();
+	return 0;
+}
+
+int HDF5::openDataSet(H5std_string groupName, H5std_string dataName){
+	_group = new H5::Group(_file->openGroup(groupName));
+	_data =  new H5::DataSet(_group->openDataSet(dataName));
+	_compType = new H5::CompType(_data->getCompType());
+	_space = new H5::DataSpace(_data->getSpace());
+	_rank = _space->getSimpleExtentNdims();
+	_memSpace = new H5::DataSpace(_rank, _dims);
+	_entries =  _space->getSimpleExtentNpoints(); 
+
+	return 0;
+}
+
+int HDF5::tidy(void){
 	_space->close();
+	_memSpace->close();
 	_compType->close();
 	_data->close();
 	_group->close();
 	_file->close();
+	return 0;
+}
+/* write functions */
+int HDF5::writeMicroscopeData(const SMLMS::Microscope &microscope){
+	try{
+	H5::Exception::dontPrint();
+	/* open dataset from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
+	openDataSet(_gnSettings, _dsMicroscope);
+	/* data transfer */
+	SMLMS::Settings tempData={microscope.pxlSize(), microscope.intTime(), microscope.locPrec()};
+	/* write data to file */
+	_data->write(&tempData, *_compType, *_memSpace, *_space);
+	/* tidy */
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group data"<<std::endl;
+		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write all molecules.";
-		std::cout<<" Make sure "<<_fileName.data()<<" can take up "<<mol.getNumberOfMolecules()<<" molecules."<<std::endl;
+		std::cout<<"could not write data to dataset "<<_dsMicroscope<<std::endl;;
 		return -1;
 	}
 	return 0;
 }
 
-int HDF5::writeJudiData(SMLMS::JumpDistanceList &judi){
+int HDF5::writeRoiData(const SMLMS::ROI &roi){
 	try{
 	H5::Exception::dontPrint();
+	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnData));
-	_data =  new H5::DataSet(_group->openDataSet(_dsJudi));
-	_compType = new H5::CompType(_data->getCompType());
-	_space = new H5::DataSpace(_data->getSpace());
-	int rank = _space->getSimpleExtentNdims();
-	hsize_t dims[1]={1}; 
-	H5::DataSpace *dspace = new H5::DataSpace(rank, dims);
-	SMLMS::Jump data;
-	for(hsize_t i=0; i<judi.getNumberOfJumps(); i++){
-		data = judi.getJump(i);
-
-		hsize_t start[]  = {i};
-		hsize_t stride[] = {1};
-		hsize_t count[]  = {1};
-		hsize_t block[]  = {1};
-
-		_space->selectHyperslab( H5S_SELECT_SET, count, start, stride, block );
-		_data->write(&data, *_compType, *dspace, *_space);
-	}
-
-	_space->close();
-	_compType->close();
-	_data->close();
-	_group->close();
-	_file->close();
+	openDataSet(_gnSettings, _dsRoi);
+	/* write data to file */
+	_data->write(&roi, *_compType, *_memSpace, *_space);
+	/* tidy */
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group data"<<std::endl;
+		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write all jumps to dataset judi.";
-		std::cout<<" Make sure "<<_fileName.data()<<" can take up "<<judi.getNumberOfJumps()<<" jumps."<<std::endl;
+		std::cout<<"could not write data to dataset "<<_dsRoi<<std::endl;
 		return -1;
 	}
 	return 0;
 }
 
-int HDF5::writeStatisticData(SMLMS::HMMSequence &hmm){
+int HDF5::writeMolData(const SMLMS::MoleculeList &mol){
 	try{
 	H5::Exception::dontPrint();
+	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnHmm));
-	_data =  new H5::DataSet(_group->openDataSet(_dsHmmStatistics));
-	_compType = new H5::CompType(_data->getCompType());
-	_space = new H5::DataSpace(_data->getSpace());
-	int rank = _space->getSimpleExtentNdims();
-	hsize_t dims[1]={1}; 
-	SMLMS::HmmStatistics data={	hmm.stateNumber(),
+	openDataSet(_gnData, _dsMol);
+	SMLMS::Molecule tempData;
+	for(int i=0; i<_entries; i++){
+		/* data transfer*/
+		tempData = mol.getMolecule(i);
+		/* write data to file */
+		_start[0]  = i;
+		_space->selectHyperslab(H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->write(&tempData, *_compType, *_memSpace, *_space);
+	}
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not write data to dataset "<<_dsMol<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::writeJudiData(const SMLMS::JumpDistanceList &judi){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
+	openDataSet(_gnData, _dsJudi);
+	SMLMS::Jump tempData;
+	for(int i=0; i<_entries; i++){
+		/* data transfer */
+		tempData = judi.getJump(i);
+		/* write data to file file */
+		_start[0]  = i;
+		_space->selectHyperslab( H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->write(&tempData, *_compType, *_memSpace, *_space);
+	}
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not write data to dataset "<<_dsJudi<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::writeStatisticData(SMLMS::HMMSequence& hmm){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
+	openDataSet(_gnHmm, _dsHmmStatistics);
+	/* data transfer */
+	SMLMS::HmmStatistics tempData={	hmm.stateNumber(),
 					hmm.symbolNumber(),
 					hmm.logLikelihood(),
 					hmm.dof(),
 					hmm.bic(),
 					hmm.aic()};
-	H5::DataSpace *dspace = new H5::DataSpace(rank, dims);
-
-	hsize_t start[]  = {0};
-	hsize_t stride[] = {1};
-	hsize_t count[]  = {1};
-	hsize_t block[]  = {1};
-
-	_space->selectHyperslab( H5S_SELECT_SET, count, start, stride, block );
-	_data->write(&data, *_compType, *dspace, *_space);
-
-	_space->close();
-	_compType->close();
-	_data->close();
-	_group->close();
-	_file->close();
+	/* write data to file */
+	_data->write(&tempData, *_compType, *_memSpace, *_space);
+	/* tidy */
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
@@ -307,21 +379,25 @@ int HDF5::writeStatisticData(SMLMS::HMMSequence &hmm){
 		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
 		return -1;
 	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsHmmStatistics<<std::endl;
+		return -1;
+	}
 	return 0;
 }
 
-int HDF5::writeWeightMatData(SMLMS::HMMSequence &hmm){
+int HDF5::writeWeightMatData(SMLMS::HMMSequence& hmm){
 	try{
 	H5::Exception::dontPrint();
+	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnHmm));
-	_data =  new H5::DataSet(_group->openDataSet(_dsWeightMat));
+	openDataSet(_gnHmm, _dsWeightMat);
+	/* transfer data */
 	SMLMS::Matrix matrix = hmm.equiPDF();
+	/* write data to file */
 	_data->write(matrix.data(), H5::PredType::NATIVE_DOUBLE);
 	/* tidy */
-	_data->close();
-	_group->close();
-	_file->close();
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
@@ -332,25 +408,24 @@ int HDF5::writeWeightMatData(SMLMS::HMMSequence &hmm){
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write all states to dataset "<<_dsWeightMat;
-		std::cout<<" Make sure "<<_fileName.data()<<" can take up "<<hmm.stateNumber()<<" states."<<std::endl;
+		std::cout<<"could not write to dataset "<<_dsWeightMat<<std::endl;
 		return -1;
 	}
 	return 0;
 }
 
-int HDF5::writeTransMatData(SMLMS::HMMSequence &hmm){
+int HDF5::writeTransMatData(SMLMS::HMMSequence& hmm){
 	try{
 	H5::Exception::dontPrint();
+	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnHmm));
-	_data =  new H5::DataSet(_group->openDataSet(_dsTransMat));
+	openDataSet(_gnHmm, _dsTransMat);
+	/* transfer data */
 	SMLMS::Matrix matrix = hmm.transPDF();
+	/* write data to file */
 	_data->write(matrix.data(), H5::PredType::NATIVE_DOUBLE);
 	/* tidy */
-	_data->close();
-	_group->close();
-	_file->close();
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
@@ -361,25 +436,24 @@ int HDF5::writeTransMatData(SMLMS::HMMSequence &hmm){
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write all states to dataset "<<_dsTransMat;
-		std::cout<<" Make sure "<<_fileName.data()<<" can take up "<<hmm.stateNumber()<<" states."<<std::endl;
+		std::cout<<"could not write to dataset "<<_dsTransMat<<std::endl;
 		return -1;
 	}
 	return 0;
 }
 
-int HDF5::writeObsMatData(SMLMS::HMMSequence &hmm){
+int HDF5::writeObsMatData(SMLMS::HMMSequence& hmm){
 	try{
 	H5::Exception::dontPrint();
+	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnHmm));
-	_data =  new H5::DataSet(_group->openDataSet(_dsObsMat));
+	openDataSet(_gnHmm, _dsObsMat);
+	/* transfer data */
 	SMLMS::Matrix matrix = hmm.obsPDF();
+	/* write data to file */
 	_data->write(matrix.data(), H5::PredType::NATIVE_DOUBLE);
 	/* tidy */
-	_data->close();
-	_group->close();
-	_file->close();
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
@@ -390,25 +464,24 @@ int HDF5::writeObsMatData(SMLMS::HMMSequence &hmm){
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write all states to dataset "<<_dsObsMat;
-		std::cout<<" Make sure "<<_fileName.data()<<" can take up "<<hmm.stateNumber()<<" x "<<hmm.symbolNumber()<<" observations."<<std::endl;
+		std::cout<<"could not write to dataset "<<_dsObsMat<<std::endl;
 		return -1;
 	}
 	return 0;
 }
 
-int HDF5::writeAlphabetData(SMLMS::HMMSequence &hmm){
+int HDF5::writeAlphabetData(SMLMS::HMMSequence& hmm){
 	try{
 	H5::Exception::dontPrint();
+	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	_group = new H5::Group(_file->openGroup(_gnHmm));
-	_data =  new H5::DataSet(_group->openDataSet(_dsAlphabet));
+	openDataSet(_gnHmm, _dsAlphabet);
+	/* transfer data */
 	std::vector<double> alphabet = hmm.obsAlphabet();
+	/* write data to file */
 	_data->write(alphabet.data(), H5::PredType::NATIVE_DOUBLE);
 	/* tidy */
-	_data->close();
-	_group->close();
-	_file->close();
+	tidy();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
@@ -419,8 +492,454 @@ int HDF5::writeAlphabetData(SMLMS::HMMSequence &hmm){
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write all states to dataset "<<_dsAlphabet;
-		std::cout<<" Make sure "<<_fileName.data()<<" can take up "<<hmm.symbolNumber()<<" symbols."<<std::endl;
+		std::cout<<"could not write to dataset "<<_dsAlphabet<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::writeHmmData(SMLMS::HMMSequence& hmm){
+	if(writeStatisticData(hmm)<0){
+		return -1;
+	}
+	if(writeWeightMatData(hmm)<0){
+		return -1;
+	}
+	if(writeTransMatData(hmm)<0){
+		return -1;
+	}
+	if(writeObsMatData(hmm)<0){
+		return -1;
+	}
+	if(writeAlphabetData(hmm)<0){
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::writePhysModData(SMLMS::PhysicalModelBLD& pMod){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
+	openDataSet(_gnModel, _dsModelWeight);
+	SMLMS::Matrix tempMat = pMod.paraMat();
+	SMLMS::ModelState tempData;
+	for(int i=0; i<_entries; i++){
+		/* data transfer */
+		tempData = 	{tempMat.at(i,0),
+				unsigned(tempMat.at(i,1)),
+				tempMat.at(i,2),
+				tempMat.at(i,3),
+				};
+		/* write data to file */
+		_start[0]  = i;
+		_space->selectHyperslab( H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->write(&tempData, *_compType, *_memSpace, *_space);
+	}
+	/* tidy */
+	tidy();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
+	openDataSet(_gnModel, _dsModelDiff);
+	for(int i=0; i<_entries; i++){
+		/* data transfer */
+		tempData = 	{tempMat.at(i,4),
+				unsigned(tempMat.at(i,5)),
+				tempMat.at(i,6),
+				tempMat.at(i,7),
+				};
+		/* write data to file */
+		_start[0]  = i;
+		_space->selectHyperslab( H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->write(&tempData, *_compType, *_memSpace, *_space);
+	}
+	/* tidy */
+	tidy();
+	/* transfer data */
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnModel<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not write data to datasets "<<_dsModelWeight<<" and "<<_dsModelDiff<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+/* read functions */
+int HDF5::readMicroscopeData(SMLMS::Microscope &microscope){
+	try{
+	H5::Exception::dontPrint();
+	/* open dataset from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnSettings, _dsMicroscope);
+	/* read data from file */
+	SMLMS::Settings tempData;
+	_data->read(&tempData, *_compType, *_memSpace, *_space);
+	/* transfer data */
+	microscope.setPxlSize(tempData.pxl);
+	microscope.setIntTime(tempData.dt);
+	microscope.setLocPrec(tempData.prec);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsMicroscope<<std::endl;;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readRoiData(SMLMS::ROI &roi){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnSettings, _dsRoi);
+	/* read data from file */
+	_data->read(&roi, *_compType, *_memSpace, *_space);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsRoi<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readMolData(SMLMS::MoleculeList &mol){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnData, _dsMol);
+	/* read data from file */
+	SMLMS::Molecule tempData;
+	mol.clearLocList();
+	for(int i=0; i<_entries; i++){
+		_start[0]  = i;
+		_space->selectHyperslab(H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->read(&tempData, *_compType, *_memSpace, *_space);
+		/* transfer data */
+		mol.addMoleculeToEnd(tempData);
+	}
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read  data from dataset "<<_dsMol<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readJudiData(SMLMS::JumpDistanceList &judi){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnData, _dsJudi);
+	/* read data from file */
+	SMLMS::Jump tempData;
+	judi.clearJumpDistanceList();
+	for(int i=0; i<_entries; i++){
+		_start[0]  = i;
+		_space->selectHyperslab( H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->read(&tempData, *_compType, *_memSpace, *_space);
+		/* transfer data */
+		judi.addJumpToEnd(tempData);
+	}
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from data Set "<<_dsJudi<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readStatisticData(SMLMS::HMMSequence& hmm){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnHmm, _dsHmmStatistics);
+	/* read data from file */
+	SMLMS::HmmStatistics tempData;
+	_data->read(&tempData, *_compType, *_memSpace, *_space);
+	/* transfer data */
+	hmm.setStateNumber(tempData.states);
+	hmm.setSymbolNumber(tempData.symbols);
+	hmm.setDof(tempData.dof);
+	hmm.setBic(tempData.bic);
+	hmm.setAic(tempData.aic);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsHmmStatistics<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readWeightMatData(SMLMS::HMMSequence& hmm){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnHmm, _dsWeightMat);
+	/* read data from file */
+	std::vector<double>  tempData(hmm.stateNumber(),0.0);
+	_data->read(tempData.data(), H5::PredType::NATIVE_DOUBLE);//, *_memSpace, *_space);
+	/* transfer data */
+	SMLMS::Matrix tempMat(1,hmm.stateNumber());
+	for (int i=0; i<hmm.stateNumber(); i++){
+		tempMat.at(0,i,tempData.at(i));
+	}
+	hmm.setEquiPDF(tempMat);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsWeightMat<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readTransMatData(SMLMS::HMMSequence& hmm){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnHmm, _dsTransMat);
+	/* read data from file */
+	std::vector<double>  tempData(hmm.stateNumber()*hmm.stateNumber(),0.0);
+	_data->read(tempData.data(), H5::PredType::NATIVE_DOUBLE);//, *_memSpace, *_space);
+	/* transfer data */
+	SMLMS::Matrix tempMat(hmm.stateNumber(),hmm.stateNumber());
+	for (int i=0; i<hmm.stateNumber(); i++){
+		for (int j=0; j<hmm.stateNumber(); j++){
+			tempMat.at(i,j,tempData.at((i*hmm.stateNumber())+j));
+		}
+	}
+	hmm.setTransPDF(tempMat);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsTransMat<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readObsMatData(SMLMS::HMMSequence& hmm){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnHmm, _dsObsMat);
+	/* read data from file */
+	std::vector<double>  tempData(hmm.symbolNumber()*hmm.stateNumber(),0.0);
+	_data->read(tempData.data(), H5::PredType::NATIVE_DOUBLE);//, *_memSpace, *_space);
+	/* transfer data */
+	SMLMS::Matrix tempMat(hmm.stateNumber(),hmm.symbolNumber());
+	for (int i=0; i<hmm.stateNumber(); i++){
+		for (int j=0; j<hmm.symbolNumber(); j++){
+			tempMat.at(i,j,tempData.at((i*hmm.symbolNumber())+j));
+		}
+	}
+	hmm.setObsPDF(tempMat);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsObsMat<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readAlphabetData(SMLMS::HMMSequence& hmm){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnHmm, _dsAlphabet);
+	/* read data from file */
+	std::vector<double>  tempData(hmm.symbolNumber(),0.0);
+	_data->read(tempData.data(), H5::PredType::NATIVE_DOUBLE);//, *_memSpace, *_space);
+	/* transfer data */
+	hmm.setObsAlphabet(tempData);
+	/* tidy */
+	tidy();
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from dataset "<<_dsAlphabet<<std::endl;
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readHmmData(SMLMS::HMMSequence& hmm){
+	hmm.clearHMM();
+	if(readStatisticData(hmm)<0){
+		return -1;
+	}
+	hmm.initEqui();
+	if(readWeightMatData(hmm)<0){
+		return -1;
+	}
+	hmm.initTrans();
+	if(readTransMatData(hmm)<0){
+		return -1;
+	}
+	hmm.initObs();
+	if(readObsMatData(hmm)<0){
+		return -1;
+	}
+	hmm.initObsAlphabet();
+	if(readAlphabetData(hmm)<0){
+		return -1;
+	}
+	return 0;
+}
+
+int HDF5::readPhysModData(SMLMS::PhysicalModelBLD& pMod){
+	try{
+	H5::Exception::dontPrint();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnModel, _dsModelWeight);
+	/* read data from file */
+	SMLMS::Matrix tempMat(_entries, 8);
+	pMod.setStateNumber(_entries);
+	pMod.initParaMat();
+	SMLMS::ModelState tempData;
+	for(int i=0; i<_entries; i++){
+		_start[0]  = i;
+		_space->selectHyperslab( H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->read(&tempData, *_compType, *_memSpace, *_space);
+		/* transfer data */
+		tempMat.at(i, 0, tempData.value);
+		tempMat.at(i, 1, tempData.fix);
+		tempMat.at(i, 2, tempData.min);
+		tempMat.at(i, 3, tempData.max);
+	}
+	/* tidy */
+	tidy();
+	/* open data set from file */
+	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
+	openDataSet(_gnModel, _dsModelDiff);
+	/* read data from file */
+	for(int i=0; i<_entries; i++){
+		_start[0]  = i;
+		_space->selectHyperslab( H5S_SELECT_SET, _count, _start, _stride, _block);
+		_data->read(&tempData, *_compType, *_memSpace, *_space);
+		/* transfer data */
+		tempMat.at(i, 4, tempData.value);
+		tempMat.at(i, 5, tempData.fix);
+		tempMat.at(i, 6, tempData.min);
+		tempMat.at(i, 7, tempData.max);
+	}
+	/* tidy */
+	tidy();
+	/* transfer data */
+	pMod.setParaMat(tempMat);
+	}
+	catch(H5::FileIException& error){
+		std::cout<<"could not open file "<<_fileName<<std::endl;
+		return -1;
+	}
+	catch(H5::GroupIException& error){
+		std::cout<<"could not open Group "<<_gnModel<<std::endl;
+		return -1;
+	}
+	catch(H5::DataSetIException& error){
+		std::cout<<"could not read data from data Sets "<<_dsModelWeight<<" and "<<_dsModelDiff<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -542,7 +1061,7 @@ int HDF5::createStatisticData(void){
 	return 0;
 }
 
-int HDF5::createJudiData(SMLMS::JumpDistanceList &judi){
+int HDF5::createJudiData(const SMLMS::JumpDistanceList &judi){
 	hsize_t length = judi.getNumberOfJumps();
 	/*
  	* define the data-type
@@ -631,7 +1150,7 @@ int HDF5::createMicroscopeData(void){
 	return 0;
 }
 
-int HDF5::createMolData(SMLMS::MoleculeList &mol){
+int HDF5::createMolData(const SMLMS::MoleculeList &mol){
 	/*
  	* define the data-type
  	*/
@@ -888,8 +1407,8 @@ int HDF5::createModelWeightData(SMLMS::PhysicalModelBLD &model){
  	* create CompType
  	*/
 	_compType = new H5::CompType(sizeof(SMLMS::ModelState));
-	_compType->insertMember("fix weight", HOFFSET(SMLMS::ModelState, fix), H5::PredType::NATIVE_INT);
 	_compType->insertMember("weight", HOFFSET(SMLMS::ModelState, value), H5::PredType::NATIVE_DOUBLE);
+	_compType->insertMember("fix weight", HOFFSET(SMLMS::ModelState, fix), H5::PredType::NATIVE_INT);
 	_compType->insertMember("min weight", HOFFSET(SMLMS::ModelState, min), H5::PredType::NATIVE_DOUBLE);
 	_compType->insertMember("max weight", HOFFSET(SMLMS::ModelState, max), H5::PredType::NATIVE_DOUBLE);
 	/*
@@ -933,8 +1452,8 @@ int HDF5::createModelDiffData(SMLMS::PhysicalModelBLD &model){
  	* create CompType
  	*/
 	_compType = new H5::CompType(sizeof(SMLMS::ModelState));
-	_compType->insertMember("fix", HOFFSET(SMLMS::ModelState, fix), H5::PredType::NATIVE_INT);
 	_compType->insertMember("D [nm^2 s^-1]", HOFFSET(SMLMS::ModelState, value), H5::PredType::NATIVE_DOUBLE);
+	_compType->insertMember("fix", HOFFSET(SMLMS::ModelState, fix), H5::PredType::NATIVE_INT);
 	_compType->insertMember("min D [nm^2 s^-1]", HOFFSET(SMLMS::ModelState, min), H5::PredType::NATIVE_DOUBLE);
 	_compType->insertMember("max D [nm^2 s^-1]", HOFFSET(SMLMS::ModelState, max), H5::PredType::NATIVE_DOUBLE);
 	/*

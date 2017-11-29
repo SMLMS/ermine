@@ -29,6 +29,7 @@
 #include "header/smlmsHmmUnique.hpp"
 #include "header/smlmsHmmSequence.hpp"
 #include "header/smlmsDwellTime.hpp"
+#include "header/ermineHDF5.hpp"
 
 namespace po=boost::program_options;
 
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]){
 	}
 	catch(...){
 		std::cout<<"User Error: Unkown parameters given to ermine."<<std::endl;
-		std::cout<<"Type --help (-h) to view help message."<<std::endl;
+		std::cout<<"Tyheader/ermineHDF5.hpppe --help (-h) to view help message."<<std::endl;
 		return 1;
 	}
 	if(vm.count("help")){
@@ -626,6 +627,7 @@ int main(int argc, char *argv[]){
 		try{
 			std::cout<<"The ermine is evaluating the likelihood of model fitting the given sequence."<<std::endl;
 			hmm.setTraceNumber(judi.traceNumber());
+			hmm.calcDof();
 			hmm.estimateSeqLikelihood(judi);
 		}
 		catch(SMLMS::SmlmsError &error){
@@ -973,7 +975,59 @@ int main(int argc, char *argv[]){
 		}
 		/* start tidy */
 		statement.printTidy();
-	}	
+	}
+	/* archive Model */
+	else if(eVar.algorithmArgument()=="archive"){
+		statement.printArchive();
+		/* create instances */
+		SMLMS::Microscope microscope;
+		SMLMS::MoleculeList molList;
+		SMLMS::JumpDistanceList judi;
+		SMLMS::HMMSequence hmm;
+		SMLMS::PhysicalModelBLD physMod;
+		physMod.setMinValue(eVar.minDistArgument());
+		physMod.setMaxValue(eVar.maxDistArgument());
+		physMod.setBinSize(eVar.jumpIntervalArgument());
+		physMod.setFolderName(fileNames.folderName());
+		SMLMS::HDF5 archive;
+		/* load data */
+		try{
+			microscope.loadMicroscope(fileNames.microscopeName());
+			molList.readMoleculeList(fileNames.molListName(), fileNames.roiName());
+			judi.readJumpDistanceList(fileNames.judiName());
+			hmm.readHMM(fileNames.hmmName());
+			physMod.readPhysMod(fileNames.modelName());
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+		archive.setFileName(fileNames.archiveName());
+		archive.archiveModel(microscope, molList, judi, hmm, physMod);
+		statement.printTidy();
+	}
+	/* archive Model */
+	else if(eVar.algorithmArgument()=="extract"){
+		statement.printExtract();
+		/* create instances */
+		SMLMS::Microscope microscope;
+		SMLMS::MoleculeList molList;
+		SMLMS::JumpDistanceList judi;
+		SMLMS::HMMSequence hmm;
+		SMLMS::PhysicalModelBLD physMod;
+		physMod.setMinValue(eVar.minDistArgument());
+		physMod.setMaxValue(eVar.maxDistArgument());
+		physMod.setBinSize(eVar.jumpIntervalArgument());
+		physMod.setFolderName(fileNames.folderName());
+		SMLMS::HDF5 archive;
+		archive.setFileName(fileNames.archiveName());
+		archive.extractModel(microscope, molList, judi, hmm, physMod);
+		statement.printTidy();
+	}
 	/* no matching algorithm */
 	else{
 		std::cout<<std::endl<<eVar.algorithmArgument()<<" is not a valid argument for ermine"<<std::endl;

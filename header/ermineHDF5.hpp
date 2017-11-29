@@ -52,7 +52,16 @@ class HDF5{
 		H5::Group* _group;
 		H5::DataSet* _data;
 		H5::DataSpace* _space;
+		H5::DataSpace* _memSpace;
 		H5::CompType* _compType;
+		int _rank;
+		hsize_t _dims[1];
+		hsize_t _start[1];
+		hsize_t _stride[1];
+		hsize_t _count[1];
+		hsize_t _block[1];
+		hsize_t _entries;
+		
 	public:
 		/* constructor */
 		HDF5();
@@ -63,27 +72,45 @@ class HDF5{
 		/* elementary functions */
 		void setFileName(std::string name);
 		std::string fileName(void);
-		/* read functions */
-		int openFileForReading(void); 
-		int readHmm();
-		int readJudi();
-		int readMicroscopope();
-		int readMol();
-		int readPhysMod();
-		int readRoi();
+		/* HDF functions */
+		int archiveModel(const SMLMS::Microscope&,
+					const SMLMS::MoleculeList&,
+					const SMLMS::JumpDistanceList&,
+					SMLMS::HMMSequence&,
+					SMLMS::PhysicalModelBLD&);
+		int extractModel(SMLMS::Microscope& mic,
+					SMLMS::MoleculeList& mol,
+					SMLMS::JumpDistanceList& judi,
+					SMLMS::HMMSequence& hmm,
+					SMLMS::PhysicalModelBLD& model);
+	/* load hdf5 */
+		int openDataSet(H5std_string groupName, H5std_string dataName);
+		int tidy(void);
 		/* write functions */
-		int writeMicroscopeData(SMLMS::Microscope &);
-		int writeRoiData(SMLMS::ROI &);
-		int writeMolData(SMLMS::MoleculeList &);
-		int writeJudiData(SMLMS::JumpDistanceList &);
+		int writeMicroscopeData(const SMLMS::Microscope &);
+		int writeRoiData(const SMLMS::ROI &);
+		int writeMolData(const SMLMS::MoleculeList &);
+		int writeJudiData(const SMLMS::JumpDistanceList &);
 		int writeStatisticData(SMLMS::HMMSequence &);
 		int writeWeightMatData(SMLMS::HMMSequence &);
 		int writeTransMatData(SMLMS::HMMSequence &);
 		int writeObsMatData(SMLMS::HMMSequence &);
 		int writeAlphabetData(SMLMS::HMMSequence &);
+		int writeHmmData(SMLMS::HMMSequence &);
 		int writePhysModData(SMLMS::PhysicalModelBLD &);
-		int writeHmm();
-		/* create file */
+		/* read functions */
+		int readMicroscopeData(SMLMS::Microscope &);
+		int readRoiData(SMLMS::ROI &);
+		int readMolData(SMLMS::MoleculeList &);
+		int readJudiData(SMLMS::JumpDistanceList &);
+		int readStatisticData(SMLMS::HMMSequence &);
+		int readWeightMatData(SMLMS::HMMSequence &);
+		int readTransMatData(SMLMS::HMMSequence &);
+		int readObsMatData(SMLMS::HMMSequence &);
+		int readAlphabetData(SMLMS::HMMSequence &);
+		int readHmmData(SMLMS::HMMSequence &);
+		int readPhysModData(SMLMS::PhysicalModelBLD &);
+		/* create file function */
 		int createFile(void);
 		/* create group functions */
 		int createGroup(H5std_string&);
@@ -94,8 +121,8 @@ class HDF5{
 		/* create data set functions */
 		int createMicroscopeData(void);
 		int createRoiData(void);
-		int createMolData(SMLMS::MoleculeList &);
-		int createJudiData(SMLMS::JumpDistanceList &);
+		int createMolData(const SMLMS::MoleculeList &);
+		int createJudiData(const SMLMS::JumpDistanceList &);
 		int createStatisticData(void);
 		int createWeightMatData(SMLMS::HMMSequence &);
 		int createTransMatData(SMLMS::HMMSequence &);

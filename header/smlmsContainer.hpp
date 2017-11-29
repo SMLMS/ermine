@@ -61,8 +61,8 @@ namespace SMLMS{
 	};
 
 	struct ModelState{
-		unsigned fix;
 		double value;
+		unsigned fix;
 		double min;
 		double max;
 	};

@@ -123,6 +123,16 @@ void Statement::setTransferStates(){
 	_transferStates.append("The ermine transfers all states from a judi to a trc data set.");
 }
 
+void Statement::setArchive(){
+	_archive.clear();
+	_archive.append("The ermine archives the given model to a hdf5 file..");
+}
+
+void Statement::setExtract(){
+	_extract.clear();
+	_extract.append("The ermine extracts a model from an hdf5 archive.");
+}
+
 void Statement::setTidy(){
 	_tidy.clear();
 	_tidy.append("\nThe ermine is clearing the heap.\n");
@@ -178,6 +188,14 @@ void Statement::printDwellTime(){
 
 void Statement::printTransferStates(){
 	std::cout<<std::endl<<_transferStates<<std::endl;
+}
+
+void Statement::printArchive(){
+	std::cout<<std::endl<<_archive<<std::endl;
+}
+
+void Statement::printExtract(){
+	std::cout<<std::endl<<_extract<<std::endl;
 }
 
 void Statement::printTidy(){

@@ -31,6 +31,8 @@ class Statement{
 		std::string _bestPath;
 		std::string _dwellTime;
 		std::string _transferStates;
+		std::string _archive;
+		std::string _extract;
 		std::string _tidy;
 	public:
 		/* constructor */
@@ -53,6 +55,8 @@ class Statement{
 		void setBestPath();
 		void setDwellTime();
 		void setTransferStates();
+		void setArchive();
+		void setExtract();
 		void setTidy();
 		/* print functions */
 		void printInit();
@@ -69,6 +73,8 @@ class Statement{
 		void printBestPath();
 		void printDwellTime();
 		void printTransferStates();
+		void printArchive();
+		void printExtract();
 		void printTidy();
 };/* Satement */
 }/* SMLMS */

@@ -43,6 +43,7 @@ FileNames::FileNames(const FileNames &obj){
 	setModelName(obj._modelName);
 	setMolListName(obj._molListName);
 	setTrcNames(obj._trcNames);
+	setArchiveName(obj._archiveName);
 }
 /* elementary functions */
 void FileNames::setSourceFileName(std::string name){
@@ -117,6 +118,14 @@ std::vector<std::string> FileNames::trcNames(){
 	return _trcNames;
 }
 
+void FileNames::setArchiveName(std::string name){
+	_archiveName = name;
+}
+
+std::string FileNames::archiveName(){
+	return _archiveName;
+}
+
 /* special functions */
 int FileNames::trcNumber(){
 	return _trcNames.size();
@@ -140,6 +149,7 @@ void FileNames::clearFileNames(){
 	_modelName.clear();
 	_molListName.clear();
 	_trcNames.clear();
+	_archiveName.clear();
 }
 
 void FileNames::readNamesFromSourceFile(){
@@ -181,6 +191,10 @@ void FileNames::readNamesFromSourceFile(){
 				else if (tempFileName.find(".trc")!= std::string::npos){
 					addTrcName(tempFileName);
 					trcInd = 1;
+				}
+				else if (tempFileName.find(".h5")!= std::string::npos){
+					setArchiveName(tempFileName);
+					std::cout<<"Model archive file is: "<<_archiveName<<std::endl;
 				}
 				else{
 					std::stringstream errorMessage;

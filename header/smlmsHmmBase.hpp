@@ -71,9 +71,13 @@ class HMMBase{
 		SMLMS::Matrix obsPDF(void);
 		void setObsAlphabet(std::vector<double>);
 		std::vector<double> obsAlphabet();
+		void setLogLikelihood(double);
 		double logLikelihood();
+		void setDof(unsigned);
 		unsigned dof();
+		void setBic(double);
 		double bic();
+		void setAic(double);
 		double aic();
 		void setStopCrit(double);
 		double stopCrit();
@@ -122,6 +126,11 @@ class HMMBase{
 		void calcObsAlphabetFromParas();
 		void extractParasFromObsAlphabet();
 		void calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf);
+		void calcDof(void);
+		void calcDofFromPhysMod(SMLMS::PhysicalModelBLD&);
+		void calcBic(unsigned);
+		void calcAic(unsigned);
+		void calcModelSelection(unsigned);
 		/* print functions */
 		void printFolderName();
 		void printStateNumber();
@@ -137,6 +146,7 @@ class HMMBase{
 		void printObsCDF();
 		void printObsAlphabet();
 		void printLogLikelihood();
+		void printDof();
 		void printBic();
 		void printAic();
 		void printHMM();

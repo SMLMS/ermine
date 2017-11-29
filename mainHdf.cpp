@@ -49,37 +49,41 @@ int main(int argc, const char * argv[]){
 	model.setFolderName(names.folderName());
 	model.readPhysMod(names.modelName());
 
-	std::string fileName = "/home/malkusch/Dokumente/ermineTest/hdf.h5";
+	std::string fileName = "/home/malkusch/Dokumente/ermineTest/hdf/hdf.h5";
 	
 	file.setFileName(fileName);
-	file.createFile();
-	/* create groups */
-	file.createDataGroup();
-	file.createHmmGroup();
-	file.createModelGroup();
-	file.createSettingsGroup();
-	/* create Data */
-	file.createMicroscopeData();
-	file.createRoiData();
-	file.createMolData(mol);
-	file.createJudiData(judi);
-	file.createStatisticData();
-	file.createWeightMatData(hmm);
-	file.createTransMatData(hmm);
-	file.createObsMatData(hmm);
-	file.createAlphabetData(hmm);
-	file.createModelWeightData(model);
-	file.createModelDiffData(model);
-	/* write data */
-	file.writeMicroscopeData(mic);
-	file.writeRoiData(roi);
-	file.writeMolData(mol);
-	file.writeJudiData(judi);
-	file.writeStatisticData(hmm);
-	file.writeWeightMatData(hmm);
-	file.writeTransMatData(hmm);
-	file.writeObsMatData(hmm);
-	file.writeAlphabetData(hmm);
+	file.archiveModel(mic, mol, judi, hmm, model);
+	/* read data */
+	file.extractModel(mic, mol, judi, hmm, model);
+	/*
+	std::string outfilename;
+
+	outfilename = "/home/malkusch/Dokumente/ermineTest/hdf/microscope.txt";
+	file.readMicroscopeData(mic);
+	mic.saveMicroscope(outfilename);
+
+	outfilename = "/home/malkusch/Dokumente/ermineTest/hdf/roi.txt";
+	file.readRoiData(roi);
+	mol.setRoi(roi);
+	mol.writeROI(outfilename);
+
+	outfilename = "/home/malkusch/Dokumente/ermineTest/hdf/mol.txt";
+	file.readMolData(mol);
+	mol.writeLocList(outfilename);
+
+	outfilename = "/home/malkusch/Dokumente/ermineTest/hdf/judi.txt";
+	file.readJudiData(judi);
+	judi.writeJumpDistanceList(outfilename);
+	
+	outfilename = "/home/malkusch/Dokumente/ermineTest/hdf";
+	file.readHmmData(hmm);
+	hmm.setFolderName(outfilename);
+	hmm.writeHMM();
+
+	file.readPhysModData(model);
+	model.setFolderName(outfilename);
+	model.writePhysMod();
+	*/
 	}
 	catch(SMLMS::SmlmsError &error){
 		std::cout<<"error: "<<error.what()<<std::endl;

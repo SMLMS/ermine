@@ -45,6 +45,8 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("bestPath",0));
 	alphabet.insert(std::make_pair("dwellTime",0));
 	alphabet.insert(std::make_pair("transferStates",0));
+	alphabet.insert(std::make_pair("archive",0));
+	alphabet.insert(std::make_pair("extract",0));
 	setAlgorithmAlphabet(alphabet);
 	setAlgorithmArgument("train");
 	setStopCritArgument(0.01);
@@ -187,7 +189,9 @@ void ErmineParser::printAlgorithmHelp(){
 	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t(to be announced)"<<std::endl
 	<<"bestPath:\t\testimates the most likely path of hidden states by Viterbi.\t(to be announced)"<<std::endl
 	<<"dwellTime:\t\tretimates the model transition rates form an optimized path."<<std::endl
-	<<"transferStates:\tretransfers states from a judi to a matching trc file."<<std::endl;
+	<<"transferStates:\tretransfers states from a judi to a matching trc file."<<std::endl
+	<<"archive:\t\tsave a complete model to an hdf5 file."<<std::endl
+	<<"extract:\t\textract an archived model from an hdf5 file."<<std::endl;
 
 	std::cout<<line<<message.str()<<std::endl;
 }

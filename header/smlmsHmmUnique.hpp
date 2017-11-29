@@ -106,8 +106,8 @@ class HMMUnique: public HMMBase{
 		void backwardAlgorithm(const std::vector<double> &obsSeq);
 		void forwardBackward(const std::vector<double> &obsSeq);
 		void estimateLikelihood();
-		void estimateBic();
-		void estimateAic();
+		//void estimateBic();
+		//void estimateAic();
 		void baumWelch(const std::vector<double> &obsSeq);
 		void train(const std::vector<double> &obsSeq);
 		void viterbi(std::vector<int> &stateSeq, const std::vector<double> &obsSeq);

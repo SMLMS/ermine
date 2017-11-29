@@ -84,8 +84,8 @@ class HMMSequence: public HMMBase{
 		/* core functions */
 		void simulateSequence(unsigned obsVal, SMLMS::JumpDistanceList &);
 		void estimateSeqLikelihood(const SMLMS::JumpDistanceList&);
-		void estimateSeqBic(unsigned obsNumber);
-		void estimateSeqAic();
+		//void estimateSeqBic(unsigned obsNumber);
+		//void estimateSeqAic();
 		void baumWelchSequence(const SMLMS::JumpDistanceList &judi);
 		void trainSequence(const SMLMS::JumpDistanceList& judi);
 		void trainPhysModSequence(const SMLMS::JumpDistanceList &judi, SMLMS::PhysicalModelBLD &physMod);

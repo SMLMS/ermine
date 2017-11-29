@@ -651,10 +651,12 @@ void HMMUnique::estimateLikelihood(){
 		llc += log(_normLH.at(t));
 	}
 	_logLikelihood = -1*llc;
-	estimateAic();
-	estimateBic();
+	calcModelSelection(_obsNumber);
+	//estimateAic();
+	//estimateBic();
 }
 
+/*
 void HMMUnique::estimateBic(){
 	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
 	_bic = (-2.0 * _logLikelihood) + p * log(_obsNumber);
@@ -664,6 +666,7 @@ void HMMUnique::estimateAic(){
 	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
 	_aic = (-2.0 * _logLikelihood) + p * 2.0;
 }
+*/
 
 void HMMUnique::baumWelch(const std::vector<double> &obsSeq){
 	checkHMM();

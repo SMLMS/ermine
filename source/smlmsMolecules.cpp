@@ -53,6 +53,10 @@ ROI MoleculeList::roi(){
 	return _roi;
 }
 
+ROI MoleculeList::roi()const{
+	return _roi;
+}
+
 void MoleculeList::setMoleculeList(std::vector<Molecule> &inputList){
 	_moleculeList = inputList;
 }
@@ -67,6 +71,10 @@ void MoleculeList::addMoleculeToEnd(Molecule &mol){
 }
 
 Molecule MoleculeList::getMolecule(int position){
+	return _moleculeList.at(position);
+}
+
+Molecule MoleculeList::getMolecule(int position)const{
 	return _moleculeList.at(position);
 }
 
@@ -88,6 +96,10 @@ void MoleculeList::deleteMolecule(int position){
 }
 
 int MoleculeList::getNumberOfMolecules(){
+	return _moleculeList.size();
+}
+
+int MoleculeList::getNumberOfMolecules() const{
 	return _moleculeList.size();
 }
 

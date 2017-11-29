@@ -37,14 +37,17 @@ class MoleculeList{
 	/* elementary functions */
 		void setRoi(ROI&);
 		ROI roi();
+		ROI roi()const;
 		void setMoleculeList(std::vector<Molecule>&);
 		std::vector<Molecule> moleculeList();
 	/* special functions */
 		void addMoleculeToEnd(Molecule&);
 		Molecule getMolecule(int);
+		Molecule getMolecule(int) const;
 		void addMoleculeList(MoleculeList &);
 		void deleteMolecule(int);
 		int getNumberOfMolecules();
+		int getNumberOfMolecules() const;
 		bool getTraceIndices(int trace, int &start, int &stop);
 		void setMoleculeState(int index, int state);
 		//load functions

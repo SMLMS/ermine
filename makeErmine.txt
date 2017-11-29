@@ -16,6 +16,9 @@ ROOTCFLAGS   := $(shell root-config --cflags)
 ROOTLIBS     := $(shell root-config --libs)
 ROOTGLIBS    := $(shell root-config --glibs)
 
+HDFFLAGS  = -lhdf5
+HDFFLAGS  += -lhdf5_cpp
+
 SOURCES = main.cpp
 SOURCES += source/ermineStatement.cpp
 SOURCES += source/ermineParser.cpp
@@ -25,6 +28,7 @@ SOURCES += source/ermineFilenames.cpp
 SOURCES += source/smlmsMatrix.cpp
 SOURCES += source/smlmsRandom.cpp
 SOURCES += source/smlmsExceptions.cpp
+SOURCES += source/ermineHDF5.cpp
 SOURCES += source/smlmsMicroscope.cpp
 SOURCES += source/smlmsMolecules.cpp
 SOURCES += source/smlmsJudi.cpp
@@ -44,7 +48,7 @@ EXECUTABLE := prog/ermine
 all:$(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CXX) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(ROOTCFLAGS) $(ROOTGLIBS) $(LIBS) $(INCLUDES) -o $@
+	$(CXX) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(ROOTCFLAGS) $(ROOTGLIBS) $(HDFFLAGS) $(LIBS) $(INCLUDES) -o $@
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(ROOTCFLAGS)  -c $<
