@@ -749,8 +749,22 @@ int main(int argc, char *argv[]){
 				std::cout<<"oops, the ermine discovered an unexpected error while loading the physical model and is going to rest."<<std::endl;
 				return 1;
 			}
-			physMod.calcPdf(judi);
-			hmm.trainPhysModSequence(judi, physMod);
+			try{
+				physMod.calcPdf(judi);
+				hmm.trainPhysModSequence(judi, physMod);
+			}
+			catch(SMLMS::SmlmsError &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(std::out_of_range &error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
+			catch(...){
+				std::cout<<"oops, the ermine discovered an unexpected error while loading the physical model and is going to rest."<<std::endl;
+				return 1;
+			}
 			/* write model */
 			try{
 				physMod.writePhysMod();
@@ -989,10 +1003,10 @@ int main(int argc, char *argv[]){
 		physMod.setMaxValue(eVar.maxDistArgument());
 		physMod.setBinSize(eVar.jumpIntervalArgument());
 		physMod.setFolderName(fileNames.folderName());
-		SMLMS::HDF5 archive;
 		/* load data */
 		try{
 			microscope.loadMicroscope(fileNames.microscopeName());
+			physMod.setMicroscope(microscope);
 			molList.readMoleculeList(fileNames.molListName(), fileNames.roiName());
 			judi.readJumpDistanceList(fileNames.judiName());
 			hmm.readHMM(fileNames.hmmName());
@@ -1006,8 +1020,24 @@ int main(int argc, char *argv[]){
 			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
 			return 1;
 		}
-		archive.setFileName(fileNames.archiveName());
-		archive.archiveModel(microscope, molList, judi, hmm, physMod);
+		
+		try{
+			SMLMS::HDF5 archive;
+			archive.setFileName(fileNames.archiveName());
+			archive.archiveModel(microscope, molList, judi, hmm, physMod);
+		}
+		catch(H5::FileIException& error){
+			error.printError();
+			return -1;
+		}
+		catch(H5::GroupIException& error){
+			error.printError();
+			return -1;
+		}
+		catch(H5::DataSetIException& error){
+			error.printError();
+			return -1;
+		}
 		statement.printTidy();
 	}
 	/* archive Model */
@@ -1019,13 +1049,48 @@ int main(int argc, char *argv[]){
 		SMLMS::JumpDistanceList judi;
 		SMLMS::HMMSequence hmm;
 		SMLMS::PhysicalModelBLD physMod;
-		physMod.setMinValue(eVar.minDistArgument());
-		physMod.setMaxValue(eVar.maxDistArgument());
-		physMod.setBinSize(eVar.jumpIntervalArgument());
-		physMod.setFolderName(fileNames.folderName());
-		SMLMS::HDF5 archive;
-		archive.setFileName(fileNames.archiveName());
-		archive.extractModel(microscope, molList, judi, hmm, physMod);
+		try{
+			physMod.setMinValue(eVar.minDistArgument());
+			physMod.setMaxValue(eVar.maxDistArgument());
+			physMod.setBinSize(eVar.jumpIntervalArgument());
+			physMod.setFolderName(fileNames.folderName());
+			physMod.setMicroscope(microscope);
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+
+		try{
+			SMLMS::HDF5 archive;
+			archive.setFileName(fileNames.archiveName());
+			archive.extractModel(microscope, molList, judi, hmm, physMod);
+		}
+		catch(H5::FileIException& error){
+			error.printError();
+			return -1;
+		}
+		catch(H5::GroupIException& error){
+			error.printError();
+			return -1;
+		}
+		catch(H5::DataSetIException& error){
+			error.printError();
+			return -1;
+		}
+		catch(SMLMS::SmlmsError& error){
+			std::cout<<error.what()<<std::endl;
+			return 1;
+		}
+		catch(...){
+			std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+			return 1;
+		}
+
 		statement.printTidy();
 	}
 	/* no matching algorithm */

@@ -280,8 +280,8 @@ void HMMSequence::reestimateEquiPDF(){
 void HMMSequence::reestimateTransPDF(){
 	int i,j;
 	for (i=0; i<_stateNumber; i++){
-		for (j=0; j<_stateNumber; j++) _transPDF(i,j)=_transPDFNumer.at(i,j)/_pdfDenominator(0,i);
-	}
+		for (j=0; j<_stateNumber; j++) _transPDF(i,j)= _transPDFNumer.at(i,j)/_pdfDenominator(0,i);
+		}
 }
 
 void HMMSequence::reestimateObsPDF(){
@@ -295,6 +295,7 @@ void HMMSequence::reestimateHMM(){
 	reestimateEquiPDF();
 	reestimateTransPDF();
 	reestimateObsPDF();
+	normalizeHMM();
 }
 
 bool HMMSequence::benchmarkTrainingsResult(double llResult, int itStep){
@@ -423,8 +424,8 @@ void HMMSequence::trainPhysModSequence(const SMLMS::JumpDistanceList &judi, SMLM
 	int it = 0;
 	double llResult = 0.0;
 	double lastLl = 0.0;
-	/* calc dof from physical Model */
-	calcDofFromPhysMod(physMod);
+	/* calc dof */
+	calcDof(physMod);
 	// set trace Number
 	setTraceNumber(judi.traceNumber());
 	// test length

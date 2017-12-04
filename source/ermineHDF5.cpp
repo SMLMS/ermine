@@ -43,8 +43,8 @@ HDF5::HDF5(){
 	_dsObsMat = H5std_string("observation matrix");
 	_dsRoi = H5std_string("roi");
 	_dsTransMat = H5std_string("transition matrix");
-	_dsWeightMat = H5std_string("weight matrix");
-	_dsModelWeight = H5std_string("weigth coefficient");
+	_dsEquiMat = H5std_string("equilibrium matrix");
+	_dsModelWeight = H5std_string("weight coefficient");
 	_dsModelDiff = H5std_string("diffusion coefficient");
 	/* HDF5 attributes */
 	_dims[0] = 1;
@@ -82,7 +82,7 @@ HDF5::HDF5(const HDF5 &obj){
 	_dsMol = obj._dsMol;
 	_dsRoi = obj._dsRoi;
 	_dsTransMat = obj._dsTransMat;
-	_dsWeightMat = obj._dsWeightMat;
+	_dsEquiMat = obj._dsEquiMat;
 	_dsObsMat = obj._dsObsMat;
 	_dsAlphabet = obj._dsAlphabet;
 	_dsModelWeight = obj._dsModelWeight;
@@ -132,7 +132,7 @@ int HDF5::archiveModel(const SMLMS::Microscope& mic,
 	if (createMolData(mol)<0){return -1;}
 	if (createJudiData(judi)<0){return -1;}
 	if (createStatisticData()<0){return -1;}
-	if (createWeightMatData(hmm)<0){return -1;}
+	if (createEquiMatData(hmm)<0){return -1;}
 	if (createTransMatData(hmm)<0){return -1;}
 	if (createObsMatData(hmm)<0){return -1;}
 	if (createAlphabetData(hmm)<0){return -1;}
@@ -386,12 +386,12 @@ int HDF5::writeStatisticData(SMLMS::HMMSequence& hmm){
 	return 0;
 }
 
-int HDF5::writeWeightMatData(SMLMS::HMMSequence& hmm){
+int HDF5::writeEquiMatData(SMLMS::HMMSequence& hmm){
 	try{
 	H5::Exception::dontPrint();
 	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDWR);
-	openDataSet(_gnHmm, _dsWeightMat);
+	openDataSet(_gnHmm, _dsEquiMat);
 	/* transfer data */
 	SMLMS::Matrix matrix = hmm.equiPDF();
 	/* write data to file */
@@ -408,7 +408,7 @@ int HDF5::writeWeightMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write to dataset "<<_dsWeightMat<<std::endl;
+		std::cout<<"could not write to dataset "<<_dsEquiMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -502,7 +502,7 @@ int HDF5::writeHmmData(SMLMS::HMMSequence& hmm){
 	if(writeStatisticData(hmm)<0){
 		return -1;
 	}
-	if(writeWeightMatData(hmm)<0){
+	if(writeEquiMatData(hmm)<0){
 		return -1;
 	}
 	if(writeTransMatData(hmm)<0){
@@ -732,12 +732,12 @@ int HDF5::readStatisticData(SMLMS::HMMSequence& hmm){
 	return 0;
 }
 
-int HDF5::readWeightMatData(SMLMS::HMMSequence& hmm){
+int HDF5::readEquiMatData(SMLMS::HMMSequence& hmm){
 	try{
 	H5::Exception::dontPrint();
 	/* open data set from file */
 	_file = new H5::H5File (_fileName, H5F_ACC_RDONLY);
-	openDataSet(_gnHmm, _dsWeightMat);
+	openDataSet(_gnHmm, _dsEquiMat);
 	/* read data from file */
 	std::vector<double>  tempData(hmm.stateNumber(),0.0);
 	_data->read(tempData.data(), H5::PredType::NATIVE_DOUBLE);//, *_memSpace, *_space);
@@ -759,7 +759,7 @@ int HDF5::readWeightMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsWeightMat<<std::endl;
+		std::cout<<"could not read data from dataset "<<_dsEquiMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -870,7 +870,7 @@ int HDF5::readHmmData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	hmm.initEqui();
-	if(readWeightMatData(hmm)<0){
+	if(readEquiMatData(hmm)<0){
 		return -1;
 	}
 	hmm.initTrans();
@@ -1323,7 +1323,7 @@ int HDF5::createTransMatData(SMLMS::HMMSequence &hmm){
 	return 0;
 }
 
-int HDF5::createWeightMatData(SMLMS::HMMSequence &hmm){
+int HDF5::createEquiMatData(SMLMS::HMMSequence &hmm){
 	/*
  	* define the data-type
  	*/
@@ -1341,7 +1341,7 @@ int HDF5::createWeightMatData(SMLMS::HMMSequence &hmm){
 	_file = new H5::H5File(_fileName, H5F_ACC_RDWR);
 	_group = new H5::Group(_file->openGroup(_gnHmm));
 	_space = new H5::DataSpace(rank, dim);
-	_data = new H5::DataSet(_group->createDataSet(_dsWeightMat, H5::PredType::NATIVE_DOUBLE, *_space));
+	_data = new H5::DataSet(_group->createDataSet(_dsEquiMat, H5::PredType::NATIVE_DOUBLE, *_space));
 	/*
  	* tidy
  	*/
@@ -1349,11 +1349,11 @@ int HDF5::createWeightMatData(SMLMS::HMMSequence &hmm){
 	_space->close();
 	_group->close();
 	_file->close();
-	std::cout<<"Created dataset "<<_dsWeightMat<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created dataset "<<_dsEquiMat<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
 		//error.printError();
-		std::cout<<"data set "<<_dsWeightMat<<" already exists in "<<_fileName<<std::endl;
+		std::cout<<"data set "<<_dsEquiMat<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
 	

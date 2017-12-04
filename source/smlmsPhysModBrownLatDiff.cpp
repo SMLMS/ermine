@@ -133,7 +133,6 @@ void PhysicalModelBLD::initParaVect(){
 	_paraVect = tempVect;
 }
 
-
 void PhysicalModelBLD::initContArea(){
 	// check stuff
 	checkStateNumber();
@@ -295,6 +294,7 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 		inFile.close();
 		/* calc para Vector */
 		paraMat2paraVect();
+		updatePdfWeight();
 	}
 	else{
 		std::stringstream errorMessage;
@@ -427,8 +427,13 @@ void PhysicalModelBLD::calcFitMatrixFromPara(){
 		}
 	}
 	/* normalize */
-	normPdfMatrix(_areaPdf, _fitMatrix);
-	//contNormPdfMat(_contArea, _fitMatrix);
+	//normPdfMatrix(_areaPdf, _fitMatrix);
+	contNormPdfMat(_contArea, _fitMatrix);
+}
+
+void PhysicalModelBLD::updatePdfWeight(void){
+	checkParaMat();
+	for (int i=0; i<_stateNumber; i++) _pdfWeight.at(i) = _paraMat.at(i,0);
 }
 
 void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
@@ -521,6 +526,7 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 	double normFac = 0.0;
 	for (i=0; i<_stateNumber; i++) normFac += _paraMat.at(i,0);
 	for (i=0; i<_stateNumber; i++) _paraMat(i,0) /= normFac;
+	updatePdfWeight();
 	calcFitSuperPosFromPara();
 	calcFitMatrixFromPara();
 	/* delete root class instances */
@@ -620,6 +626,7 @@ void PhysicalModelBLD::baumWelchFit(const SMLMS::Matrix &pi, SMLMS::Matrix &pdf)
 	//normPdfMatrix(_areaPdf, _pdfMatrix);
 	fitPdf(_pdfMatrix);
 	updateWeight(pi);
+	updatePdfWeight();
 	calcFitMatrixFromPara();
 	calcFitSuperPosFromPara();
 	/* normalize histogram */

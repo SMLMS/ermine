@@ -253,6 +253,12 @@ void HMMBase::readHMM(std::string const &name){
 					lineContent>>_obsPDF(row, column);
 				}
 			}
+			/* read statistics */
+			if(n==4+2*_stateNumber)lineContent>>_logLikelihood;
+			if(n==5+2*_stateNumber)lineContent>>_dof;
+			if(n==6+2*_stateNumber)lineContent>>_bic;
+			if(n==7+2*_stateNumber)lineContent>>_aic;
+			/* increase iteration */
 			n +=1;
 		}
 		/* close */
@@ -306,11 +312,11 @@ void HMMBase::writeHMM(){
 			for (int column=0; column<_symbolNumber; column++) outFile<<_obsPDF.at(row,column)<<"\t";
 			outFile<<std::endl;
 		}
-		/* print LogLikelihood and BIC */
-		outFile<<"# LogLikelihood: "<<_logLikelihood<<std::endl;
-		outFile<<"# DOF: "<<_dof<<std::endl;
-		outFile<<"# AIC: "<<_aic<<std::endl;
-		outFile<<"# BIC: "<<_bic<<std::endl;
+		/* print statistics */
+		outFile<<"# LogLikelihood:"<<std::endl<<_logLikelihood<<std::endl;
+		outFile<<"# DOF:"<<std::endl<<_dof<<std::endl;
+		outFile<<"# AIC:"<<std::endl<<_aic<<std::endl;
+		outFile<<"# BIC:"<<std::endl<<_bic<<std::endl;
 		/* close */
 		outFile<<"# go ermine!"<<std::endl;
 		outFile.close();
@@ -657,21 +663,20 @@ void HMMBase::calcDof(){
 	_dof += (_symbolNumber-1)*_stateNumber;
 }
 
-void HMMBase::calcDofFromPhysMod(SMLMS::PhysicalModelBLD& model){
-	SMLMS::Matrix tempMat = model.paraMat();
+void HMMBase::calcDof(SMLMS::PhysicalModelBLD &model){
 	_dof = 0;
+	SMLMS::Matrix paraMat = model.paraMat();
 	/* add equilibrium degrees of freedom */
 	for (int i=0; i<_stateNumber; i++){
-		if (tempMat.at(i,1)<1.0){_dof+=1;}
+		if(!paraMat.at(i,1))_dof += 1;
 	}
-	if (_dof>0){_dof -= 1;}
+	if (_dof)_dof -= 1;
 	/* add transition Matrix degrees of freedom based upon Sriraman et al. J. Phys Chem. 2005 */
 	_dof += (_stateNumber+2)*(_stateNumber-1)/2;
 	/* add observation degrees of freedom */
 	for (int i=0; i<_stateNumber; i++){
-		if (tempMat.at(i,5)<1.0){_dof+=1;}
+		if (!paraMat.at(i,5))_dof += 1;
 	}
-
 }
 
 void HMMBase::calcBic(unsigned n){
@@ -803,6 +808,7 @@ void HMMBase::printHMM(){
 	printSymbolInterval();
 	printObsAlphabet();
 	printLogLikelihood();
+	printDof();
 	printAic();
 	printBic();
 }/* printHMM*/

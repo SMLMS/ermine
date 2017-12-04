@@ -127,7 +127,7 @@ class HMMBase{
 		void extractParasFromObsAlphabet();
 		void calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf);
 		void calcDof(void);
-		void calcDofFromPhysMod(SMLMS::PhysicalModelBLD&);
+		void calcDof(SMLMS::PhysicalModelBLD &);
 		void calcBic(unsigned);
 		void calcAic(unsigned);
 		void calcModelSelection(unsigned);

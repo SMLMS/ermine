@@ -41,10 +41,10 @@ class HDF5{
 		H5std_string _dsMicroscope;
 		H5std_string _dsMol;
 		H5std_string _dsAlphabet;
-		H5std_string _dsObsMat;
 		H5std_string _dsRoi;
+		H5std_string _dsEquiMat;
 		H5std_string _dsTransMat;
-		H5std_string _dsWeightMat;
+		H5std_string _dsObsMat;
 		H5std_string _dsModelWeight;
 		H5std_string _dsModelDiff;
 		/* HDF5 attributes */
@@ -92,7 +92,7 @@ class HDF5{
 		int writeMolData(const SMLMS::MoleculeList &);
 		int writeJudiData(const SMLMS::JumpDistanceList &);
 		int writeStatisticData(SMLMS::HMMSequence &);
-		int writeWeightMatData(SMLMS::HMMSequence &);
+		int writeEquiMatData(SMLMS::HMMSequence &);
 		int writeTransMatData(SMLMS::HMMSequence &);
 		int writeObsMatData(SMLMS::HMMSequence &);
 		int writeAlphabetData(SMLMS::HMMSequence &);
@@ -104,7 +104,7 @@ class HDF5{
 		int readMolData(SMLMS::MoleculeList &);
 		int readJudiData(SMLMS::JumpDistanceList &);
 		int readStatisticData(SMLMS::HMMSequence &);
-		int readWeightMatData(SMLMS::HMMSequence &);
+		int readEquiMatData(SMLMS::HMMSequence &);
 		int readTransMatData(SMLMS::HMMSequence &);
 		int readObsMatData(SMLMS::HMMSequence &);
 		int readAlphabetData(SMLMS::HMMSequence &);
@@ -124,7 +124,7 @@ class HDF5{
 		int createMolData(const SMLMS::MoleculeList &);
 		int createJudiData(const SMLMS::JumpDistanceList &);
 		int createStatisticData(void);
-		int createWeightMatData(SMLMS::HMMSequence &);
+		int createEquiMatData(SMLMS::HMMSequence &);
 		int createTransMatData(SMLMS::HMMSequence &);
 		int createObsMatData(SMLMS::HMMSequence &);
 		int createAlphabetData(SMLMS::HMMSequence &);

@@ -75,8 +75,10 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void paraVect2paraMat();
 		void calcFitSuperPosFromPara();
 		void calcFitMatrixFromPara();
+		void updatePdfWeight(void);
 		void updateWeight(const SMLMS::Matrix &pi);
 		void updatePi(SMLMS::Matrix &pi);
+		// void transferFreeTransitions(SMLMS::Matrix &transFIX);
 		/* fit functions */
 		void fitPdfSuperPos();
 		void fitPdfMatState(int state, SMLMS::Matrix &pdf);
