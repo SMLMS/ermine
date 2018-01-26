@@ -403,7 +403,7 @@ void HMMSequence::trainSequence(const SMLMS::JumpDistanceList &judi){
 	judi.checkTraceNumber();
 	// init
 	std::cout<<std::endl<<"The ermine is training:"<<std::endl;
-	boost::progress_display show_progress(_maxIt+1);	
+	boost::progress_display show_progress(_maxIt+1);
 	initTrainingSequences();
 	estimateSeqLikelihood(judi);
 	llResult = 0-_logLikelihood;

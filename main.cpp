@@ -783,7 +783,13 @@ int main(int argc, char *argv[]){
 		}
 		/* train hmm without physical model */
 		else{
-			hmm.trainSequence(judi);
+			try {
+				hmm.trainSequence(judi);
+			}
+			catch(SMLMS::SmlmsError& error){
+				std::cout<<error.what()<<std::endl;
+				return 1;
+			}
 		}
 		/* write hmm */
 		try{
@@ -977,7 +983,7 @@ int main(int argc, char *argv[]){
 		}
 		/* write mol list */
 		try{
-			molList.writeLocList(fileNames.folderName().append("/mol_with_trace.trc"));
+			molList.writeLocList(fileNames.folderName().append("/mol.txt"));
 		}
 		catch(SMLMS::SmlmsError& error){
 			std::cout<<error.what()<<std::endl;

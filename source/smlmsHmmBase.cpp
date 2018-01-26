@@ -256,8 +256,8 @@ void HMMBase::readHMM(std::string const &name){
 			/* read statistics */
 			if(n==4+2*_stateNumber)lineContent>>_logLikelihood;
 			if(n==5+2*_stateNumber)lineContent>>_dof;
-			if(n==6+2*_stateNumber)lineContent>>_bic;
-			if(n==7+2*_stateNumber)lineContent>>_aic;
+			if(n==6+2*_stateNumber)lineContent>>_aic;
+			if(n==7+2*_stateNumber)lineContent>>_bic;
 			/* increase iteration */
 			n +=1;
 		}
