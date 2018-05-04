@@ -225,7 +225,7 @@ std::vector<double> JumpDistanceList::getAllJumpsOfState(int state){
 	return jumpList;
 }
 
-void JumpDistanceList::readJumpDistanceList(std::string const &name){
+void JumpDistanceList::readJumpDistanceList(const std::string &name){
 	clearJumpDistanceList();
 	SMLMS::Jump jump;
 	std::string line;
@@ -249,7 +249,9 @@ void JumpDistanceList::readJumpDistanceList(std::string const &name){
 	}
 }
 
-void JumpDistanceList::writeJumpDistanceList(std::string &name){
+void JumpDistanceList::writeJumpDistanceList(const std::string &folderName){
+	std::string name = folderName;
+	name.append("/judi.txt");
 	SMLMS::Jump jump;
 	std::ofstream outFile;
 	outFile.open(name.data());

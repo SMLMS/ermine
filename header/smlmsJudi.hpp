@@ -61,8 +61,8 @@ class JumpDistanceList{
 		void getAllJumps(std::vector<double> &);
 		std::vector<double> getAllJumpsOfState(int state);
 		void clearJumpDistanceList();
-		void readJumpDistanceList(std::string const&);
-		void writeJumpDistanceList(std::string &);
+		void readJumpDistanceList(const std::string &);
+		void writeJumpDistanceList(const std::string &folderName);
 		void calcJumpDistanceList(MoleculeList &);
 		void transferStatesToMoleculeList(MoleculeList &);
 };/* JumpDistanceList  */

@@ -56,9 +56,9 @@ class MoleculeList{
 		void readLocList(std::string);
 		void readROI(std::string);
 		//write functions
-		void writeMoleculeList(std::string moleculeListName, std::string roiName);
-		void writeROI(std::string);
-		void writeLocList(std::string);
+		void writeMoleculeList(const std::string &folderName);
+		void writeROI(const std::string &folderName);
+		void writeLocList(const std::string &folderName);
 		//clear functions
 		void clearMoleculeList();
 		void clearLocList();

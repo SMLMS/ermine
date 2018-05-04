@@ -41,8 +41,8 @@ class Microscope{
 		double locPrec()const;
 		/* Sprecial Functions */
 		void clearMicroscope();
-		void loadMicroscope(std::string name);
-		void saveMicroscope(std::string name);
+		void loadMicroscope(const std::string &name);
+		void saveMicroscope(const std::string &folderName);
 		
 };/* Microscope */
 }/* SMLMS */

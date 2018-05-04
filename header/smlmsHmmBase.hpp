@@ -22,7 +22,6 @@
 namespace SMLMS{
 class HMMBase{
 	protected:
-		std::string _folderName;
 		unsigned _stateNumber;
 		unsigned _symbolNumber;
 		double _minValue;
@@ -51,8 +50,6 @@ class HMMBase{
 		/* copy Constructor */
 		HMMBase(const HMMBase &);
 		/* elementary functions */
-		void setFolderName(std::string);
-		std::string folderName();
 		void setStateNumber(unsigned);
 		unsigned stateNumber();
 		void setSymbolNumber(unsigned);
@@ -84,12 +81,11 @@ class HMMBase{
 		void setMaxIt(int);
 		int maxIt();
         	/* load/save funCtions */
-		void readHMM(std::string const &);
-		void writeHMM();
+		void readHMM(const std::string &folderName);
+		void writeHMM(const std::string &folderName);
 		/* clear functions */
 		void clearHMM();
 		/* proof functions */
-		void checkFolderName();
 		void checkStateNumber();
 		void checkSymbolNumber();
 		void checkEqui();
@@ -132,7 +128,6 @@ class HMMBase{
 		void calcAic(unsigned);
 		void calcModelSelection(unsigned);
 		/* print functions */
-		void printFolderName();
 		void printStateNumber();
 		void printMinValue();
 		void printMaxValue();

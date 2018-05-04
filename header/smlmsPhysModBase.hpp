@@ -41,12 +41,11 @@ class PhysicalModelBase{
 		SMLMS::Matrix _resMatrix;
 		std::vector<double> _chiSquare;
 		std::vector<double> _pdfWeight;
-		std::string _folderName;
 	public:
 		/* Constructor */
 		PhysicalModelBase();
-		PhysicalModelBase(const std::vector<double> &xVal, int stateVal, std::string&);
-		PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal, std::string&);
+		PhysicalModelBase(const std::vector<double> &xVal, int stateVal);
+		PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal);
 		/* Destructor */
 		virtual ~PhysicalModelBase();
 		/* Copy Constructor */
@@ -84,8 +83,6 @@ class PhysicalModelBase{
 		std::vector<double> chiSquare();
 		void setPdfWeight(std::vector<double>&);
 		std::vector<double> pdfWeight();
-		void setFolderName(std::string);
-		std::string folderName();
 		/* description */
 		void description();
 		/* print functions */
@@ -108,7 +105,6 @@ class PhysicalModelBase{
 		void printResMatrix();
 		void printChiSquare();
 		void printPdfWeight();
-		void printFolderName();
 		/* check functions */
 		void checkMinValue();
 		void checkMaxValue();
@@ -132,17 +128,16 @@ class PhysicalModelBase{
 		void checkResMatrix();
 		void checkChiSquare();
 		void checkPdfWeight();
-		void checkFolderName();
 		void checkPhysicalModelBase();
 		/* init functions */
 		void initModel();
 		void initModelByParameter();
 		void initModelByAlphabet();
 		/* write functions */
-		void writePdfSuperPos();
-		void writePdfMatrix();
+		void writePdfSuperPos(const std::string &folderName);
+		void writePdfMatrix(const std::string &folderName);
 		/* plot functions */
-		void plotPhysicalModel();
+		void plotPhysicalModel(const std::string &folderName);
 		/* norm functions */
 		void intPdfSuperPos(double &area, const std::vector<double> &pdf);
 		void normPdfSuperPos(double &area, std::vector<double> &pdf);

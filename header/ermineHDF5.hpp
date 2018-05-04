@@ -30,6 +30,7 @@ class HDF5{
 	private:
 		/* file Name */
 		H5std_string _fileName;
+		H5std_string _folderName;
 		/* group names */
 		H5std_string _gnData;
 		H5std_string _gnHmm;
@@ -72,6 +73,8 @@ class HDF5{
 		/* elementary functions */
 		void setFileName(std::string name);
 		std::string fileName(void);
+		void setFolderName(std::string name);
+		std::string folderName(void);
 		/* HDF functions */
 		int archiveModel(const SMLMS::Microscope&,
 					const SMLMS::MoleculeList&,

@@ -54,6 +54,9 @@ Statement::Statement(const Statement &obj){
 	_bestPath=obj._bestPath;
 	_dwellTime = obj._dwellTime;
 	_transferStates = obj._transferStates;
+	_wholeCell = obj._wholeCell;
+	_archive = obj._archive;
+	_extract = obj._extract;
 	_tidy = obj._tidy;
 }
 
@@ -123,6 +126,11 @@ void Statement::setTransferStates(){
 	_transferStates.append("The ermine transfers all states from a judi to a trc data set.");
 }
 
+void Statement::setWholeCell(){
+	_wholeCell.clear();
+	_wholeCell.append("The ermine is running a complete analysis of a whole single cell.");
+}
+
 void Statement::setArchive(){
 	_archive.clear();
 	_archive.append("The ermine archives the given model to a hdf5 file..");
@@ -188,6 +196,10 @@ void Statement::printDwellTime(){
 
 void Statement::printTransferStates(){
 	std::cout<<std::endl<<_transferStates<<std::endl;
+}
+
+void Statement::printWholeCell(){
+	std::cout<<std::endl<<_wholeCell<<std::endl;
 }
 
 void Statement::printArchive(){

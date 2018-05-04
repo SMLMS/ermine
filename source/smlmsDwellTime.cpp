@@ -47,7 +47,6 @@ DwellTimeAnalysis::~DwellTimeAnalysis(){
 /* copy-constructor */
 DwellTimeAnalysis::DwellTimeAnalysis(const DwellTimeAnalysis &obj){
 	std::cout<<"DwellTimeAnalysis copy-constructor called."<<std::endl;
-	_folderName = obj._folderName;
 	_stateNumber = obj._stateNumber;
 	_dt = obj._dt;
 	_originalState = obj._originalState;
@@ -64,14 +63,6 @@ DwellTimeAnalysis::DwellTimeAnalysis(const DwellTimeAnalysis &obj){
 }
 
 /* elementary functions */
-void DwellTimeAnalysis::setFolderName(std::string name){
-	_folderName = name;
-}
-
-std::string DwellTimeAnalysis::folderName(){
-	return _folderName;
-}
-
 void DwellTimeAnalysis::setStateNumber(unsigned number){
 	_stateNumber = number;
 }
@@ -181,10 +172,6 @@ void DwellTimeAnalysis::proofHistogram(){
 }
 
 /* print functions */
-void DwellTimeAnalysis::printFolderName(){
-	std::cout<<"folder name: "<<_folderName<<std::endl;
-}
-
 void DwellTimeAnalysis::printStateNumber(){
 	std::cout<<"state number: "<<_stateNumber<<std::endl;
 }
@@ -238,11 +225,11 @@ void DwellTimeAnalysis::printResult(){
 }
 
 /* write functions */
-void DwellTimeAnalysis::writeDwellTime(){
+void DwellTimeAnalysis::writeDwellTime(const std::string &folderName){
 	int i;
 	proofHistogram();
 	std::string name;
-	name = _folderName;
+	name = folderName;
 	std::stringstream fileName;
 	fileName<<"/DwellTimeAnalysis_"<<_originalState<<"to"<<_targetState<<".txt";
 	name.append(fileName.str());
@@ -272,12 +259,12 @@ void DwellTimeAnalysis::writeDwellTime(){
 	}
 }
 
-void DwellTimeAnalysis::plotDwellTime(){
+void DwellTimeAnalysis::plotDwellTime(const std::string &folderName){
 	int i;
 	proofHistogram();
 	/* create filename */
 	std::string name;
-	name =_folderName;
+	name =folderName;
 	std::stringstream fileName;
 	fileName<<"/DwellTimeAnalysis_"<<_originalState<<"to"<<_targetState<<".pdf";
 	name.append(fileName.str());
@@ -542,7 +529,7 @@ void DwellTimeAnalysis::estimateChiSquare(){
 	for (i=0; i<_time.size(); i++) _chiSquare += std::pow((_transProbData.at(i)-_transProbFit.at(i)),2)/ _transProbFit.at(i);
 }
 
-void DwellTimeAnalysis::analyzeJudi(HMMBase &hmm, const JumpDistanceList &judi){
+void DwellTimeAnalysis::analyzeJudi(HMMBase &hmm, const JumpDistanceList &judi, const std::string &folderName){
 	int i,j;
 	_stateNumber = hmm.stateNumber();
 	SMLMS::Matrix transMat = hmm.transPDF();
@@ -558,8 +545,8 @@ void DwellTimeAnalysis::analyzeJudi(HMMBase &hmm, const JumpDistanceList &judi){
 				estimateTransProbFit();
 				estimateResiduals();
 				estimateChiSquare();
-				writeDwellTime();
-				plotDwellTime();
+				writeDwellTime(folderName);
+				plotDwellTime(folderName);
 				printResult();
 			}
 		}

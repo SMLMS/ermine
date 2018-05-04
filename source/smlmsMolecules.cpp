@@ -208,12 +208,14 @@ void MoleculeList::readROI(std::string name){
 
 /* write functions */
 
-void MoleculeList::writeMoleculeList(std::string locListName, std::string roiName){
-	writeLocList(locListName);
-	writeROI(roiName);
+void MoleculeList::writeMoleculeList(const std::string &folderName){
+	writeLocList(folderName);
+	writeROI(folderName);
 }/* writeMoleculeList */
 
-void MoleculeList::writeLocList(std::string name){
+void MoleculeList::writeLocList(const std::string &folderName){
+	std::string name = folderName;
+	name.append("/mol.txt");
 	SMLMS::Molecule mol;
 	std::ofstream outFile;
 	outFile.open(name.data());
@@ -229,7 +231,9 @@ void MoleculeList::writeLocList(std::string name){
 	outFile.close();
 }/* writeLocList */
 
-void MoleculeList::writeROI(std::string name){
+void MoleculeList::writeROI(const std::string &folderName){
+	std::string name = folderName;
+	name.append("/roi.txt");
 	std::ofstream outFile;
 	outFile.open(name.data());
 	outFile<<std::scientific;

@@ -20,6 +20,7 @@ HDFFLAGS  = -lhdf5
 HDFFLAGS  += -lhdf5_cpp
 
 SOURCES = main.cpp
+SOURCES += source/ermineDelegate.cpp
 SOURCES += source/ermineStatement.cpp
 SOURCES += source/ermineParser.cpp
 SOURCES += source/ermineExceptions.cpp

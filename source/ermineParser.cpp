@@ -45,18 +45,19 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("bestPath",0));
 	alphabet.insert(std::make_pair("dwellTime",0));
 	alphabet.insert(std::make_pair("transferStates",0));
+	alphabet.insert(std::make_pair("wholeCell", 0));
 	alphabet.insert(std::make_pair("archive",0));
 	alphabet.insert(std::make_pair("extract",0));
 	setAlgorithmAlphabet(alphabet);
 	setAlgorithmArgument("train");
-	setStopCritArgument(0.01);
-	setMaxItArgument(100);
+	setStopCritArgument(0.0001);
+	setMaxItArgument(300);
 	setFileNameArgument("");
-	setJumpIntervalArgument(10.0);
-	setMinDistArgument(10.0);
-	setMaxDistArgument(500.0);
-	setTimeIntervalArgument(0.0);
-	setTraceLengthArgument(20);
+	setJumpIntervalArgument(1.0);
+	setMinDistArgument(0.0);
+	setMaxDistArgument(800.0);
+	setTimeIntervalArgument(0.02);
+	setTraceLengthArgument(300);
 	setParticleArgument(1000);
 }// ErmineParser()
 
@@ -178,22 +179,37 @@ void ErmineParser::printAlgorithmHelp(){
 	
 	std::stringstream message;
 	message<<"possible algorithms in ermine are:"<<std::endl
-	<<"algorithm\t\tdescription\t\t\t\tessential parameters"<<std::endl
-	<<"batch:\t\tmerge several .trc data sets\t\t\t(-a, -f)"<<std::endl
-	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t(-a, -f)"<<std::endl
-	<<"initPhysMod:\treturns an initial .mod file.\t\t\t(-a, -f)"<<std::endl
-	<<"fitPhysMod:\tfits a physical model to a given judi.\t\t(to be announced)"<<std::endl
-	<<"initHMM:\treturns an initial guess for a hmm.\t\t(-a -f -j --midDist --maxDist)"<<std::endl
-	<<"simulate:\tcalculates a mchmm simulation.\t\t\t(to be announced)"<<std::endl
-	<<"evaluate:\tevaluates how well a given model fits a distinct data set\t(to be announced)"<<std::endl
-	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t(to be announced)"<<std::endl
-	<<"bestPath:\t\testimates the most likely path of hidden states by Viterbi.\t(to be announced)"<<std::endl
-	<<"dwellTime:\t\tretimates the model transition rates form an optimized path."<<std::endl
-	<<"transferStates:\tretransfers states from a judi to a matching trc file."<<std::endl
-	<<"archive:\t\tsave a complete model to an hdf5 file."<<std::endl
-	<<"extract:\t\textract an archived model from an hdf5 file."<<std::endl;
+	<<"algorithm\tdescription\t\t\t\t\t\t\t\t\t\t\tessential files"<<std::endl
+	<<"batch:\t\tmerge several .trc data sets\t\t\t\t\t\t\t\t\t(trc, mic)"<<std::endl
+	<<"mol2judi:\tcalculate judi from .trc file.\t\t\t\t\t\t\t\t\t(mol, mic)"<<std::endl
+	<<"initPhysMod:\treturns an initial .mod file.\t\t\t\t\t\t\t\t\t(mic)"<<std::endl
+	<<"fitPhysMod:\tfits a physical model to a given judi.\t\t\t\t\t\t\t\t(mic, judi, mod)"<<std::endl
+	<<"initHMM:\treturns an initial guess for a hmm.\t\t\t\t\t\t\t\t(mic, mod)"<<std::endl
+	<<"evaluate:\tevaluates how well a given model fits a distinct data set\t\t\t\t\t(judi, hmm)"<<std::endl
+	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t\t\t\t\t\t\t(mic, judi, mod, hmm)"<<std::endl
+	<<"bestPath:\testimates the most likely path of hidden states by Viterbi.\t\t\t\t\t(judi, hmm)"<<std::endl
+	<<"transferStates:\tretransfers states from a judi to a matching trc file.\t\t\t\t\t\t(mol, judi)"<<std::endl
+	<<"wholeCell:\ttrains a model n a single cell data set, calculates the best path and archives the result.\t(mic, mol, judi, mod, hmm)"<<std::endl
+	<<"archive:\tsave a complete model to an hdf5 file.\t\t\t\t\t\t\t\t(mic, mol, judi, mod, hmm)"<<std::endl
+	<<"extract:\textract an archived model from an hdf5 file.\t\t\t\t\t\t\t(HDF5)"<<std::endl
+	<<"dwellTime:\tretimates the model transition rates form an optimized path.\t\t\t\t\t(judi, hmm)"<<std::endl
+	<<"simulate:\tcalculates a mchmm simulation.\t\t\t\t\t\t\t\t\t(hmm)"<<std::endl
+	<<std::endl;
 
 	std::cout<<line<<message.str()<<std::endl;
+
+	std::stringstream legend;
+	legend<<"legend:"<<std::endl
+	<<"mic:\t\tmicroscope (microscope.txt)"<<std::endl
+	<<"trc:\t\ttrace list (__name__.trc"<<std::endl
+	<<"mol:\t\tmolecule list (mol.txt)"<<std::endl
+	<<"judi:\t\tjump distance distribution (judi.txt)"<<std::endl
+	<<"mod:\t\tphysical model (physMod.txt)"<<std::endl
+	<<"hmm:\t\thidden markov model (hmm.txt)"<<std::endl
+	<<"HDF5:\t\tarchive in Hierarchical Data Format 5 (__name__.h5)"<<std::endl
+	<<std::endl;
+
+	
 }
 
 void ErmineParser::proofFilename(po::variables_map &vm){

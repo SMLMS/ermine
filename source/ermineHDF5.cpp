@@ -70,6 +70,7 @@ HDF5::~HDF5(){
 HDF5::HDF5(const HDF5 &obj){
 	std::cout<<"HDF5 copy constructor called."<<std::endl;
 	_fileName = obj._fileName;
+	_folderName = obj._folderName;
 	/* group names */
 	_gnData = obj._gnData;
 	_gnHmm = obj._gnHmm;
@@ -105,12 +106,22 @@ HDF5::HDF5(const HDF5 &obj){
 /* elementary functions */
 void HDF5::setFileName(std::string name){
 	_fileName = name;
+	std::size_t index = name.find_last_of("/");
+	_folderName = name.substr(0,index);
 }
 
 std::string HDF5::fileName(void){
 	return _fileName;
 }
 
+void HDF5::setFolderName(std::string name){
+	_folderName = name;
+	_fileName = name.append("/archive.h5");
+}
+
+std::string HDF5::folderName(void){
+	return _folderName;
+}
 /* HDF functions */
 int HDF5::archiveModel(const SMLMS::Microscope& mic,
 			const SMLMS::MoleculeList& mol,
@@ -164,47 +175,43 @@ int HDF5::extractModel(SMLMS::Microscope& mic,
 	if (readHmmData(hmm)<0){return -1;}
 	if (readPhysModData(model)<0){return -1;}
 	/* create out file name base*/
-	std::size_t index = _fileName.find_last_of("/");
-	std::string baseName = _fileName.substr(0,index);
 	std::string outName;
 	/* write data*/
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/names.txt");
 	/* open names file */
 	std::ofstream outFile;
 	outFile.open(outName.data());
 
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/microscope.txt");
 	outFile<<outName.data()<<std::endl;
-	mic.saveMicroscope(outName);
+	mic.saveMicroscope(_folderName);
 	
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/roi.txt");
 	outFile<<outName.data()<<std::endl;
-	mol.writeROI(outName);
+	mol.writeROI(_folderName);
 
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/mol.txt");
 	outFile<<outName.data()<<std::endl;
-	mol.writeLocList(outName);
+	mol.writeLocList(_folderName);
 
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/judi.txt");
 	outFile<<outName.data()<<std::endl;
-	judi.writeJumpDistanceList(outName);
+	judi.writeJumpDistanceList(_folderName);
 	
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/hmm.txt");
 	outFile<<outName.data()<<std::endl;
-	hmm.setFolderName(baseName);
-	hmm.writeHMM();
+	hmm.writeHMM(_folderName);
 
-	outName = baseName;
+	outName = _folderName;
 	outName.append("/physMod.txt");
 	outFile<<outName.data()<<std::endl;
-	model.setFolderName(baseName);
-	model.writePhysMod();
+	model.writePhysMod(_folderName);
 
 	/* close name file */
 	outFile.close();

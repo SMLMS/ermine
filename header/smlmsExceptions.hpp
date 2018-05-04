@@ -17,6 +17,12 @@
 
 namespace SMLMS{
 
+enum {
+	SMLMS_SUCCESS = 0,
+	SMLMS_FAILURE = -1
+};
+
+
 class SmlmsError{
 	private:
 		std::string _errorMessage;

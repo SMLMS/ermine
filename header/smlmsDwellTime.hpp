@@ -22,7 +22,6 @@
 namespace SMLMS{
 class DwellTimeAnalysis{
 	private:
-		std::string _folderName;
 		unsigned _stateNumber;
 		double _dt;
 		unsigned _originalState;
@@ -44,8 +43,6 @@ class DwellTimeAnalysis{
 		/* copy-constructor */
 		DwellTimeAnalysis(const DwellTimeAnalysis &);
 		/* elementary functions */
-		void setFolderName(std::string name);
-		std::string folderName();
 		void setStateNumber(unsigned);
 		unsigned stateNumber();	
 		void setDt(double);
@@ -75,7 +72,6 @@ class DwellTimeAnalysis{
 		/* proof functions */
 		void proofHistogram();
 		/* print functions */
-		void printFolderName();
 		void printStateNumber();
 		void printDt();
 		void printOriginalState();
@@ -87,8 +83,8 @@ class DwellTimeAnalysis{
 		void printChiSquare();
 		void printResult();
 		/* write functions */
-		void writeDwellTime();
-		void plotDwellTime();
+		void writeDwellTime(const std::string &folderName);
+		void plotDwellTime(const std::string &filderName);
 		/* help functions */
 		bool startIndex(int &start, std::vector<int> &stateList);
 		bool stopIndex(int &stop, std::vector<int> &stateList);
@@ -100,7 +96,7 @@ class DwellTimeAnalysis{
 		void estimateTransProbFit();
 		void estimateResiduals();
 		void estimateChiSquare();
-		void analyzeJudi(HMMBase &hmm, const JumpDistanceList &Judi);
+		void analyzeJudi(HMMBase &hmm, const JumpDistanceList &Judi, const std::string &folderName);
 }; /* DwellTime */
 } /* SMLMS */
 #endif /* SMLMSDWELLTIME_hpp */

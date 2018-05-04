@@ -479,6 +479,7 @@ void HMMSequence::estimateStateSequence(SMLMS::JumpDistanceList& judi){
 		// update progress
 		++show_progress;
 	}
+	std::cout<<std::endl;
 }
 
 } /* SMLMS */

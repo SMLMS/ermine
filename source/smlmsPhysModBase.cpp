@@ -36,22 +36,20 @@ PhysicalModelBase::PhysicalModelBase(){
 	std::cout<<"Physical Model Base constructor called"<<std::endl;
 }
 
-PhysicalModelBase::PhysicalModelBase(const std::vector<double> &xVal, int stateVal, std::string &name){
+PhysicalModelBase::PhysicalModelBase(const std::vector<double> &xVal, int stateVal){
 	std::cout<<"Physical Model Base constructor called"<<std::endl;
 	_alphabet = xVal;
 	_stateNumber = stateVal;
-	_folderName = name;
 	initModelByAlphabet();
 }
 
 
-PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal, std::string &name){
+PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal){
 	std::cout<<"Physical Model Base constructor called"<<std::endl;
 	_minValue = minVal;
 	_maxValue = maxVal;
 	_incNumber = incVal;
 	_stateNumber = stateVal;
-	_folderName = name;
 	initModelByParameter();
 }
 
@@ -82,7 +80,6 @@ PhysicalModelBase::PhysicalModelBase(const PhysicalModelBase &obj){
 	_resMatrix = obj._resMatrix;
 	_chiSquare = obj._chiSquare;
 	_pdfWeight = obj._pdfWeight;
-	_folderName = obj._folderName;
 }
 
 /* elementary functions */
@@ -214,14 +211,6 @@ std::vector<double> PhysicalModelBase::pdfWeight(){
 	return _pdfWeight;
 }
 
-void PhysicalModelBase::setFolderName(std::string val){
-	_folderName = val;
-}
-
-std::string PhysicalModelBase::folderName(){
-	return _folderName;
-}
-
 /* description */
 void PhysicalModelBase::description(){
 	std::stringstream descMessage;
@@ -348,9 +337,6 @@ void PhysicalModelBase::printPdfWeight(){
 	std::cout<<std::endl;
 }
 
-void PhysicalModelBase::printFolderName(){
-	std::cout<<"File base name: "<<_folderName.data()<<std::endl;
-}
 /* check functions */
 void PhysicalModelBase::checkMinValue(){
 	if (_minValue>=_maxValue){
@@ -619,16 +605,6 @@ void PhysicalModelBase::checkPdfWeight(){
 	}
 }
 
-void PhysicalModelBase::checkFolderName(){
-	if(_folderName.size() < 1){
-		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
-		errorMessage<<"no file base name defined."<<std::endl;
-		SMLMS::SmlmsError error(errorMessage.str());
-		throw error;
-	}
-}
-
 void PhysicalModelBase::checkPhysicalModelBase(){
 	checkMinValue();
 	checkMaxValue();
@@ -652,7 +628,6 @@ void PhysicalModelBase::checkPhysicalModelBase(){
 	checkResMatrix();
 	checkChiSquare();
 	checkPdfWeight();
-	checkFolderName();
 }
 
 /* init functions */
@@ -715,10 +690,10 @@ void PhysicalModelBase::initModelByAlphabet(){
 }
 
 /* write functions */
-void PhysicalModelBase::writePdfSuperPos(){
+void PhysicalModelBase::writePdfSuperPos(const std::string &folderName){
 	int i,j;
 	std::string name;
-	name = _folderName;
+	name = folderName;
 	name.append("/pdfSuperPos.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
@@ -743,10 +718,10 @@ void PhysicalModelBase::writePdfSuperPos(){
 	outFile.close();
 }
 
-void PhysicalModelBase::writePdfMatrix(){
+void PhysicalModelBase::writePdfMatrix(const std::string &folderName){
 	int i,j;
 	std::string name;
-	name = _folderName;
+	name = folderName;
 	name.append("/pdfMatrix.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
@@ -774,11 +749,11 @@ void PhysicalModelBase::writePdfMatrix(){
 }
 
 /* plot functions */
-void PhysicalModelBase::plotPhysicalModel(){
+void PhysicalModelBase::plotPhysicalModel(const std::string &folderName){
 	int i,j;
 	/* create Filename */
 	std::string name;
-	name = _folderName;
+	name = folderName;
 	name.append("/ProbabilityDensityDistribution.pdf");
 	/* define and set style */
 	gStyle->SetOptStat(0);

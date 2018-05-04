@@ -37,13 +37,13 @@ PhysicalModelBLD::PhysicalModelBLD(): SMLMS::PhysicalModelBase(){
 	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 }
 
-PhysicalModelBLD::PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope, std::string &name): SMLMS::PhysicalModelBase(xVal, stateVal, name){
+PhysicalModelBLD::PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope): SMLMS::PhysicalModelBase(xVal, stateVal){
 	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 	_microscope = microscope;
 }
 
 
-PhysicalModelBLD::PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope, std::string &name): SMLMS::PhysicalModelBase(minVal, maxVal, incVal, stateVal, name){
+PhysicalModelBLD::PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope): SMLMS::PhysicalModelBase(minVal, maxVal, incVal, stateVal){
 	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 	_microscope = microscope;
 }
@@ -75,7 +75,6 @@ PhysicalModelBLD::PhysicalModelBLD(const PhysicalModelBLD &obj){
 	_resMatrix = obj._resMatrix;
 	_chiSquare = obj._chiSquare;
 	_pdfWeight = obj._pdfWeight;
-	_folderName = obj._folderName;
 	_microscope = obj._microscope;
 	_paraMat = obj._paraMat;
 	_paraVect = obj._paraVect;
@@ -236,10 +235,10 @@ void PhysicalModelBLD::printContArea(){
 
 
 /* read and write functions */
-void PhysicalModelBLD::writePhysMod(){
+void PhysicalModelBLD::writePhysMod(const std::string &folderName){
 	int i,j;
 	std::string name;
-	name = _folderName;
+	name = folderName;
 	name.append("/physMod.txt");
 	std::ofstream outFile(name.data());
 	if (outFile.is_open()){
@@ -448,6 +447,18 @@ void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
 void PhysicalModelBLD::updatePi(SMLMS::Matrix &pi){
 	int j;
 	for (j=0; j<_stateNumber; j++) pi(0,j)=_paraMat.at(j,0);
+}
+
+void PhysicalModelBLD::fixDiffusionCoefficients(void){
+	int i;
+	for (i=0; i<_stateNumber; i++) _paraMat(i,5)=1;
+	paraMat2paraVect();
+}
+
+void PhysicalModelBLD::releaseDiffusionCoefficients(void){
+	int i;
+	for (i=0; i<_stateNumber; i++) _paraMat(i,5)=0;
+	paraMat2paraVect();
 }
 
 /* fit functions */

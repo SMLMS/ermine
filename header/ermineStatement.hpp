@@ -31,6 +31,7 @@ class Statement{
 		std::string _bestPath;
 		std::string _dwellTime;
 		std::string _transferStates;
+		std::string _wholeCell;
 		std::string _archive;
 		std::string _extract;
 		std::string _tidy;
@@ -55,6 +56,7 @@ class Statement{
 		void setBestPath();
 		void setDwellTime();
 		void setTransferStates();
+		void setWholeCell();
 		void setArchive();
 		void setExtract();
 		void setTidy();
@@ -73,6 +75,7 @@ class Statement{
 		void printBestPath();
 		void printDwellTime();
 		void printTransferStates();
+		void printWholeCell();
 		void printArchive();
 		void printExtract();
 		void printTidy();

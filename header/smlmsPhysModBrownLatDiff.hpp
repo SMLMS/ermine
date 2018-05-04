@@ -31,8 +31,8 @@ class PhysicalModelBLD: public PhysicalModelBase{
 	public:
 		/* Constructor */
 		PhysicalModelBLD();
-		PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope, std::string&);
-		PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope, std::string&);
+		PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope);
+		PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope);
 		/* Destructor */
 		~PhysicalModelBLD();
 		/* Copy Constructor */
@@ -62,8 +62,8 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void printContAreaSuperPos();
 		void printContArea();
 		/* read and write functions */
-		void writePhysMod();
-		void readPhysMod(const std::string&);
+		void writePhysMod(const std::string &folderName);
+		void readPhysMod(const std::string &folderName);
 		/* numerical normalization  Functions */
 		void contIntSuperPos(double &area, const std::vector<double> &pdf);
 		void contNormSuperPos(double &area, std::vector<double> &pdf);
@@ -78,7 +78,8 @@ class PhysicalModelBLD: public PhysicalModelBase{
 		void updatePdfWeight(void);
 		void updateWeight(const SMLMS::Matrix &pi);
 		void updatePi(SMLMS::Matrix &pi);
-		// void transferFreeTransitions(SMLMS::Matrix &transFIX);
+		void fixDiffusionCoefficients(void);
+		void releaseDiffusionCoefficients(void);
 		/* fit functions */
 		void fitPdfSuperPos();
 		void fitPdfMatState(int state, SMLMS::Matrix &pdf);

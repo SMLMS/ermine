@@ -87,7 +87,7 @@ void Microscope::clearMicroscope(){
 	setLocPrec(0);
 }
 
-void Microscope::loadMicroscope(std::string name){
+void Microscope::loadMicroscope(const std::string &name){
 	clearMicroscope();
 	std::string line;
 	std::vector<double> input(3);
@@ -113,7 +113,9 @@ void Microscope::loadMicroscope(std::string name){
 	}	
 }
 
-void Microscope::saveMicroscope(std::string name){
+void Microscope::saveMicroscope(const std::string &folderName){
+	std::string name = folderName;
+	name.append("/microscope.txt");
 	std::ofstream outFile;
 	outFile.open(name.data());
 	outFile<<std::scientific;
