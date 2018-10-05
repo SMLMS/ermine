@@ -13,19 +13,24 @@
 
 #ifndef Smlms_hpp
 #define Smlms_hpp
-#include <string>
-#include <vector>
 
 namespace SMLMS{
 	struct Molecule{
-		int trace;
-		int frame;
+		unsigned trace;
+		unsigned frame;
 		double x;
 		double y;
 		double z;
-		int state;
+		unsigned state;
 		double intensity;
 		double precision;
+	};
+
+	struct TraceStatistics{
+		unsigned index;
+		unsigned begin;
+		unsigned end;
+		unsigned length;
 	};
 
 	struct ROI{
@@ -40,9 +45,9 @@ namespace SMLMS{
 	};
 
 	struct Jump{
-		int trace;
+		unsigned trace;
 		double jumpDistance;
-		int state;
+		unsigned state;
 	};
 	
 	struct Settings{

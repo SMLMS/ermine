@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
-* Creation Date:
+* File Name: smlmsDwelltime.cpp
+* Project: smlms
+* Version: 18.09
+* Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt
@@ -36,7 +36,7 @@
 namespace SMLMS{
 /* constructor */
 DwellTimeAnalysis::DwellTimeAnalysis(){
-	std::cout<<"DwellTimeAnalysis constructor called."<<std::endl;
+	std::cout<<" DwellTimeAnalysis constructor called."<<std::endl;
 }
 
 /* destructor */
@@ -189,7 +189,7 @@ void DwellTimeAnalysis::printTargetState(){
 }
 
 void DwellTimeAnalysis::printTransTimes(){
-	int i;
+	unsigned i;
 	std::cout<<"transition times:"<<std::endl;
 	for (i=0; i<_transTimes.size(); i++){
 		std::cout<<_transTimes.at(i)<<std::endl;
@@ -197,7 +197,7 @@ void DwellTimeAnalysis::printTransTimes(){
 }
 
 void DwellTimeAnalysis::printHist(){
-	int i=0;
+	unsigned i=0;
 	std::cout<<"dwell time analysis histogram:"<<std::endl;
 	std::cout<<"time[s]\tdata[a.u.]\tfit[a.u.]\tres[a.u.]"<<std::endl;
 	for (i=0; i<_time.size(); i++){
@@ -226,7 +226,7 @@ void DwellTimeAnalysis::printResult(){
 
 /* write functions */
 void DwellTimeAnalysis::writeDwellTime(const std::string &folderName){
-	int i;
+	unsigned i;
 	proofHistogram();
 	std::string name;
 	name = folderName;
@@ -260,7 +260,7 @@ void DwellTimeAnalysis::writeDwellTime(const std::string &folderName){
 }
 
 void DwellTimeAnalysis::plotDwellTime(const std::string &folderName){
-	int i;
+	unsigned i;
 	proofHistogram();
 	/* create filename */
 	std::string name;
@@ -371,10 +371,10 @@ void DwellTimeAnalysis::plotDwellTime(const std::string &folderName){
 /* help functions */
 bool DwellTimeAnalysis::startIndex(int &start, std::vector<int> &stateList){
 	/* retuns index of first timepoint in right state to be measured */
-	int i;
+	unsigned i;
 	bool success=false;
 	for (i = start+1; i<stateList.size(); i++){
-		if ((stateList.at(i-1)!=_originalState) && (stateList.at(i)==_originalState)){
+		if ((unsigned(stateList.at(i-1))!=_originalState) && (unsigned(stateList.at(i))==_originalState)){
 			success = true;
 			start = i;
 			break;
@@ -385,12 +385,12 @@ bool DwellTimeAnalysis::startIndex(int &start, std::vector<int> &stateList){
 
 bool DwellTimeAnalysis::stopIndex(int &stop, std::vector<int> &stateList){
 	/* retuns index of last time point in right state to be measured */
-	int i;
+	unsigned i;
 	bool success = false;
 	for (i = stop+1; i<stateList.size(); i++){
-		if((stateList.at(i-1)==_originalState) && (stateList.at(i)!=_originalState)){
+		if((unsigned(stateList.at(i-1))==_originalState) && (unsigned(stateList.at(i))!=_originalState)){
 			stop = i-1;
-			if (stateList.at(i) == _targetState) success = true;
+			if (unsigned(stateList.at(i)) == _targetState) success = true;
 			break;
 		}
 	}
@@ -398,7 +398,6 @@ bool DwellTimeAnalysis::stopIndex(int &stop, std::vector<int> &stateList){
 }
 
 void DwellTimeAnalysis::analyzeTraceTransitions(std::vector<int> &stateList){
-	int i; 
 	int start=0;
 	int stop;
 	double timeInterval = 0.0;
@@ -414,7 +413,7 @@ void DwellTimeAnalysis::analyzeTraceTransitions(std::vector<int> &stateList){
 
 /* special functions */
 void DwellTimeAnalysis::estimateTransTimes(const JumpDistanceList &judi){
-	int i;
+	unsigned i;
 	std::vector<int> stateList;
 	_transTimes.clear();
 	for (i=0; i<judi.traceNumber(); i++){
@@ -425,7 +424,7 @@ void DwellTimeAnalysis::estimateTransTimes(const JumpDistanceList &judi){
 }
 
 void DwellTimeAnalysis::transTimesToHist(){
-	int i, j;
+	unsigned i, j;
 	double tempTime;
 	double tMin = _dt;
 	double tMax;
@@ -501,7 +500,7 @@ void DwellTimeAnalysis::fitHist(){
 }
 
 void DwellTimeAnalysis::estimateTransProbFit(){
-	int i;
+	unsigned i;
 	/* proof hist */
 	proofHistogram();
 	/* estimate fit */
@@ -514,14 +513,14 @@ void DwellTimeAnalysis::estimateTransProbFit(){
 }
 
 void DwellTimeAnalysis::estimateResiduals(){
-	int i;
+	unsigned i;
 	/* check stuff */
 	proofHistogram();
 	for (i=0; i<_time.size(); i++) _transProbRes.at(i) = _transProbData.at(i) - _transProbFit.at(i);
 }
 
 void DwellTimeAnalysis::estimateChiSquare(){
-	int i;
+	unsigned i;
 	/* check stuff */
 	proofHistogram();
 	/* calc chi */
@@ -530,7 +529,7 @@ void DwellTimeAnalysis::estimateChiSquare(){
 }
 
 void DwellTimeAnalysis::analyzeJudi(HMMBase &hmm, const JumpDistanceList &judi, const std::string &folderName){
-	int i,j;
+	unsigned i,j;
 	_stateNumber = hmm.stateNumber();
 	SMLMS::Matrix transMat = hmm.transPDF();
 	for (i=0; i<_stateNumber; i++){

@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: matrix.cpp
 * Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 21.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -73,8 +73,8 @@ Matrix Matrix::operator+(const Matrix &obj){
                 throw matrixError;
         }
 	SMLMS::Matrix obj2(_numberOfRows, _numberOfColumns);
-	for (int i=0; i<_numberOfRows; i++){
-		for (int j=0; j<_numberOfColumns; j++) obj2.at(i,j,at(i,j)+obj.at(i,j));
+	for (unsigned i=0; i<_numberOfRows; i++){
+		for (unsigned j=0; j<_numberOfColumns; j++) obj2.at(i,j,at(i,j)+obj.at(i,j));
 	}
 	return obj2;
 }
@@ -87,8 +87,8 @@ Matrix Matrix::operator+(const Matrix &obj) const{
                 throw matrixError;
         }
 	SMLMS::Matrix obj2(_numberOfRows, _numberOfColumns);
-	for (int i=0; i<_numberOfRows; i++){
-		for (int j=0; j<_numberOfColumns; j++) obj2.at(i,j,at(i,j)+obj.at(i,j));
+	for (unsigned i=0; i<_numberOfRows; i++){
+		for (unsigned j=0; j<_numberOfColumns; j++) obj2.at(i,j,at(i,j)+obj.at(i,j));
 	}
 	return obj2;
 }
@@ -100,8 +100,8 @@ Matrix& Matrix::operator+=(const Matrix &obj){
 		std::out_of_range matrixError(errorMessage.str());		
                 throw matrixError;
         }
-	for (int i=0; i<_numberOfRows; i++){
-		for (int j=0; j<_numberOfColumns; j++) at(i,j,(at(i,j))+obj.at(i,j));
+	for (unsigned i=0; i<_numberOfRows; i++){
+		for (unsigned j=0; j<_numberOfColumns; j++) at(i,j,(at(i,j))+obj.at(i,j));
 	}
 	return *this;
 }

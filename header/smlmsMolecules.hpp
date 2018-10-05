@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: Molecules
 * Project: SMLMS
-* Version:16.02
+* Version:18.09
 * Creation Date:29.02.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -48,18 +48,19 @@ class MoleculeList{
 		void deleteMolecule(int);
 		int getNumberOfMolecules();
 		int getNumberOfMolecules() const;
-		bool getTraceIndices(int trace, int &start, int &stop);
+		bool getTraceIndices(unsigned trace, int &start, int &stop);
 		void setMoleculeState(int index, int state);
 		//load functions
-		void readMoleculeList(std::string locsName, std::string roiName);
-		void readTrcList(SMLMS::Microscope&, std::string);
-		void readLocList(std::string);
-		void readROI(std::string);
+		void readMoleculeList(const std::string &locsName,const std::string &roiName);
+		void readTrcList(SMLMS::Microscope&, const std::string&);
+		void readLocList(const std::string&);
+		void readROI(const std::string&);
 		//write functions
 		void writeMoleculeList(const std::string &folderName);
 		void writeROI(const std::string &folderName);
 		void writeLocList(const std::string &folderName);
-		//clear functions
+		//memory management  functions
+		void reserveMemory(const std::string &fileName);
 		void clearMoleculeList();
 		void clearLocList();
 		void clearROI();

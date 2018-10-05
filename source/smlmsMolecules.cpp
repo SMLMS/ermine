@@ -1,8 +1,8 @@
 /* ######################################################################
 * File Name: Molecules
 * Project: SMLMS
-* Version:16.02
-* Creation Date:01.03.2016
+* Version: 18.09
+* Creation Date: 01.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt
@@ -103,7 +103,7 @@ int MoleculeList::getNumberOfMolecules() const{
 	return _moleculeList.size();
 }
 
-bool MoleculeList::getTraceIndices(int trace, int &start, int &stop){
+bool MoleculeList::getTraceIndices(unsigned trace, int &start, int &stop){
 	bool exists = false;
 	Molecule mol;
 	int i;
@@ -133,12 +133,12 @@ void MoleculeList::setMoleculeState(int index, int state){
 }
 
 /* load functions */
-void MoleculeList::readMoleculeList(std::string locListName, std::string roiName){
+void MoleculeList::readMoleculeList(const std::string& locListName, const std::string& roiName){
 	readLocList(locListName);
 	readROI(roiName);
 }
 
-void MoleculeList::readTrcList(SMLMS::Microscope &microscope, std::string name){
+void MoleculeList::readTrcList(SMLMS::Microscope &microscope,const std::string& name){
 	readLocList(name);
 	for (int i=0; i<getNumberOfMolecules(); i++){
 		_moleculeList.at(i).x=_moleculeList.at(i).x*microscope.pxlSize();
@@ -147,11 +147,14 @@ void MoleculeList::readTrcList(SMLMS::Microscope &microscope, std::string name){
 	}
 }
 
-void MoleculeList::readLocList(std::string name){
+void MoleculeList::readLocList(const std::string& name){
 	clearLocList();
 	SMLMS::Molecule mol;
 	std::string line;
 	std::fstream inFile(name.data());
+	// memory management
+	reserveMemory(name);
+	// read from file
 	if (inFile.is_open()){
 		while(std::getline(inFile, line)){
 			// skip comments //
@@ -163,6 +166,8 @@ void MoleculeList::readLocList(std::string name){
 			addMoleculeToEnd(mol);
 		}
 		inFile.close();
+		// free unused memory
+		_moleculeList.shrink_to_fit();
 	}
 	else{
 		std::stringstream errorMessage;
@@ -173,7 +178,7 @@ void MoleculeList::readLocList(std::string name){
 
 }/* readLocList */
 
-void MoleculeList::readROI(std::string name){
+void MoleculeList::readROI(const std::string& name){
 	clearROI();
 	std::string line;
 	std::vector<double> input(8);
@@ -224,7 +229,7 @@ void MoleculeList::writeLocList(const std::string &folderName){
 	/* header lines*/
 	outFile<<"# ERMINE TRC file"<<std::endl;
 	outFile<<"# trace\tframe\tx\ty\tstate\tintensity"<<std::endl;
-	for(int i=0; i<_moleculeList.size(); i++){
+	for(unsigned i=0; i<_moleculeList.size(); i++){
 		mol=getMolecule(i);
 		outFile<<mol.trace<<"\t"<<mol.frame<<"\t"<<mol.x<<"\t"<<mol.y<<"\t"<<mol.state<<"\t"<<mol.intensity<<std::endl;	
 	}	
@@ -251,7 +256,27 @@ void MoleculeList::writeROI(const std::string &folderName){
 	outFile.close();
 }/* writeROI*/
 
-/* clear functions */
+/* memory management functions */
+void MoleculeList::reserveMemory(const std::string &name){
+	std::string line;
+	std::fstream inFile(name.data());
+	int lineNumber=0;
+	if (inFile.is_open()){
+		while(std::getline(inFile, line)){
+			lineNumber ++;	
+		}
+		inFile.close();
+		_moleculeList.reserve(lineNumber);
+	}
+	else{
+		std::stringstream errorMessage;
+		errorMessage<<"Unable to read molecule list form: "<<name<<std::endl;
+		SMLMS::SmlmsError error(errorMessage.str());
+		throw error;
+
+	}
+}/* reserveMemory */
+
 void MoleculeList::clearMoleculeList(){
 	clearLocList();
 	clearROI();
@@ -259,6 +284,7 @@ void MoleculeList::clearMoleculeList(){
 
 void MoleculeList::clearLocList(){
 	_moleculeList.clear();
+	_moleculeList.resize(0);
 }/* clearLocList */
 
 void MoleculeList::clearROI(){

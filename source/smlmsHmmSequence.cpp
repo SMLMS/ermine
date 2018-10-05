@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmSequence.cpp
 * Project: SMLMS
-* Version: 17.02
+* Version: 18.09
 * Creation Date: 23.02.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -163,27 +163,27 @@ void HMMSequence::initTrainingSequences(){
 
 /* clear functions */
 void HMMSequence::resetEquiPDFNumer(){
-	for (int i=0; i<_stateNumber; i++)_equiPDFNumer.at(0,i,0.0);
+	for (unsigned i=0; i<_stateNumber; i++)_equiPDFNumer.at(0,i,0.0);
 }
 
 void HMMSequence::resetTransPDFNumer(){
-	for(int i=0; i<_stateNumber; i++){
-		for(int j=0; j<_stateNumber; j++){
+	for(unsigned i=0; i<_stateNumber; i++){
+		for(unsigned j=0; j<_stateNumber; j++){
 			_transPDFNumer.at(i,j,0.0);
 		}
 	}
 }
 
 void HMMSequence::resetObsPDFNumer(){
-	for(int i=0; i<_stateNumber; i++){
-		for(int j=0; j<_symbolNumber; j++){
+	for(unsigned i=0; i<_stateNumber; i++){
+		for(unsigned j=0; j<_symbolNumber; j++){
 			_obsPDFNumer.at(i,j,0.0);
 		}
 	}
 }
 
 void HMMSequence::resetPDFDenominator(){
-	for (int i=0; i<_stateNumber; i++)_pdfDenominator.at(0,i,0.0);
+	for (unsigned i=0; i<_stateNumber; i++)_pdfDenominator.at(0,i,0.0);
 }
 
 void HMMSequence::resetTrainingSequences(){
@@ -206,7 +206,7 @@ void HMMSequence::printSeqLogLikelihood(){
 
 void HMMSequence::printEquiPDFNumer(){
 	std::cout<<"Equilibrium Matrix Numer:"<<std::endl;
-	for (int i=0; i<_stateNumber; i++){
+	for (unsigned i=0; i<_stateNumber; i++){
 		std::cout<<_equiPDFNumer.at(0,i)<<"\t";
 	}
 	std::cout<<std::endl<<std::endl;
@@ -214,8 +214,8 @@ void HMMSequence::printEquiPDFNumer(){
 
 void HMMSequence::printTransPDFNumer(){
 	std::cout<<"Transition Matrix Numer:"<<std::endl;
-	for(int i=0; i<_stateNumber; i++){
-		for(int j=0; j<_stateNumber; j++){
+	for(unsigned i=0; i<_stateNumber; i++){
+		for(unsigned j=0; j<_stateNumber; j++){
 			std::cout<<_transPDFNumer.at(i,j)<<"\t";
 		}
 		std::cout<<std::endl;
@@ -225,8 +225,8 @@ void HMMSequence::printTransPDFNumer(){
 
 void HMMSequence::printObsPDFNumer(){
 	std::cout<<"Observation Matrix Numer:"<<std::endl;
-	for(int i=0; i<_stateNumber; i++){
-		for(int j=0; j<_symbolNumber; j++){
+	for(unsigned i=0; i<_stateNumber; i++){
+		for(unsigned j=0; j<_symbolNumber; j++){
 			std::cout<<_obsPDFNumer.at(i,j)<<"\t";
 		}
 		std::cout<<std::endl;
@@ -236,7 +236,7 @@ void HMMSequence::printObsPDFNumer(){
 
 void HMMSequence::printPDFDenominator(){
 	std::cout<<"Transition/Observation Matrix Denominator:"<<std::endl;
-	for(int i=0; i<_stateNumber; i++){
+	for(unsigned i=0; i<_stateNumber; i++){
 		std::cout<<_pdfDenominator.at(0,i)<<"\t";
 	}
 	std::cout<<std::endl<<std::endl;
@@ -271,21 +271,21 @@ void HMMSequence::increaseSimulationSequence(SMLMS::JumpDistanceList &judi, unsi
 // model adjustment
 
 void HMMSequence::reestimateEquiPDF(){
-	int i;
+	unsigned i;
 	for (i=0; i<_stateNumber; i++){
 		_equiPDF(0,i) = _equiPDFNumer.at(0,i)/_traceNumber; 
 	}
 }
 
 void HMMSequence::reestimateTransPDF(){
-	int i,j;
+	unsigned i,j;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_stateNumber; j++) _transPDF(i,j)= _transPDFNumer.at(i,j)/_pdfDenominator(0,i);
 		}
 }
 
 void HMMSequence::reestimateObsPDF(){
-	int i,j;
+	unsigned i,j;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_symbolNumber; j++) _obsPDF(i,j)=_obsPDFNumer.at(i,j)/_pdfDenominator(0,i);
 	}
@@ -321,7 +321,7 @@ void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &
 	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
 	initHelpUniqueHMM(tempHMM, obsNumber);
 	//simulate
-	for (int i=0; i<_traceNumber; i++){
+	for (unsigned i=0; i<_traceNumber; i++){
 		tempHMM.simulate(tempObsList, tempStateList);
 		increaseSimulationSequence(tempJudi, i+1, tempObsList, tempStateList);
 	}
@@ -339,7 +339,7 @@ void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
 	SMLMS::HMMUnique tempHmm(_stateNumber, _symbolNumber);
 	unsigned obsNumber = 0;
 	unsigned cummulativeObsNumber = 0;
-	for (int i=1; i<judi.traceNumber()+1; i++){
+	for (unsigned i=1; i<judi.traceNumber()+1; i++){
 		obs = judi.getTraceJumps(i);
 		obsNumber = obs.size();
 		cummulativeObsNumber += obsNumber;
@@ -375,7 +375,7 @@ void HMMSequence::baumWelchSequence(const SMLMS::JumpDistanceList &judi){
 	std::vector<double> obs;
 	SMLMS::HMMUnique tempHmm(_stateNumber, _symbolNumber);
 	unsigned obsNumber = 0;
-	for (int i=1; i<judi.traceNumber()+1; i++){
+	for (unsigned i=1; i<judi.traceNumber()+1; i++){
 		obs = judi.getTraceJumps(i);
 		obsNumber = obs.size();
 		initHelpUniqueHMM(tempHmm, obsNumber);
@@ -463,7 +463,7 @@ void HMMSequence::estimateStateSequence(SMLMS::JumpDistanceList& judi){
 	boost::progress_display show_progress(_traceNumber+1);	
 	SMLMS::HMMUnique tempHmm(_stateNumber, _symbolNumber);
 	unsigned obsNumber = 0;
-	for (int i=1; i<_traceNumber+1; i++){
+	for (unsigned i=1; i<_traceNumber+1; i++){
 		// get jump of trace
 		obs.clear();
 		obs = judi.getTraceJumps(i);

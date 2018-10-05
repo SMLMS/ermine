@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: matrix.hpp
 * Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 21.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>

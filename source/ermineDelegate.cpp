@@ -48,7 +48,7 @@ Delegate::Delegate(const Delegate &obj){
 	_judi = obj._judi;
 	_physMod = obj._physMod;
 	_hmm = obj._hmm;
-	_dwellTime = obj._dwellTime;
+	//_dwellTime = obj._dwellTime;
 }
 
 /* parse functions */
@@ -344,7 +344,7 @@ int Delegate::writeHmm(void){
 	return SMLMS::SMLMS_SUCCESS;
 }
 
-
+/*
 int Delegate::writeDwellTime(void){
 	try{
 		_dwellTime.writeDwellTime(_fileNames.folderName());
@@ -360,6 +360,7 @@ int Delegate::writeDwellTime(void){
 	}
 	return SMLMS::SMLMS_SUCCESS;	
 }
+*/
 
 /* run algorithm functions */
 int Delegate::run(void){
@@ -433,12 +434,14 @@ int Delegate::run(void){
 		statement.printExtract();
 		runExtractAlgorithm();
 	}
+	/*
 	else if(_eVar.algorithmArgument()=="dwellTime"){
 		statement.printDwellTime();
 		createFolder();
 		_eVar.writeErmineParser();
 		runDwellTimeAlgorithm();
 	}
+	*/
 	else if(_eVar.algorithmArgument()=="simulate"){
 		statement.printSimulate();
 		createFolder();
@@ -832,13 +835,13 @@ int Delegate::runExtractAlgorithm(void){
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
 	return SMLMS::SMLMS_SUCCESS;
 }
-
+/*
 int Delegate::runDwellTimeAlgorithm(void){
-	/* load functions */
+	// load functions
 	_errors += loadJumpDistanceList();
 	_errors += loadHmm();
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
-	/* analysis functions */
+	// analysis functions 
 	SMLMS::DwellTimeAnalysis dwellTime;
 	dwellTime.setDt(_eVar.jumpIntervalArgument());
 	try{
@@ -859,6 +862,7 @@ int Delegate::runDwellTimeAlgorithm(void){
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
 	return SMLMS::SMLMS_SUCCESS;
 }
+*/
 
 int Delegate::runSimulateAlgorithm(void){
 	/* load functions */
@@ -961,25 +965,7 @@ int Delegate::runWholeCellAnalysis(void){
 		_errors +=  1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
-	/* Dwell Time */
-	SMLMS::DwellTimeAnalysis dwellTime;
-	dwellTime.setDt(_eVar.jumpIntervalArgument());
-	try{
-		dwellTime.analyzeJudi(_hmm, _judi, _eVar.folderNameArgument());
-	}
-	catch(SMLMS::SmlmsError &error){
-		std::cout<<error.what()<<std::endl;
-		_errors += 1;
-	}
-	catch(std::out_of_range &error){
-		std::cout<<error.what()<<std::endl;
-		_errors += 1;
-	}
-	catch(...){
-		std::cout<<"unkown error!"<<std::endl;
-		_errors += 1;
-	}
-	if(_errors){return SMLMS::SMLMS_FAILURE;}
+
 	/* transfer States */
 	try{
 		_judi.transferStatesToMoleculeList(_molList);
@@ -1019,6 +1005,27 @@ int Delegate::runWholeCellAnalysis(void){
 	_errors += writePhysMod();
 	_errors += writeHmm();
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
+	/*
+	// Dwell Time
+	SMLMS::DwellTimeAnalysis dwellTime;
+	dwellTime.setDt(_eVar.jumpIntervalArgument());
+	try{
+		dwellTime.analyzeJudi(_hmm, _judi, _eVar.folderNameArgument());
+	}
+	catch(SMLMS::SmlmsError &error){
+		std::cout<<error.what()<<std::endl;
+		_errors += 1;
+	}
+	catch(std::out_of_range &error){
+		std::cout<<error.what()<<std::endl;
+		_errors += 1;
+	}
+	catch(...){
+		std::cout<<"unkown error!"<<std::endl;
+		_errors += 1;
+	}
+	if(_errors){return SMLMS::SMLMS_FAILURE;}
+	*/
 	return SMLMS::SMLMS_SUCCESS;
 }
 } /* SMLMS */

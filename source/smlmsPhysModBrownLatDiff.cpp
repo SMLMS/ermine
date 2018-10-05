@@ -1,6 +1,6 @@
 /* ######################################################################
 * File Name: smlmsPhysModBrownLatDiff.cpp* Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 30.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -135,7 +135,7 @@ void PhysicalModelBLD::initParaVect(){
 void PhysicalModelBLD::initContArea(){
 	// check stuff
 	checkStateNumber();
-	int i;
+	unsigned i;
 	_contAreaSuperPos = 0.0;
 	_areaPdfSuperPos = 0.0;
 	std::vector<double> tempVec(_stateNumber,0.0);
@@ -203,7 +203,7 @@ void PhysicalModelBLD::checkContArea(){
 
 /* print functions */
 void PhysicalModelBLD::printParaMat(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<"\nBrownian lateral diffusion parameter matrix:"<<std::endl;
 	std::cout<<"Number of states: "<<_stateNumber<<std::endl<<_stateNumber<<std::endl;;
 	std::cout<<"Weight\tfix\tmin\tmax\tD[nm^2/s]\tfix\tmin\tmax"<<std::endl;
@@ -215,7 +215,7 @@ void PhysicalModelBLD::printParaMat(){
 }
 
 void PhysicalModelBLD::printParaVect(){
-	int i, vSize;
+	unsigned i, vSize;
 	vSize = _paraVect.size();
 	std::cout<<"\nBrownian lateral diffusion parameter vector:"<<std::endl;
 	for (i=0; i<vSize; i++) std::cout<<_paraVect.at(i)<<"\t";
@@ -227,7 +227,7 @@ void PhysicalModelBLD::printContAreaSuperPos(){
 }
 
 void PhysicalModelBLD::printContArea(){
-	int i;
+	unsigned i;
 	std::cout<<"\nIntegrals of pdf Matrix functions:"<<std::endl;
 	for (i=0; i<_stateNumber; i++) std::cout<<_contArea.at(i)<<"\t";
 	std::cout<<std::endl;
@@ -236,7 +236,7 @@ void PhysicalModelBLD::printContArea(){
 
 /* read and write functions */
 void PhysicalModelBLD::writePhysMod(const std::string &folderName){
-	int i,j;
+	unsigned i,j;
 	std::string name;
 	name = folderName;
 	name.append("/physMod.txt");
@@ -267,7 +267,7 @@ void PhysicalModelBLD::writePhysMod(const std::string &folderName){
 }
 
 void PhysicalModelBLD::readPhysMod(const std::string &name){
-	int i,j,n;
+	unsigned i,j,n;
 	std::string line;
 	std::fstream inFile(name.data());
 	n=0;
@@ -306,7 +306,7 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 /* contineous normalization function */
 
 void PhysicalModelBLD::contIntSuperPos(double &area, const std::vector<double> &pdf){
-	int i;
+	unsigned i;
 	area=0.0;
  	// integrate TrapZ way
  	/*
@@ -320,14 +320,14 @@ void PhysicalModelBLD::contIntSuperPos(double &area, const std::vector<double> &
 }
 
 void PhysicalModelBLD::contNormSuperPos(double &area, std::vector<double> &pdf){
-	int i;
+	unsigned i;
 	contIntSuperPos(area, pdf);
 	for (i=0; i<_incNumber; i++) pdf.at(i) /= area;
 	contIntSuperPos(area, pdf);
 }
 
 void PhysicalModelBLD::contIntPdfMat(std::vector<double> &area, const SMLMS::Matrix &pdf){
-	int i,j;
+	unsigned i,j;
 	for (j=0; j<_stateNumber; j++){
 		area.at(j)=0.0;
  		// integrate TrapZ way
@@ -343,7 +343,7 @@ void PhysicalModelBLD::contIntPdfMat(std::vector<double> &area, const SMLMS::Mat
 }
 
 void PhysicalModelBLD::contNormPdfMat(std::vector<double> &area, SMLMS::Matrix &pdf){
-	int i,j;
+	unsigned i,j;
 	contIntPdfMat(area, pdf);
 	for (j=0; j<_stateNumber; j++){
 		for (i=0; i<_incNumber; i++) pdf(j,i) /= area.at(j);
@@ -369,7 +369,7 @@ void PhysicalModelBLD::paraMat2paraVect(){
 	checkParaMat();
 	checkMicroscope();
 	/* calculate expDist and transfer to paraVect */
-	int j;
+	unsigned j;
 	double tempPi, tempDist;
 	_paraVect.clear();
 	_paraVect.push_back(_stateNumber);
@@ -389,7 +389,7 @@ void PhysicalModelBLD::paraVect2paraMat(){
 	checkParaVect();
 	checkMicroscope();
 	/* calculate expDiff and transfer to paraMat */
-	int j;
+	unsigned j;
 	double tempPi, tempDiff;
 	for (j=0; j<_stateNumber; j++){
 		tempPi=_paraVect.at(1+(j*2));
@@ -405,7 +405,7 @@ void PhysicalModelBLD::calcFitSuperPosFromPara(){
 	checkFitSuperPos();
 	checkAlphabetSize();
 	/* pdf by para */
-	for (int i=0; i<_incNumber; i++){
+	for (unsigned i=0; i<_incNumber; i++){
 		_fitSuperPos.at(i)=judiSuperPosPdf(&_alphabet.at(i), _paraVect.data());
 	}
 	/* normalize */
@@ -419,9 +419,9 @@ void PhysicalModelBLD::calcFitMatrixFromPara(){
 	checkFitMatrix();
 	checkAlphabetSize();
 	/* pdf by para */
-	int i,j;
+	unsigned i,j;
 	for (j=0; j<_stateNumber; j++){
-		for (int i=0; i<_incNumber; i++){
+		for ( i=0; i<_incNumber; i++){
 			_fitMatrix(j,i)=judiPdf(&_alphabet.at(i), &_paraVect[1+(j*2)]);
 		}
 	}
@@ -432,11 +432,11 @@ void PhysicalModelBLD::calcFitMatrixFromPara(){
 
 void PhysicalModelBLD::updatePdfWeight(void){
 	checkParaMat();
-	for (int i=0; i<_stateNumber; i++) _pdfWeight.at(i) = _paraMat.at(i,0);
+	for (unsigned i=0; i<_stateNumber; i++) _pdfWeight.at(i) = _paraMat.at(i,0);
 }
 
 void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
-	int j;
+	unsigned j;
 	/* check stuff */
 	checkParaMat();
 	checkParaVect();
@@ -445,25 +445,25 @@ void PhysicalModelBLD::updateWeight(const SMLMS::Matrix &pi){
 }
 
 void PhysicalModelBLD::updatePi(SMLMS::Matrix &pi){
-	int j;
+	unsigned j;
 	for (j=0; j<_stateNumber; j++) pi(0,j)=_paraMat.at(j,0);
 }
 
 void PhysicalModelBLD::fixDiffusionCoefficients(void){
-	int i;
+	unsigned i;
 	for (i=0; i<_stateNumber; i++) _paraMat(i,5)=1;
 	paraMat2paraVect();
 }
 
 void PhysicalModelBLD::releaseDiffusionCoefficients(void){
-	int i;
+	unsigned i;
 	for (i=0; i<_stateNumber; i++) _paraMat(i,5)=0;
 	paraMat2paraVect();
 }
 
 /* fit functions */
 void PhysicalModelBLD::fitPdfSuperPos(){
-	int i;
+	unsigned i;
 	/* check stuff */
 	checkParaMat();
 	checkParaVect();
@@ -476,62 +476,60 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 	checkMaxValue();
 	checkBinSize();
 	/* normalize pdf SuperPos */
-	//contNormSuperPos(_contAreaSuperPos, _pdfSuperPos);
 	normPdfSuperPos(_areaPdfSuperPos, _pdfSuperPos);
 	paraMat2paraVect();
 	/* create canvas */
-	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
+	TCanvas c1 ("c1", "PDF Matrix", 700, 500);
 	/* create Histogramm */
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
-	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,_minValue,_maxValue);
+	TH1F pdfHist("PDF", "PDF", _incNumber,_minValue+(_binSize),_maxValue+(_binSize));
 	for (i=0; i<_incNumber; i++){
-		pdfHist->SetBinContent(i, _pdfSuperPos.at(i));
+		pdfHist.SetBinContent(i, _pdfSuperPos.at(i));
 	}
 	/* normalize */
 	double histIntegral;
-	histIntegral = pdfHist->Integral();
+	histIntegral = pdfHist.Integral();
 	double scale = 1/histIntegral;
-	pdfHist->Scale(scale);
-	pdfHist->Draw();
+	pdfHist.Scale(scale);
+	pdfHist.Draw();
+	pdfHist.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* create fit function */
-	TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue+_binSize,_maxValue+_binSize,_paraVect.size());
-	//TF1 *fitFcn = new TF1("fitFcn", judiSuperPosPdf ,_minValue,_maxValue,_paraVect.size());
-	fitFcn->SetParName(0, "states");
-	fitFcn->FixParameter(0,(double) _stateNumber);
+	TF1 fitFcn("fitFcn", judiSuperPosPdf ,_minValue+_binSize,_maxValue+_binSize,_paraVect.size());
+	fitFcn.SetParName(0, "states");
+	fitFcn.FixParameter(0,double(_stateNumber));
 	std::string weightName, weightBaseName("weight");
 	std::string DistName, DistBaseName("distance");
 	printParaMat();
 	printParaVect();	
+	double minDist, maxDist;
 	for (i=0; i<_stateNumber; i++){
 		weightName=weightBaseName;
 		weightName.append(std::to_string(i));
 		DistName=DistBaseName;
 		DistName.append(std::to_string(i));
-		fitFcn->SetParName(1+(i*2), weightName.data());
- 		fitFcn->SetParName(2+(i*2), DistName.data());
+		fitFcn.SetParName(1+(i*2), weightName.data());
+ 		fitFcn.SetParName(2+(i*2), DistName.data());
           	if (_paraMat.at(i,1)>0){
-        		fitFcn->FixParameter(1+(i*2),_paraVect.at(1+(i*2)));
+        		fitFcn.FixParameter(1+(i*2),_paraVect.at(1+(i*2)));
 		}
 		else{
-	        	fitFcn->SetParameter(1+(i*2),_paraVect.at(1+(i*2)));
-			fitFcn->SetParLimits(1+(i*2), _paraMat.at(i,2), _paraMat.at(i,3));
+	        	fitFcn.SetParameter(1+(i*2),_paraVect.at(1+(i*2)));
+			fitFcn.SetParLimits(1+(i*2), _paraMat.at(i,2), _paraMat.at(i,3));
 		}
 		if (_paraMat.at(i,5)>0){
-			fitFcn->FixParameter(2+(i*2),_paraVect.at(2+(i*2)));
+			fitFcn.FixParameter(2+(i*2),_paraVect.at(2+(i*2)));
 		}
 		else{
-			double minDist, maxDist;
-			fitFcn->SetParameter(2+(i*2),_paraVect.at(2+(i*2)));
+			fitFcn.SetParameter(2+(i*2),_paraVect.at(2+(i*2)));
 			minDist = SMLMS::expectedDistance(_paraMat(i,6), _microscope.intTime(), _microscope.locPrec()); 
 			maxDist = SMLMS::expectedDistance(_paraMat(i,7), _microscope.intTime(), _microscope.locPrec()); 
-			fitFcn->SetParLimits(2+(i*2), minDist, maxDist);
+			fitFcn.SetParLimits(2+(i*2), minDist, maxDist);
 		}
 	}
-	pdfHist->Fit("fitFcn", "I,L,M");
+	pdfHist.Fit("fitFcn", "I,WL,M,Q");
 	/* parse fit parameter to new rf1 */
-	TF1 *fit = pdfHist->GetFunction("fitFcn");
+	TF1 fit = *pdfHist.GetFunction("fitFcn");
 	for (i=0; i<_paraVect.size(); i++){
-		_paraVect.at(i)=std::abs(fit->GetParameter(i));
+		_paraVect.at(i)=std::abs(fit.GetParameter(i));
 	}
 	paraVect2paraMat();
 	double normFac = 0.0;
@@ -541,14 +539,11 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 	calcFitSuperPosFromPara();
 	calcFitMatrixFromPara();
 	/* delete root class instances */
-	delete fit;
-	delete fitFcn;
-	delete pdfHist;
-	delete c1;
+	c1.Close();
 }
 
 void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
-	int i;
+	unsigned i;
 	/* check stuff */
 	checkParaVect();
 	checkPdfMatrix();
@@ -560,65 +555,49 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 	checkMaxValue();
 	checkBinSize();
 	/* create canvas */	
-	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
+	TCanvas c1("c1", "PDF Matrix", 700, 500);
 	/* create histogram */
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber,(_minValue+_binSize),(_maxValue+_binSize));
+	TH1F pdfHist("PDF", "PDF", _incNumber,(_minValue+_binSize),(_maxValue+_binSize));
 	for (i=0; i<_incNumber; i++){
-		pdfHist->SetBinContent(i, pdf.at(j,i));
+		pdfHist.SetBinContent(i, pdf.at(j,i));
 	}
 	/* normalize */
 	double histIntegral;
-	histIntegral = pdfHist->Integral();
-	//histIntegral = pdfHist->GetEntries()*pdfHist->GetBinWidth(0);
+	histIntegral = pdfHist.Integral();
 	double scale = 1/histIntegral;
-	pdfHist->Scale(scale);
-	pdfHist->Draw();
+	pdfHist.Scale(scale);
+	pdfHist.Draw();
+	pdfHist.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* create fit function */
-	TF1 *fitFcn = new TF1("fitFcn", judiPdf ,_minValue,_maxValue,2);
+	TF1 fitFcn("fitFcn", judiPdf ,_minValue,_maxValue,2);
 	std::string weightName("weight");
 	std::string distName("dist");
-	//std::string dtName("dt");
-	//std::string sigmaName("sigma");
-	fitFcn->SetParName(0, weightName.data());
-	fitFcn->SetParName(1, distName.data());
-	//fitFcn->SetParName(2, dtName.data());
-	//fitFcn->SetParName(3, sigmaName.data());
-	//fitFcn->SetParameter(0,1.0/(_incNumber*_binSize));
-	fitFcn->SetParameter(0,1.0);
+	fitFcn.SetParName(0, weightName.data());
+	fitFcn.SetParName(1, distName.data());
+	fitFcn.SetParameter(0,1.0);
 	if (_paraMat.at(j, 5) > 0){
-		fitFcn->FixParameter(1,_paraVect.at(2+(j*2)));
+		fitFcn.FixParameter(1,_paraVect.at(2+(j*2)));
 	}
 	else{
 		double minDist, maxDist;
-		fitFcn->SetParameter(1,_paraVect.at(2+(j*2)));
+		fitFcn.SetParameter(1,_paraVect.at(2+(j*2)));
 		minDist = SMLMS::expectedDistance(_paraMat(j,6), _microscope.intTime(), _microscope.locPrec()); 
 		maxDist = SMLMS::expectedDistance(_paraMat(j,7), _microscope.intTime(), _microscope.locPrec()); 
-		fitFcn->SetParLimits(2+(j*2), minDist, maxDist);
+		fitFcn.SetParLimits(2+(j*2), minDist, maxDist);
 	}
-	//fitFcn->SetParameter(1,_paraVect.at(2+(j*2)));
-	//fitFcn->FixParameter(2,_paraVect.at(3+(j*4)));
-	//fitFcn->FixParameter(3,_paraVect.at(4+(j*4)));
 	/* fit */
-	pdfHist->Fit("fitFcn", "I,L,Q");
+	pdfHist.Fit("fitFcn", "I,WL,Q");
 	/* parse fit parameter to new rf1 */
-	TF1 *fit = pdfHist->GetFunction("fitFcn");
-	/*
-	for (i=1; i<2; i++){
-		_paraVect.at(1+i+(j*2))=fit->GetParameter(i);
-	}
-	*/
-	_paraVect.at(2+(j*2)) = fit->GetParameter(1);
+	TF1 fit = *pdfHist.GetFunction("fitFcn");
+	_paraVect.at(2+(j*2)) = fit.GetParameter(1);
 	/* delete root class instances */
-	delete fit;
-	delete pdfHist;
-	delete c1;
+	c1.Close();
 }
 
 void PhysicalModelBLD::fitPdf(SMLMS::Matrix &pdf){
 	/* normalize pdf SuperPos */
 	contNormPdfMat(_contArea, pdf);
-	//normPdfMatrix(_areaPdf, pdf);
-	int j;
+	unsigned j;
 	for (j=0; j<_stateNumber; j++) fitPdfMatState(j, pdf);
 	paraVect2paraMat();
 }
@@ -634,7 +613,6 @@ void PhysicalModelBLD::baumWelchFit(const SMLMS::Matrix &pi, SMLMS::Matrix &pdf)
 	paraMat2paraVect();
 	_pdfMatrix = pdf;
 	contNormPdfMat(_contArea, _pdfMatrix);
-	//normPdfMatrix(_areaPdf, _pdfMatrix);
 	fitPdf(_pdfMatrix);
 	updateWeight(pi);
 	updatePdfWeight();

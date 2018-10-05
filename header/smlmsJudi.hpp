@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: judi.hpp
 * Project: SMLMS
-* Version: 17.03
+* Version: 18.09
 * Creation Date: 03.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -25,6 +25,7 @@ namespace SMLMS{
 class JumpDistanceList{
 	private:
 		std::vector<Jump> _jumpDistanceList;
+		std::vector<TraceStatistics> _traceStatList;
 		unsigned _traceNumber;
 	public:
 		/* constructor */
@@ -45,23 +46,28 @@ class JumpDistanceList{
 		/* proof functions */
 		void checkTraceNumber();
 		void checkTraceNumber()const;
+		void checkTraceNumber(unsigned tempTrace);
+		void checkTraceNumber(unsigned tempTrace)const;
 		/* special functions*/
 		void calcTraceNumber();
 		Jump calculateJump(Molecule &initMol, Molecule &finalMol);
 		void addJumpToEnd(Jump &);
 		Jump getJump(int);
 		Jump getJump(int) const;
-		std::vector<double> getTraceJumps(int traceNumber);
-		std::vector<double> getTraceJumps(int traceNumber) const;
-		void setTraceStates(int traceNumber, std::vector<int> &stateTrace);
-		std::vector<int> getTraceStates(int TraceNumber);
-		std::vector<int> getTraceStates(int TraceNumber) const;
+		std::vector<double> getTraceJumps(unsigned traceNumber);
+		std::vector<double> getTraceJumps(unsigned traceNumber) const;
+		void setTraceStates(unsigned traceNumber, std::vector<int> &stateTrace);
+		std::vector<int> getTraceStates(unsigned TraceNumber);
+		std::vector<int> getTraceStates(unsigned TraceNumber) const;
 		int getNumberOfJumps();
 		int getNumberOfJumps() const;
 		void getAllJumps(std::vector<double> &);
-		std::vector<double> getAllJumpsOfState(int state);
+		std::vector<double> getAllJumpsOfState(unsigned state);
+		void clearTraceStatList();
+		void calcTraceStatList();
 		void clearJumpDistanceList();
-		void readJumpDistanceList(const std::string &);
+		void reserveMemory(const std::string& fileName);
+		void readJumpDistanceList(const std::string& fileName);
 		void writeJumpDistanceList(const std::string &folderName);
 		void calcJumpDistanceList(MoleculeList &);
 		void transferStatesToMoleculeList(MoleculeList &);

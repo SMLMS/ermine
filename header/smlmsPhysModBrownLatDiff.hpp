@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsPhysModBrownLat.hpp
 * Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 30.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>

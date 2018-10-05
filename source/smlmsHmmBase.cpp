@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmBase.cpp
 * Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 23.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -196,7 +196,7 @@ int HMMBase::maxIt(){
 
 /* read/write functions */
 void HMMBase::readHMM(std::string const &name){
-	int n=0, row=0;
+	unsigned n=0, row=0;
 	std::string line;
 	std::fstream inFile(name.data());
 	if (inFile.is_open()){
@@ -218,20 +218,20 @@ void HMMBase::readHMM(std::string const &name){
 			}
 			/* read initial probability: pi */
 			if (n==2){
-				for (int i=0; i<_stateNumber; i++){
+				for (unsigned i=0; i<_stateNumber; i++){
 					lineContent>>_equiPDF(0,i);
 				}
 			}
 			/* read transition probability: A */
 			if(n>2 && n<(3+_stateNumber)){
 				row=n-3;
-				for (int column=0; column<_stateNumber; column++){
+				for (unsigned column=0; column<_stateNumber; column++){
 					lineContent>>_transPDF(row, column);
 				}
 			}
 			/* read observation alphabet */
 			if(n==3+_stateNumber){
-				for(int i=0; i<_symbolNumber; i++) lineContent>>_obsAlphabet.at(i);
+				for(unsigned i=0; i<_symbolNumber; i++) lineContent>>_obsAlphabet.at(i);
 				extractParasFromObsAlphabet();
 				extractSymbolInterval();
 				extractMinValue();
@@ -240,7 +240,7 @@ void HMMBase::readHMM(std::string const &name){
 			/* read observation parameter Matrix: B */
 			if(n>(3+_stateNumber) && n<(4+_stateNumber+_stateNumber)){
 				row = n-_stateNumber-4;
-				for (int column=0; column<_symbolNumber; column++){
+				for (unsigned column=0; column<_symbolNumber; column++){
 					lineContent>>_obsPDF(row, column);
 				}
 			}
@@ -282,26 +282,26 @@ void HMMBase::writeHMM(const std::string &folderName){
 		outFile<<symbolNumber()<<std::endl;
 		/* initial probability: pi */
 		outFile<<"# initial probability vector: pi"<<std::endl;
-		for (int i=0; i<_stateNumber; i++){
+		for (unsigned i=0; i<_stateNumber; i++){
 			outFile<<_equiPDF.at(0,i)<<"\t";
 		}
 		outFile<<std::endl;
 		/* transition array: A */
 		outFile<<"# transition probability matrix: A"<<std::endl;
-		for (int row=0; row<_stateNumber; row++){
-			for (int column=0; column<_stateNumber; column++){
+		for (unsigned row=0; row<_stateNumber; row++){
+			for (unsigned column=0; column<_stateNumber; column++){
 				outFile<<_transPDF.at(row, column)<<"\t";
 			}
 			outFile<<std::endl;
 		}
 		/* observation alphabet */
 		outFile<<"# observation alphabet:"<<std::endl;
-		for (int i=0; i<_symbolNumber; i++)outFile<<_obsAlphabet.at(i)<<"\t";
+		for (unsigned i=0; i<_symbolNumber; i++)outFile<<_obsAlphabet.at(i)<<"\t";
 		outFile<<std::endl;
 		/* observation parameter array: B */
 		outFile<<"# observation probability matrix B"<<std::endl;
-		for (int row=0; row<_stateNumber; row++){
-			for (int column=0; column<_symbolNumber; column++) outFile<<_obsPDF.at(row,column)<<"\t";
+		for (unsigned row=0; row<_stateNumber; row++){
+			for (unsigned column=0; column<_symbolNumber; column++) outFile<<_obsPDF.at(row,column)<<"\t";
 			outFile<<std::endl;
 		}
 		/* print statistics */
@@ -397,9 +397,9 @@ void HMMBase::checkAlphabet(){
 
 void HMMBase::checkProbDen(SMLMS::Matrix & mat){
 	double prob;
-	for (int i=0; i<mat.numberOfRows(); i++){
+	for (unsigned i=0; i<mat.numberOfRows(); i++){
 		prob = 0;
-		for (int j=0; j<mat.numberOfColumns(); j++){
+		for (unsigned j=0; j<mat.numberOfColumns(); j++){
 			prob += mat.at(i,j);
 		}
 		if ((prob < 0.99) || (prob > 1.01)){
@@ -452,7 +452,7 @@ void HMMBase::initEquiPDF(){
 	_equiPDF.clearMatrix();
 	SMLMS::Matrix tempMat(1, _stateNumber);
 	_equiPDF = tempMat;
-	for (int i=0; i<_stateNumber; i++){
+	for (unsigned i=0; i<_stateNumber; i++){
 		_equiPDF(0,i) = 1.0/_stateNumber;
 	}
 }
@@ -473,8 +473,8 @@ void HMMBase::initTransPDF(){
 	_transPDF.clearMatrix();
 	SMLMS::Matrix tempMat(_stateNumber, _stateNumber);
 	_transPDF = tempMat;
-	for (int j=0; j<_stateNumber; j++){
-		for (int i=0; i<_stateNumber; i++){
+	for (unsigned j=0; j<_stateNumber; j++){
+		for (unsigned i=0; i<_stateNumber; i++){
 			_transPDF(j,i)=1.0/_stateNumber;
 		}
 	}
@@ -493,7 +493,7 @@ void HMMBase::initObs(){
 }
 
 void HMMBase::initObsPDF(){
-	int i,j;
+	unsigned i,j;
 	_obsPDF.clearMatrix();
 	SMLMS::Matrix tempMat(_stateNumber, _symbolNumber);
 	_obsPDF = tempMat;
@@ -556,7 +556,7 @@ void HMMBase::initFromPhysMod(SMLMS::PhysicalModelBLD &physMod){
 
 /* normalization */
 void HMMBase::normalizePDF(SMLMS::Matrix& mat){
-	int i,j;
+	unsigned i,j;
 	double area;
 	//integrate
 	for (i=0; i<mat.numberOfRows(); i++){
@@ -612,7 +612,7 @@ void HMMBase::extractSymbolInterval(){
 
 void HMMBase::calcObsAlphabetFromParas(){
 	checkAlphabet();
-	for (int i=0; i<_symbolNumber; i++){
+	for (unsigned i=0; i<_symbolNumber; i++){
 		_obsAlphabet.at(i) = _minValue+((i+1)*_symbolInterval);
 	}
 }
@@ -626,9 +626,9 @@ void HMMBase::extractParasFromObsAlphabet(){
 
 void HMMBase::calcCDF(const SMLMS::Matrix& pdf, SMLMS::Matrix& cdf){
 	double value;
-	for (int i=0; i<pdf.numberOfRows(); i++){
+	for (unsigned i=0; i<pdf.numberOfRows(); i++){
 		value = 0.0;
-		for (int j=0; j<pdf.numberOfColumns(); j++){
+		for (unsigned j=0; j<pdf.numberOfColumns(); j++){
 			value += pdf.at(i,j);
 			cdf.at(i,j,value);
 		}
@@ -649,14 +649,14 @@ void HMMBase::calcDof(SMLMS::PhysicalModelBLD &model){
 	_dof = 0;
 	SMLMS::Matrix paraMat = model.paraMat();
 	/* add equilibrium degrees of freedom */
-	for (int i=0; i<_stateNumber; i++){
+	for (unsigned i=0; i<_stateNumber; i++){
 		if(!paraMat.at(i,1))_dof += 1;
 	}
 	if (_dof)_dof -= 1;
 	/* add transition Matrix degrees of freedom based upon Sriraman et al. J. Phys Chem. 2005 */
 	_dof += (_stateNumber+2)*(_stateNumber-1)/2;
 	/* add observation degrees of freedom */
-	for (int i=0; i<_stateNumber; i++){
+	for (unsigned i=0; i<_stateNumber; i++){
 		if (!paraMat.at(i,5))_dof += 1;
 	}
 }
@@ -699,14 +699,14 @@ void HMMBase::printSymbolInterval(){
 }
 
 void HMMBase::printEquiPDF(){
-	int i;
+	unsigned i;
 	std::cout<<std::endl<<"Equilibrium Matrix (pi): "<<std::endl;
 	for (i=0; i<_stateNumber; i++) std::cout<<_equiPDF.at(0,i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void HMMBase::printTransPDF(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<std::endl<<"Transition Matrix (A): "<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for(j=0; j<_stateNumber; j++) std::cout<<_transPDF.at(i,j)<<"\t";
@@ -716,7 +716,7 @@ void HMMBase::printTransPDF(){
 }
 
 void HMMBase::printObsPDF(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<std::endl<<"Observation Matrix (B):"<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for(j=0; j<_symbolNumber; j++) std::cout<<_obsPDF.at(i,j)<<"\t";
@@ -726,14 +726,14 @@ void HMMBase::printObsPDF(){
 }
 
 void HMMBase::printEquiCDF(){
-	int i;
+	unsigned i;
 	std::cout<<std::endl<<"Cumulative Equilibrium Matrix (pi): "<<std::endl;
 	for (i=0; i<_stateNumber; i++) std::cout<<_equiCDF.at(0,i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void HMMBase::printTransCDF(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<std::endl<<"Cumulative Transition Matrix (A): "<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for(j=0; j<_stateNumber; j++) std::cout<<_transCDF.at(i,j)<<"\t";
@@ -743,7 +743,7 @@ void HMMBase::printTransCDF(){
 }
 
 void HMMBase::printObsCDF(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<std::endl<<"Cumulative Observation Matrix (B):"<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for(j=0; j<_symbolNumber; j++) std::cout<<_obsCDF.at(i,j)<<"\t";
@@ -753,7 +753,7 @@ void HMMBase::printObsCDF(){
 }
 
 void HMMBase::printObsAlphabet(){
-	int i;
+	unsigned i;
 	std::cout<<std::endl<<"Observation Alphabet: "<<std::endl;
 	for (i=0; i<_symbolNumber; i++) std::cout<<_obsAlphabet.at(i)<<"\t";
 	std::cout<<std::endl;

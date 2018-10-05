@@ -43,7 +43,7 @@ ErmineParser::ErmineParser(){
 	alphabet.insert(std::make_pair("evaluate",0));
 	alphabet.insert(std::make_pair("train",0));
 	alphabet.insert(std::make_pair("bestPath",0));
-	alphabet.insert(std::make_pair("dwellTime",0));
+	//alphabet.insert(std::make_pair("dwellTime",0));
 	alphabet.insert(std::make_pair("transferStates",0));
 	alphabet.insert(std::make_pair("wholeCell", 0));
 	alphabet.insert(std::make_pair("archive",0));
@@ -192,7 +192,7 @@ void ErmineParser::printAlgorithmHelp(){
 	<<"wholeCell:\ttrains a model n a single cell data set, calculates the best path and archives the result.\t(mic, mol, judi, mod, hmm)"<<std::endl
 	<<"archive:\tsave a complete model to an hdf5 file.\t\t\t\t\t\t\t\t(mic, mol, judi, mod, hmm)"<<std::endl
 	<<"extract:\textract an archived model from an hdf5 file.\t\t\t\t\t\t\t(HDF5)"<<std::endl
-	<<"dwellTime:\tretimates the model transition rates form an optimized path.\t\t\t\t\t(judi, hmm)"<<std::endl
+	//<<"dwellTime:\tretimates the model transition rates form an optimized path.\t\t\t\t\t(judi, hmm)"<<std::endl
 	<<"simulate:\tcalculates a mchmm simulation.\t\t\t\t\t\t\t\t\t(hmm)"<<std::endl
 	<<std::endl;
 

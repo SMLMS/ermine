@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmUnique.cpp
 * Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 23.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <ctime>
+#include <algorithm>
 #include <math.h>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
@@ -130,7 +131,7 @@ void HMMUnique::initNormLH(){
 }
 
 void HMMUnique::resetNormLH(){
-	int t;
+	unsigned t;
 	for (t=0; t<_obsNumber; t++){
 		_normLH.at(t)=0.0;
 	}
@@ -144,7 +145,7 @@ void HMMUnique::initAlpha(){
 }
 
 void HMMUnique::resetAlpha(){
-	int i,t;
+	unsigned i,t;
 	for (i=0; i<_stateNumber; i++){
 		for (t=0; t<_obsNumber; t++){
 			_alpha.at(i,t,0.0);
@@ -161,7 +162,7 @@ void HMMUnique::initBeta(){
 }
 
 void HMMUnique::resetBeta(){
-	int i,t;
+	unsigned i,t;
 	for (i=0; i<_stateNumber; i++){
 		for (t=0; t<_obsNumber; t++){
 			_beta.at(i,t,0.0);
@@ -170,7 +171,7 @@ void HMMUnique::resetBeta(){
 }
 
 void HMMUnique::initXi(){
-	int i,j,t;
+	unsigned i,j,t;
 	_xi.clear();
 	SMLMS::Matrix tempMat(_stateNumber, _stateNumber);
 	for (i=0; i<_stateNumber; i++){
@@ -184,7 +185,7 @@ void HMMUnique::initXi(){
 }
 
 void HMMUnique::resetXi(){
-	int i,j,t;
+	unsigned i,j,t;
 	SMLMS::Matrix tempMat(_stateNumber, _stateNumber);
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_stateNumber; j++){
@@ -204,7 +205,7 @@ void HMMUnique::initGamma(){
 }
 
 void HMMUnique::resetGamma(){
-	int i,t;
+	unsigned i,t;
 	for (i=0; i<_stateNumber; i++){
 		for (t=0; t<_obsNumber; t++){
 			_gamma.at(i,t,0.0);
@@ -220,7 +221,7 @@ void HMMUnique::initTransPDFNumer(){
 }
 
 void HMMUnique::resetTransPDFNumer(){
-	int i,j;
+	unsigned i,j;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_stateNumber; j++){
 			_transPDFNumer.at(i,j,0.0);
@@ -236,7 +237,7 @@ void HMMUnique::initObsPDFNumer(){
 }
 
 void HMMUnique::resetObsPDFNumer(){
-	int i,j;
+	unsigned i,j;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_symbolNumber; j++){
 			_obsPDFNumer.at(i,j,0.0);
@@ -252,7 +253,7 @@ void HMMUnique::initPDFDenominator(){
 }
 
 void HMMUnique::resetPDFDenominator(){
-	int i;
+	unsigned i;
 	for (i=0; i<_stateNumber; i++) _pdfDenominator.at(0,i,0.0);
 }
 
@@ -284,14 +285,14 @@ void HMMUnique::printObsNumber(){
 }
 
 void HMMUnique::printNormLH(){
-	int t;
+	unsigned t;
 	std::cout<<std::endl<<"Normalization Factor: "<<std::endl;
 	for (t=0; t<_obsNumber; t++) std::cout<<_normLH.at(t)<<std::endl;
 	std::cout<<std::endl;
 }
 
 void HMMUnique::printAlpha(){
-	int i,t;
+	unsigned i,t;
 	std::cout<<std::endl<<"Alpha: "<<std::endl;
 	for (t=0; t<_obsNumber; t++){
 		for(i=0; i<_stateNumber;i++) std::cout<<_alpha.at(i,t)<<"\t";
@@ -301,7 +302,7 @@ void HMMUnique::printAlpha(){
 }
 
 void HMMUnique::printBeta(){
-	int i,t;
+	unsigned i,t;
 	std::cout<<std::endl<<"Beta: "<<std::endl;
 	for (t=0; t<_obsNumber; t++){
 		for(i=0; i<_stateNumber;i++) std::cout<<_beta.at(i,t)<<"\t";
@@ -311,7 +312,7 @@ void HMMUnique::printBeta(){
 }
 
 void HMMUnique::printXi(){
-	int i,j,t;
+	unsigned i,j,t;
 	std::cout<<std::endl<<"Xi: "<<std::endl;
 	for (t=0; t<_obsNumber; t++){
 		for (i=0; i<_stateNumber; i++){
@@ -323,7 +324,7 @@ void HMMUnique::printXi(){
 }
 
 void HMMUnique::printGamma(){
-	int i,t;
+	unsigned i,t;
 	std::cout<<std::endl<<"Gamma: "<<std::endl;
 	for (t=0; t<_obsNumber; t++){
 		for(i=0; i<_stateNumber; i++) std::cout<<_gamma.at(i,t)<<"\t";
@@ -333,7 +334,7 @@ void HMMUnique::printGamma(){
 }
 
 void HMMUnique::printTransPDFNumer(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<std::endl<<"Transition Matrix Numer:"<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_stateNumber; j++) std::cout<<_transPDFNumer.at(i,j)<<"\t";
@@ -343,7 +344,7 @@ void HMMUnique::printTransPDFNumer(){
 }
 
 void HMMUnique::printObsPDFNumer(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<std::endl<<"Observation Matrix Numer:"<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_symbolNumber; j++) std::cout<<_obsPDFNumer.at(i,j)<<"\t";
@@ -353,7 +354,7 @@ void HMMUnique::printObsPDFNumer(){
 }
 
 void HMMUnique::printPDFDenominator(){
-	int i;
+	unsigned i;
 	std::cout<<std::endl<<"Transition/Observation Matrix Denominator:"<<std::endl;
 	for (i=0; i<_stateNumber; i++) std::cout<<_pdfDenominator.at(0,i)<<"\t";
 	std::cout<<std::endl;
@@ -361,7 +362,8 @@ void HMMUnique::printPDFDenominator(){
 /* help functions*/
 int HMMUnique::findMatch(const SMLMS::Matrix& cdf, int state, double event){
 	int eventPdfPosition=0;
-	int i;
+	unsigned i;
+	/*
 	if (event<=cdf.at(state,0)){
 		eventPdfPosition=0;
 	}
@@ -378,12 +380,19 @@ int HMMUnique::findMatch(const SMLMS::Matrix& cdf, int state, double event){
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
+	*/
+	// binary search
+	std::vector<double> cdfState(cdf.numberOfColumns());
+	for (i=0; i<cdf.numberOfColumns(); i++) cdfState.at(i) = cdf.at(state,i);
+	auto lb = std::lower_bound(cdfState.begin(), cdfState.end(), event);
+	eventPdfPosition = lb - cdfState.begin();
 	return eventPdfPosition;
 }
 
 int HMMUnique::obsPDFMatch(double event){
 	int eventPdfPosition=0;
-	int i;
+	/*
+	unsigned i;
 	if (event<=_obsAlphabet.at(0)){
 		eventPdfPosition=0;
 	}
@@ -400,6 +409,10 @@ int HMMUnique::obsPDFMatch(double event){
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
+	*/
+	// binary search
+	auto lb = std::lower_bound(_obsAlphabet.begin(), _obsAlphabet.end(), event);
+	eventPdfPosition = lb - _obsAlphabet.begin();
 	return eventPdfPosition;
 }
 
@@ -414,7 +427,7 @@ bool HMMUnique::obsSymbolMatch(int i, double event){
 }
 
 void HMMUnique::calcXi(const std::vector<double> &obsSeq){
-	int t,i,j;
+	unsigned t,i,j;
 	double denominator;
 	SMLMS::Matrix tempMat(_stateNumber, _stateNumber);
 	for (t=1; t<_obsNumber; t++){
@@ -434,8 +447,8 @@ void HMMUnique::calcXi(const std::vector<double> &obsSeq){
 }
 
 void HMMUnique::calcGamma(){
-	int i,j,t,scaleDiff;
-	double enumerator, denominator, tempGamma;
+	unsigned i,t;
+	double denominator;
 	for (t=1; t<_obsNumber; t++){
 		denominator = 0.0;
 		for(i=0; i<_stateNumber; i++) denominator += _gamma(i,t)= _alpha(i,t)*_beta(i,t);
@@ -444,12 +457,12 @@ void HMMUnique::calcGamma(){
 }
 
 void HMMUnique::reestimateEquiPDF(){
-	int i;
+	unsigned i;
 	for(i=0; i<_stateNumber; i++) _equiPDF(0,i) = _gamma(i,1);
 }
 
 void HMMUnique::estimateTransPDFNumer(){
-	int i,j,t;
+	unsigned i,j,t;
 	resetTransPDFNumer();
 	for (i=0; i<_stateNumber; i++){
 		for (j=0;j<_stateNumber; j++){
@@ -476,7 +489,7 @@ void HMMUnique::reestimateTransPDF02(){
 }
 */
 void HMMUnique::reestimateTransPDF(){
-	int i,j;
+	unsigned i,j;
 	estimateTransPDFNumer();
 	estimatePDFDenominator();
 	for (i=0; i<_stateNumber; i++){
@@ -501,7 +514,7 @@ void HMMUnique::reestimateObsPDF02(const std::vector<double> &obsSeq){
 }
 */
 void HMMUnique::estimateObsPDFNumer(const std::vector<double> &obsSeq){
-	int i,j,t;
+	unsigned i,j,t;
 	resetObsPDFNumer();
 	for (i=0; i<_stateNumber; i++){
 		for (j=0;j<_symbolNumber; j++){
@@ -513,7 +526,7 @@ void HMMUnique::estimateObsPDFNumer(const std::vector<double> &obsSeq){
 }
 
 void HMMUnique::estimatePDFDenominator(){
-	int i,t;
+	unsigned i,t;
 	resetPDFDenominator();
 	for (i=0; i<_stateNumber; i++){
 		for (t=0; t<_obsNumber; t++) _pdfDenominator(0,i) += _gamma.at(i,t);
@@ -521,7 +534,7 @@ void HMMUnique::estimatePDFDenominator(){
 }
 
 void HMMUnique::reestimateObsPDF(const std::vector<double> &obsSeq){
-	int i,j;
+	unsigned i,j;
 	estimateObsPDFNumer(obsSeq);
 	estimatePDFDenominator();
 	for (i=0; i<_stateNumber; i++){
@@ -544,7 +557,8 @@ void HMMUnique::simulate(std::vector<double> &obsSeq, std::vector<int> &stateSeq
 
 void HMMUnique::simulateStates(std::vector<int> &stateSeq){
 	double event = 0.0;
-	int t, preState;
+	unsigned t;
+	int preState;
 	checkObsLength(stateSeq.size());
 	// simulate initial state by equiCDF
 	event = _randGen.generateRandomDouble(0.0, 1.0);
@@ -558,7 +572,8 @@ void HMMUnique::simulateStates(std::vector<int> &stateSeq){
 
 void HMMUnique::simulateObservations(std::vector<double> &obsSeq, const std::vector<int> &stateSeq){
 	double event = 0.0;
-	int eventPDFPos, t;
+	int eventPDFPos;
+	unsigned t;
 	checkObsLength(obsSeq.size());
 	checkObsLength(stateSeq.size());
 	for(t=0; t<_obsNumber; t++){
@@ -571,7 +586,7 @@ void HMMUnique::simulateObservations(std::vector<double> &obsSeq, const std::vec
 /* core functions: HMM Estimate likelihood */
 
 void HMMUnique::forwardAlgorithm(const std::vector<double> &obsSeq){
-	int i,j,t;
+	unsigned i,j,t;
 	double tempNorm = 0.0;
 	checkObsLength(obsSeq.size());
 	// forward Procedure
@@ -608,7 +623,7 @@ void HMMUnique::forwardAlgorithm(const std::vector<double> &obsSeq){
 }
 
 void HMMUnique::backwardAlgorithm(const std::vector<double> &obsSeq){
-	int i,j,t;
+	unsigned i,j,t;
 	checkObsLength(obsSeq.size());
 	// Backward Procedure
         // beta_t(i) = P(O_t+1 O_t+2 ... O_T | q_t = S_i , hmm)
@@ -645,7 +660,7 @@ void HMMUnique::forwardBackward(const std::vector<double> &obsSeq){
 }
 
 void HMMUnique::estimateLikelihood(){
-	int t;
+	unsigned t;
 	double llc =0.0;
 	for (t=0; t<_obsNumber; t++){
 		llc += log(_normLH.at(t));
@@ -704,14 +719,13 @@ void HMMUnique::train(const std::vector<double> &obsSeq){
 }
 
 void HMMUnique::viterbi(std::vector<int> &stateSeq, const std::vector<double> &obsSeq){
-	int i,j,t;
+	unsigned i,j,t;
 	//proof seqLength
 	// Initialization
 	double tempNorm = 0.0;
 	double tempProb =0.0;
 	double maxVal=0.0;
 	int maxInd=0;
-	int tempState = 0;
 	SMLMS::Matrix delta(_stateNumber, _obsNumber);
 	SMLMS::Matrix psi(_stateNumber, _obsNumber);
 	//initAnalysis();

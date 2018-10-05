@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmSequence.hpp
 * Project: SMLMS
-* Version: 17.02
+* Version: 18.09
 * Creation Date: 23.02.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>

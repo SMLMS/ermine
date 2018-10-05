@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsPhysModBase.cpp
 * Project: SMLMS
-* Version: 16.03
+* Version: 18.09
 * Creation Date: 28.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -243,7 +243,7 @@ void PhysicalModelBase::printStateNumber(){
 }
 
 void PhysicalModelBase::printAlphabet(){
-	int i;
+	unsigned i;
 	std::cout<<"observation alphabet: "<<std::endl;
 	for (i=0; i<_incNumber; i++)std::cout<<_alphabet.at(i)<<"\t";
 	std::cout<<std::endl;
@@ -258,21 +258,21 @@ void PhysicalModelBase::printAreaFitSuperPos(){
 }
 
 void PhysicalModelBase::printPdfSuperPos(){
-	int i;
+	unsigned i;
 	std::cout<<"pdf super position: "<<std::endl;
 	for(i=0; i<_incNumber; i++) std::cout<<_pdfSuperPos.at(i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void PhysicalModelBase::printFitSuperPos(){
-	int i;
+	unsigned i;
 	std::cout<<"fit super position: "<<std::endl;
 	for(i=0; i<_incNumber; i++) std::cout<<_fitSuperPos.at(i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void PhysicalModelBase::printResSuperPos(){
-	int i;
+	unsigned i;
 	std::cout<<"residues super position: "<<std::endl;
 	for(i=0; i<_incNumber; i++) std::cout<<_resSuperPos.at(i)<<"\t";
 	std::cout<<std::endl;
@@ -283,21 +283,21 @@ void PhysicalModelBase::printChiSquareSuperPos(){
 }
 
 void PhysicalModelBase::printAreaPdf(){
-	int i;
+	unsigned i;
 	std::cout<<"area of single state pdf: "<<std::endl;
 	for(i=0; i<_stateNumber; i++) std::cout<<_areaPdf.at(i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void PhysicalModelBase::printAreaFit(){
-	int i;
+	unsigned i;
 	std::cout<<"area of single state pdf fit: "<<std::endl;
 	for(i=0; i<_stateNumber; i++) std::cout<<_areaFit.at(i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void PhysicalModelBase::printPdfMatrix(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<"pdf Matrix: "<<std::endl;
 	for (i=0; i<_incNumber; i++){
 		for (j=0; j<_stateNumber; j++)std::cout<<_pdfMatrix.at(j,i)<<"\t";
@@ -306,7 +306,7 @@ void PhysicalModelBase::printPdfMatrix(){
 }
 
 void PhysicalModelBase::printFitMatrix(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<"pdf fit Matrix: "<<std::endl;
 	for (i=0; i<_incNumber; i++){
 		for (j=0; j<_stateNumber; j++)std::cout<<_fitMatrix.at(j,i)<<"\t";
@@ -315,7 +315,7 @@ void PhysicalModelBase::printFitMatrix(){
 }
 
 void PhysicalModelBase::printResMatrix(){
-	int i,j;
+	unsigned i,j;
 	std::cout<<"residues Matrix: "<<std::endl;
 	for (i=0; i<_incNumber; i++){
 		for (j=0; j<_stateNumber; j++)std::cout<<_resMatrix.at(j,i)<<"\t";
@@ -324,14 +324,14 @@ void PhysicalModelBase::printResMatrix(){
 }
 
 void PhysicalModelBase::printChiSquare(){
-	int i;
+	unsigned i;
 	std::cout<<"single state chi suqare: "<<std::endl;
 	for(i=0; i<_stateNumber; i++)std::cout<<_chiSquare.at(i)<<"\t";
 	std::cout<<std::endl;
 }
 
 void PhysicalModelBase::printPdfWeight(){
-	int i;
+	unsigned i;
 	std::cout<<"pdf matrix weight factors: "<<std::endl;
 	for(i=0; i<_stateNumber; i++)std::cout<<_pdfWeight.at(i)<<"\t";
 	std::cout<<std::endl;
@@ -497,7 +497,7 @@ void PhysicalModelBase::checkAreaPdfSize(){
 }
 
 void PhysicalModelBase::checkAreaPdf(){
-	int i, prec;
+	unsigned i, prec;
 	prec = -1 * std::numeric_limits<double>::max_digits10;
 	for (i=0; i<_stateNumber; i++){
 		if((_areaPdf.at(i) < 1.0 - std::pow(1,prec)) or (_areaPdf.at(i) > 1.0 + std::pow(1,prec))){
@@ -521,7 +521,7 @@ void PhysicalModelBase::checkAreaFitSize(){
 }
 
 void PhysicalModelBase::checkAreaFit(){
-	int i, prec;
+	unsigned i, prec;
 	prec = -1 * std::numeric_limits<double>::max_digits10;
 	for (i=0; i<_stateNumber; i++){
 		if((_areaFit.at(i) < 1.0 - std::pow(1,prec)) or (_areaFit.at(i) > 1.0 + std::pow(1,prec))){
@@ -632,7 +632,7 @@ void PhysicalModelBase::checkPhysicalModelBase(){
 
 /* init functions */
 void PhysicalModelBase::initModel(){
-	int i, j;
+	unsigned i, j;
 	/* init superPos */
 	_areaPdfSuperPos = 1.0;
 	_areaFitSuperPos = 1.0;
@@ -664,7 +664,7 @@ void PhysicalModelBase::initModel(){
 }
 
 void PhysicalModelBase::initModelByParameter(){
-	int i;
+	unsigned i;
 	/* check stuff */
 	checkBinSize();
 	checkMinValue();
@@ -691,7 +691,7 @@ void PhysicalModelBase::initModelByAlphabet(){
 
 /* write functions */
 void PhysicalModelBase::writePdfSuperPos(const std::string &folderName){
-	int i,j;
+	unsigned i,j;
 	std::string name;
 	name = folderName;
 	name.append("/pdfSuperPos.txt");
@@ -719,7 +719,7 @@ void PhysicalModelBase::writePdfSuperPos(const std::string &folderName){
 }
 
 void PhysicalModelBase::writePdfMatrix(const std::string &folderName){
-	int i,j;
+	unsigned i,j;
 	std::string name;
 	name = folderName;
 	name.append("/pdfMatrix.txt");
@@ -750,123 +750,134 @@ void PhysicalModelBase::writePdfMatrix(const std::string &folderName){
 
 /* plot functions */
 void PhysicalModelBase::plotPhysicalModel(const std::string &folderName){
-	int i,j;
+	unsigned i,j;
 	/* create Filename */
 	std::string name;
 	name = folderName;
 	name.append("/ProbabilityDensityDistribution.pdf");
 	/* define and set style */
-	gStyle->SetOptStat(0);
-	gStyle->SetTitleFontSize(0.05);
-	gStyle->SetTitleOffset(1.0, "x");
-	gStyle->SetTitleOffset(1.0, "y");
+	TStyle eStyle("Plain","ermine style");
+	eStyle.SetOptStat(0);
+	eStyle.SetTitleFontSize(0.05);
+	eStyle.SetTitleOffset(1.0, "x");
+	eStyle.SetTitleOffset(1.0, "y");
+   	eStyle.SetCanvasBorderMode(0);
+   	eStyle.SetPadBorderMode(0);
+   	eStyle.SetPadColor(0);
+   	eStyle.SetCanvasColor(0);
+   	eStyle.SetTitleColor(0);
+   	eStyle.SetStatColor(0);
+	eStyle.cd();
 	/* create canvas */
-	TCanvas *c1 = new TCanvas("c1", "PDF Matrix", 700, 500);
-	c1->Divide(1,2);
+	TCanvas c1("c1", "PDF Matrix", 700, 500);
+	c1.Divide(1,2);
 	/* change TPad */
-	c1->cd(1);
+	c1.cd(1);
 	/* draw pdf to Histogram */
-	//TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber, _minValue+(1*_binSize), _maxValue+(1*_binSize));
-	TH1F* pdfHist = new TH1F("PDF", "PDF", _incNumber, _minValue, _maxValue);
-	for (i=0; i<_incNumber; i++) pdfHist->SetBinContent(i, _pdfSuperPos.at(i));
-	pdfHist->SetLineColor(17);
-	pdfHist->SetFillColor(17);
-	pdfHist->SetTitle("pdf fit");
-	pdfHist->GetYaxis()->SetTitle("P(r) [a.u.]");
-	pdfHist->GetXaxis()->SetTitle("r [nm]");
-	pdfHist->GetXaxis()->SetTitleSize(0.04);
-	pdfHist->GetXaxis()->SetTickLength(0.04);
-	pdfHist->GetXaxis()->SetLabelSize(0.04);
-	pdfHist->GetYaxis()->SetTitleSize(0.04);
-	pdfHist->GetYaxis()->SetTickLength(0.01);
-	pdfHist->GetYaxis()->SetLabelSize(0.04);
-	pdfHist->GetXaxis()->SetLimits(_minValue, _maxValue);
-	pdfHist->SetBarOffset(+1);
-	pdfHist->Draw("b");
+	TH1F pdfHist("PDF", "PDF", _incNumber, _minValue, _maxValue);
+	for (i=0; i<_incNumber; i++) pdfHist.SetBinContent(i, _pdfSuperPos.at(i));
+	pdfHist.SetLineColor(17);
+	pdfHist.SetFillColor(17);
+	pdfHist.SetTitle("pdf fit");
+	pdfHist.GetYaxis()->SetTitle("P(r) [a.u.]");
+	pdfHist.GetXaxis()->SetTitle("r [nm]");
+	pdfHist.GetXaxis()->SetTitleSize(0.04);
+	pdfHist.GetXaxis()->SetTickLength(0.04);
+	pdfHist.GetXaxis()->SetLabelSize(0.04);
+	pdfHist.GetYaxis()->SetTitleSize(0.04);
+	pdfHist.GetYaxis()->SetTickLength(0.01);
+	pdfHist.GetYaxis()->SetLabelSize(0.04);
+	pdfHist.GetXaxis()->SetLimits(_minValue, _maxValue);
+	pdfHist.SetBarOffset(+1);
+	pdfHist.Draw("b");
+	pdfHist.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* set legend */
-	TLegend *leg1 = new TLegend(0.6,0.7,0.9,0.9);
-   	leg1->SetHeader("jump distance dirtsibutions");
-	leg1->AddEntry(pdfHist, "judi distribution pdf", "L");
+	TLegend leg1(0.6,0.7,0.9,0.9);
+   	leg1.SetHeader("jump distance dirtsibutions");
+	leg1.AddEntry(&pdfHist, "judi distribution pdf", "L");
 	std::stringstream legendState;
 	/* draw single state judi */
 	std::vector<double> ySingleFit(_incNumber);
+	std::vector<TGraph> grSingleFit(_stateNumber);
 	for (j=0; j<_stateNumber;j++){
 		for (i=0; i<_incNumber; i++) ySingleFit.at(i) = _fitMatrix.at(j,i)*_pdfWeight.at(j);
-		TGraph *grSingleFit = new TGraph(_incNumber, _alphabet.data(), ySingleFit.data());
-		grSingleFit->SetLineColor(j+2);
-		grSingleFit->SetLineWidth(2);
-		grSingleFit->Draw("Csame");
+		grSingleFit.at(j) = TGraph(_incNumber, _alphabet.data(), ySingleFit.data());
+		grSingleFit.at(j).SetLineColor(j+2);
+		grSingleFit.at(j).SetLineWidth(2);
+		grSingleFit.at(j).Draw("Csame");
+		grSingleFit.at(j).SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 		legendState.str("");
 		legendState<<"model pdf state "<<j+1;
-   		leg1->AddEntry(grSingleFit,legendState.str().data(), "L");
+   		leg1.AddEntry(&grSingleFit.at(j),legendState.str().data(), "L");
 	}
-   	leg1->Draw();
+   	leg1.Draw();
+	leg1.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* draw pdf super pos fit */
-	TGraph *grSuperFit = new TGraph(_incNumber, _alphabet.data(), _fitSuperPos.data());
-	grSuperFit->SetLineColor(1);
-	grSuperFit->SetLineWidth(2);
-	grSuperFit->SetLineStyle(2);
-	grSuperFit->Draw("Csame");
-   	leg1->AddEntry(grSuperFit,"model pdf super position", "L");
+	TGraph grSuperFit(_incNumber, _alphabet.data(), _fitSuperPos.data());
+	grSuperFit.SetLineColor(1);
+	grSuperFit.SetLineWidth(2);
+	grSuperFit.SetLineStyle(2);
+	grSuperFit.Draw("Csame");
+	grSuperFit.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
+   	leg1.AddEntry(&grSuperFit,"model pdf super position", "L");
 	/* change TPad */
-	c1->cd(2);
+	c1.cd(2);
 	/* draw Res Expextation value */
 	std::vector<double> expVal(_incNumber, 0.0); 
-        TGraph *grExpVal = new TGraph(_incNumber,_alphabet.data(),expVal.data()); 
-	grExpVal->SetTitle("residuals between model and judi pdf");
-	grExpVal->GetYaxis()->SetTitle("P(r) [a.u.]");
-	grExpVal->GetXaxis()->SetTitle("r [nm]");
-	grExpVal->GetXaxis()->SetTitleSize(0.04);
-	grExpVal->GetXaxis()->SetTickLength(0.04);
-	grExpVal->GetXaxis()->SetLabelSize(0.04);
-	grExpVal->GetYaxis()->SetTitleSize(0.04);
-	grExpVal->GetYaxis()->SetTickLength(0.01);
-	grExpVal->GetYaxis()->SetLabelSize(0.04);
-        grExpVal->SetLineColor(1);   
-        grExpVal->SetLineWidth(2);
-	grExpVal->GetXaxis()->SetLimits(_minValue, _maxValue);
+        TGraph grExpVal(_incNumber,_alphabet.data(),expVal.data()); 
+	grExpVal.SetTitle("residuals between model and judi pdf");
+	grExpVal.GetYaxis()->SetTitle("P(r) [a.u.]");
+	grExpVal.GetXaxis()->SetTitle("r [nm]");
+	grExpVal.GetXaxis()->SetTitleSize(0.04);
+	grExpVal.GetXaxis()->SetTickLength(0.04);
+	grExpVal.GetXaxis()->SetLabelSize(0.04);
+	grExpVal.GetYaxis()->SetTitleSize(0.04);
+	grExpVal.GetYaxis()->SetTickLength(0.01);
+	grExpVal.GetYaxis()->SetLabelSize(0.04);
+        grExpVal.SetLineColor(1);   
+        grExpVal.SetLineWidth(2);
+	grExpVal.GetXaxis()->SetLimits(_minValue, _maxValue);
 	double min = calcMin(_resSuperPos);
 	double minFac = 0.9;
 	if (min<0.0) minFac = 1.1;
-	grExpVal->SetMinimum(minFac*min);
+	grExpVal.SetMinimum(minFac*min);
 	double max = calcMax(_resSuperPos);
 	double maxFac = 1.1;
 	if (min<0.0) minFac = 0.9;
-	grExpVal->SetMaximum(maxFac*max);
-	grExpVal->Draw();
+	grExpVal.SetMaximum(maxFac*max);
+	grExpVal.Draw();
+	grExpVal.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* draw residuals */
-	TGraph *grResVal = new TGraph(_incNumber, _alphabet.data(), _resSuperPos.data());
-        grResVal->SetLineColor(1);   
-        grResVal->SetLineWidth(1);
-        grResVal->SetMarkerColor(1);
-        grResVal->SetMarkerStyle(3);
-	grResVal->SetMarkerSize(0.1);
-	grResVal->Draw("Psame");
+	TGraph grResVal(_incNumber, _alphabet.data(), _resSuperPos.data());
+        grResVal.SetLineColor(1);   
+        grResVal.SetLineWidth(1);
+        grResVal.SetMarkerColor(1);
+        grResVal.SetMarkerStyle(3);
+	grResVal.SetMarkerSize(0.1);
+	grResVal.Draw("Psame");
+	grResVal.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* set legend */
 	std::stringstream chiStream;
 	chiStream<<"Chi Square: "<<_chiSquareSuperPos<<std::endl;
-	TLegend *leg2 = new TLegend(0.6,0.7,0.9,0.9);
-   	leg2->SetHeader("residual between model and judi pdf");
-	leg2->AddEntry(grExpVal, "expected residuals", "L");
-   	leg2->AddEntry(grSuperFit,"residuals", "P");
-	leg2->AddEntry((TObject*)0, chiStream.str().data(), "");
-	leg2->Draw();
+	//TLegend *leg2 = new TLegend(0.6,0.7,0.9,0.9);
+	TLegend leg2(0.6,0.7,0.9,0.9);
+   	leg2.SetHeader("residual between model and judi pdf");
+	leg2.AddEntry(&grExpVal, "expected residuals", "L");
+   	leg2.AddEntry(&grSuperFit,"residuals", "P");
+	leg2.AddEntry((TObject*)0, chiStream.str().data(), "");
+	leg2.Draw();
+	leg2.SetBit(TObject::kCanDelete); //Delegate Ownership to Canvas
 	/* save */
-	c1->cd();
-	c1->Update();
-	c1->Print(name.data());
+	c1.cd();
+	c1.Update();
+	c1.Print(name.data());
 	/* delete root class instances */
-	delete leg1;
-	delete leg2;
-	delete pdfHist;
-	delete grResVal;
-	delete grExpVal;
-	delete c1;
+	c1.Close();
 }
 
 /* norm Functions */
 void PhysicalModelBase::intPdfSuperPos(double &area, const std::vector<double> &pdf){
-	int i;
+	unsigned i;
 	area = 0.0;
 	for (i=0; i<_incNumber; i++) area += pdf.at(i);
 	//for (i=1; i<_incNumber; i++) area += (pdf.at(i)+pdf.at(i-1))/2.0;
@@ -874,14 +885,14 @@ void PhysicalModelBase::intPdfSuperPos(double &area, const std::vector<double> &
 }
 
 void PhysicalModelBase::normPdfSuperPos(double &area, std::vector<double> &pdf){
-	int i;
+	unsigned i;
 	intPdfSuperPos(area, pdf);
 	for (i=0; i<_incNumber; i++) pdf.at(i) /= area;
 	intPdfSuperPos(area, pdf);
 }
 
 void PhysicalModelBase::intPdfMatrix(std::vector<double> &area, const SMLMS::Matrix &pdf){
-	int i,j;
+	unsigned i,j;
 	for (j=0; j<_stateNumber; j++){
 		area.at(j)=0.0;
 		for (i=0; i<_incNumber; i++) area.at(j) += pdf.at(j,i);
@@ -891,7 +902,7 @@ void PhysicalModelBase::intPdfMatrix(std::vector<double> &area, const SMLMS::Mat
 }
 
 void PhysicalModelBase::normPdfMatrix(std::vector<double> &area, SMLMS::Matrix &pdf){
-	int i,j;
+	unsigned i,j;
 	intPdfMatrix(area, pdf);
 	for (j=0; j<_stateNumber; j++){
 		for (i=0; i<_incNumber; i++) pdf(j,i) /= area.at(j);
@@ -927,7 +938,7 @@ void PhysicalModelBase::calcPdfSuperPos(const SMLMS::JumpDistanceList &judi){
 }
 
 void PhysicalModelBase::calcFitSuperPos(){
-	int i,j;
+	unsigned i,j;
 	/* check stuff */
 	checkFitSuperPos();
 	checkFitMatrix();
@@ -941,7 +952,7 @@ void PhysicalModelBase::calcFitSuperPos(){
 }
 
 void PhysicalModelBase::calcResSuperPos(){
-	int i;
+	unsigned i;
 	/* check stuff */
 	checkPdfSuperPos();
 	checkFitSuperPos();
@@ -951,7 +962,7 @@ void PhysicalModelBase::calcResSuperPos(){
 }
 
 void PhysicalModelBase::calcPdfMatrix(const SMLMS::JumpDistanceList &judi){
-	int i,j, jumpNumber;
+	unsigned i,j, jumpNumber;
 	jumpNumber = judi.getNumberOfJumps();
 	std::vector<double> tempPdf(_incNumber, 0.0);
 	SMLMS::JumpDistanceList tempJudi;
@@ -959,7 +970,7 @@ void PhysicalModelBase::calcPdfMatrix(const SMLMS::JumpDistanceList &judi){
 	for (j=0; j<_stateNumber; j++){
 		for (i=0; i<jumpNumber; i++){
 			tempJump = judi.getJump(i);
-			if (tempJump.state==j) tempJudi.addJumpToEnd(tempJump);	
+			if (unsigned(tempJump.state)==j) tempJudi.addJumpToEnd(tempJump);	
 		}
 		calcPdfSingle(tempPdf, tempJudi);
 		for (i=0; i<_incNumber; i++) _pdfMatrix(j,i) = tempPdf.at(i);
@@ -968,8 +979,8 @@ void PhysicalModelBase::calcPdfMatrix(const SMLMS::JumpDistanceList &judi){
 }
 
 void PhysicalModelBase::calcPdfSingle(std::vector<double> &pdf, const SMLMS::JumpDistanceList &judi){
-	int i, jumpNumber, prec;
-	unsigned j;
+	unsigned i,j,jumpNumber;
+	int prec;
 	double tempDist;
 	SMLMS::Jump tempJump;
 	prec = -1 * std::numeric_limits<float>::max_digits10;
@@ -979,9 +990,9 @@ void PhysicalModelBase::calcPdfSingle(std::vector<double> &pdf, const SMLMS::Jum
 	for (i=0; i<jumpNumber; i++){
 		tempJump = judi.getJump(i);
 		tempDist = tempJump.jumpDistance;
-		if ((tempDist<=_maxValue)&&(tempDist>_minValue)){
+		if ((tempDist<_maxValue)&&(tempDist>=_minValue)){
 			j = unsigned (std::floor((tempDist-(std::pow(10.0, prec)))/_binSize));
-			j -= unsigned(_minValue/_binSize);
+			j -= unsigned(std::floor(_minValue/_binSize));
 			pdf.at(j) +=1;
 		}
 		
@@ -989,7 +1000,7 @@ void PhysicalModelBase::calcPdfSingle(std::vector<double> &pdf, const SMLMS::Jum
 }
 
 void PhysicalModelBase::calcResMatrix(){
-	int i,j;
+	unsigned i,j;
 	/* check stuff */
 	checkPdfMatrix();
 	checkFitMatrix();
@@ -1001,7 +1012,7 @@ void PhysicalModelBase::calcResMatrix(){
 }
 
 double PhysicalModelBase::calcMin(const std::vector<double> &pdf){
-	int i;
+	unsigned i;
 	double min=1;
 	for (i=0; i<pdf.size(); i++){
 		if(pdf.at(i)<min) min = pdf.at(i); 
@@ -1010,7 +1021,7 @@ double PhysicalModelBase::calcMin(const std::vector<double> &pdf){
 }
 
 double PhysicalModelBase::calcMax(const std::vector<double> &pdf){
-	int i;
+	unsigned i;
 	double max=0;
 	for (i=0; i<pdf.size(); i++){
 		if(pdf.at(i)>max) max = pdf.at(i); 
@@ -1019,7 +1030,7 @@ double PhysicalModelBase::calcMax(const std::vector<double> &pdf){
 }
 
 void PhysicalModelBase::calcChiSquareSuperPos(){
-	int i;
+	unsigned i;
 	/* check stuff */
 	checkFitSuperPos();
 	checkResSuperPos();
@@ -1029,7 +1040,7 @@ void PhysicalModelBase::calcChiSquareSuperPos(){
 }
 
 void PhysicalModelBase::calcChiSquareMatrix(){
-	int i,j;
+	unsigned i,j;
 	/* check stuff */
 	checkFitMatrix();
 	checkResMatrix();
