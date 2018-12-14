@@ -16,12 +16,36 @@
 
 #include <vector>
 #include <string>
+#include <boost/mpi.hpp>
+#include <boost/mpi/collectives.hpp>
 #include "header/smlmsMatrix.hpp"
 #include "header/smlmsPhysModBrownLatDiff.hpp"
 
 namespace SMLMS{
 class HMMBase{
 	protected:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive & ar, const unsigned int version){
+			ar & _stateNumber;
+			ar & _symbolNumber;
+			ar & _minValue;
+			ar & _maxValue;
+			ar & _symbolInterval;
+			ar & _equiPDF;
+			ar & _transPDF;
+			ar & _obsPDF;
+			ar & _equiCDF;
+			ar & _transCDF;
+			ar & _obsCDF;
+			ar & _obsAlphabet;
+			ar & _logLikelihood;
+			ar & _dof;
+			ar & _bic;
+			ar & _aic;
+			ar & _stopCrit;
+			ar & _maxIt;
+		}
 		unsigned _stateNumber;
 		unsigned _symbolNumber;
 		double _minValue;
