@@ -1,5 +1,5 @@
 # Define required macros here
-CXXFLAGS = -Wall -fPIC -std=c++11 -g
+CXXFLAGS = -Wall -fPIC -std=c++11 -g  -fopenmp
 CXX = g++
 INCLUDES = -I$(HOME)/Dokumente/Code/ermine
 LIBS = -L$(HOME)/Dokumente/Code/ermine/source
@@ -44,7 +44,7 @@ OBJECTS = $(SOURCES: .cpp=.o)
 
 
 
-EXECUTABLE := prog/ermine_fast_debug
+EXECUTABLE := prog/ermine_cli
 
 all:$(OBJECTS) $(EXECUTABLE)
 

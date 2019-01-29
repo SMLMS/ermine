@@ -33,6 +33,7 @@ HMMSequence::HMMSequence():SMLMS::HMMBase(){
 	setTraceNumber(0);
 	_seqLogLikelihood = 0.0;
 	_fbSeqDone = false;
+	_numberOfCores = 8;
 }
 
 HMMSequence::HMMSequence(unsigned states, unsigned symbols):SMLMS::HMMBase(states, symbols){
@@ -41,6 +42,7 @@ HMMSequence::HMMSequence(unsigned states, unsigned symbols):SMLMS::HMMBase(state
 	setTraceNumber(0);
 	_seqLogLikelihood = 0.0;
 	_fbSeqDone = false;
+	_numberOfCores = 8;
 }
 
 HMMSequence::HMMSequence(unsigned states, unsigned symbols, unsigned trace):SMLMS::HMMBase(states, symbols){
@@ -49,6 +51,7 @@ HMMSequence::HMMSequence(unsigned states, unsigned symbols, unsigned trace):SMLM
 	setTraceNumber(trace);
 	_seqLogLikelihood = 0.0;
 	_fbSeqDone = false;
+	_numberOfCores = 8;
 }
 
 /* copy constructor */
@@ -73,6 +76,7 @@ HMMSequence::HMMSequence(const HMMSequence &obj){
 	_pdfDenominator = obj._pdfDenominator;
 	_logLikelihood = obj._logLikelihood;
 	_fbSeqDone = obj._fbSeqDone;
+	_numberOfCores = obj._numberOfCores;
 }
 
 /* elementary functions */
@@ -311,10 +315,11 @@ bool HMMSequence::benchmarkTrainingsResult(double llResult, int itStep){
 }
 
 /* core functions */
+/*
 void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &judi){
-	/* check stuff */
+	// check stuff
 	checkStateNumber();
-	/* run simulation */
+	// run simulation
 	SMLMS::JumpDistanceList tempJudi;
 	std::vector<int> tempStateList(obsNumber);
 	std::vector<double> tempObsList(obsNumber);
@@ -328,7 +333,38 @@ void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &
 	tempJudi.calcTraceNumber();
 	judi = tempJudi; 
 }
+*/
 
+void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &judi){
+	// check stuff
+	checkStateNumber();
+	// init simulation parameters simulation
+	std::vector<SMLMS::JumpDistanceList> tempJudiList(_traceNumber);
+	std::vector<int> tempStateList(obsNumber);
+	std::vector<double> tempObsList(obsNumber);
+	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
+	boost::progress_display show_progress(_traceNumber+1);	
+	// simulate in parallel
+	#pragma omp parallel for firstprivate(tempStateList, tempObsList) num_threads(_numberOfCores)
+	for (unsigned i=0; i<_traceNumber; i++){
+		initHelpUniqueHMM(tempHMM, obsNumber);
+		tempHMM.simulate(tempObsList, tempStateList);
+		increaseSimulationSequence(tempJudiList.at(i), i+1, tempObsList, tempStateList);
+		#pragma omp critical
+		++show_progress;
+	}
+	// concentrate simulation results
+	SMLMS::Jump tempJump;
+	for (unsigned i=0; i<_traceNumber; i++){
+		for (unsigned j=0; j<obsNumber; j++){
+			tempJump = tempJudiList.at(i).getJump(j);
+			judi.addJumpToEnd(tempJump);
+		}
+	}
+	judi.calcTraceNumber();
+}
+
+/*
 void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
 	// test length
 	checkStateNumber();
@@ -353,6 +389,35 @@ void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
 	//estimateSeqBic(cummulativeObsNumber);
 	//estimateSeqAic();
 }
+*/
+
+void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
+	// test length
+	checkStateNumber();
+	judi.checkTraceNumber();
+	// init
+	initTrainingSequences();
+	std::vector<double> obs;
+	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
+	unsigned obsNumber = 0;
+	unsigned cummulativeObsNumber = 0;
+	boost::progress_display show_progress(_traceNumber+1);	
+	// evaluate Seq Likelihood in parallel
+	#pragma omp parallel for firstprivate(obs, tempHMM, obsNumber) num_threads(_numberOfCores)
+	for (unsigned i=1; i<judi.traceNumber()+1; i++){
+		obs = judi.getTraceJumps(i);
+		obsNumber = obs.size();
+		cummulativeObsNumber += obsNumber;
+		initHelpUniqueHMM(tempHMM, obsNumber);
+		tempHMM.forwardBackward(obs);
+		tempHMM.estimateLikelihood();
+		_seqLogLikelihood += tempHMM.logLikelihood();
+		#pragma omp critical
+		++show_progress;
+	}
+	_logLikelihood = _seqLogLikelihood;
+	calcModelSelection(cummulativeObsNumber);
+}
 
 /*
 void HMMSequence::estimateSeqBic(unsigned obsNumber){
@@ -366,6 +431,7 @@ void HMMSequence::estimateSeqAic(){
 }
 */
 
+/*
 void HMMSequence::baumWelchSequence(const SMLMS::JumpDistanceList &judi){
 	// test length
 	checkStateNumber();
@@ -386,6 +452,35 @@ void HMMSequence::baumWelchSequence(const SMLMS::JumpDistanceList &judi){
 		_obsPDFNumer += tempHmm.obsPDFNumer();
 		_pdfDenominator += tempHmm.pdfDenominator();
 		_seqLogLikelihood += tempHmm.logLikelihood();
+	}
+}
+*/
+
+void HMMSequence::baumWelchSequence(const SMLMS::JumpDistanceList &judi){
+	// test length
+	checkStateNumber();
+	judi.checkTraceNumber();
+	// init
+	resetTrainingSequences();
+	std::vector<double> obs;
+	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
+	unsigned obsNumber = 0;
+	// train in parallel
+	#pragma omp parallel for firstprivate(obs, tempHMM, obsNumber) num_threads(_numberOfCores)
+	for (unsigned i=1; i<judi.traceNumber()+1; i++){
+		obs = judi.getTraceJumps(i);
+		obsNumber = obs.size();
+		initHelpUniqueHMM(tempHMM, obsNumber);
+		tempHMM.baumWelch(obs);
+		tempHMM.estimateLikelihood();
+		_equiPDFNumer += tempHMM.equiPDF();
+		_transPDFNumer += tempHMM.transPDFNumer();
+		_obsPDFNumer += tempHMM.obsPDFNumer();
+		_pdfDenominator += tempHMM.pdfDenominator();
+		_seqLogLikelihood += tempHMM.logLikelihood();
+		auto id = omp_get_thread_num();
+		auto total = omp_get_num_threads();
+    		printf("Greetings from process %d out of %d\n", id, total);
 	}
 }
 
@@ -454,6 +549,7 @@ void HMMSequence::trainPhysModSequence(const SMLMS::JumpDistanceList &judi, SMLM
 	std::cout<<std::endl;
 }
 
+/*
 void HMMSequence::estimateStateSequence(SMLMS::JumpDistanceList& judi){
 	std::vector<int> states;
 	std::vector<double> obs;
@@ -477,6 +573,39 @@ void HMMSequence::estimateStateSequence(SMLMS::JumpDistanceList& judi){
 		// set states of trace
 		judi.setTraceStates(i, states);
 		// update progress
+		++show_progress;
+	}
+	std::cout<<std::endl;
+}
+*/
+
+void HMMSequence::estimateStateSequence(SMLMS::JumpDistanceList& judi){
+	std::vector<int> states;
+	std::vector<double> obs;
+	std::cout<<std::endl<<"The ermine is estimating states:"<<std::endl;
+	// set trace number
+	setTraceNumber(judi.traceNumber());
+	boost::progress_display show_progress(_traceNumber+1);	
+	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
+	unsigned obsNumber = 0;
+	// estimate sequence in parallel
+	++show_progress;
+	#pragma omp parallel for firstprivate(obs, states, tempHMM, obsNumber) num_threads(_numberOfCores)
+	for (unsigned i=1; i<_traceNumber+1; i++){
+		// get jump of trace
+		obs.clear();
+		obs = judi.getTraceJumps(i);
+		obsNumber = obs.size();
+		// get states of trace
+		states.clear();
+		states = judi.getTraceStates(i);
+		// calc viterbi
+		initHelpUniqueHMM(tempHMM, obsNumber);
+		tempHMM.viterbi(states, obs);
+		// set states of trace
+		judi.setTraceStates(i, states);
+		// update progress
+		#pragma omp critical
 		++show_progress;
 	}
 	std::cout<<std::endl;

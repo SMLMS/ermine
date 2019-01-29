@@ -17,32 +17,13 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <boost/mpi.hpp>
-#include <boost/mpi/collectives.hpp>
-#include <boost/serialization/base_object.hpp>
 #include "header/smlmsHmmBase.hpp"
 #include "header/smlmsMatrix.hpp"
 #include "header/smlmsRandom.hpp"
 
 namespace SMLMS{
 class HMMUnique: public HMMBase{
-	private:
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive & ar, const unsigned int version){
-			ar & boost::serialization::base_object<HMMBase>(*this);
-			ar & _randGen;
-			ar & _obsNumber;
-			ar & _normLH;
-			ar & _alpha;
-			ar & _beta;
-			ar & _xi;
-			ar & _gamma;
-			ar & _transPDFNumer; //new
-			ar & _obsPDFNumer; //new
-			ar & _pdfDenominator; //new
-			ar & _fbDone;
-		}
+	private:		
 		SMLMS::SMLMSRandom _randGen;
 		unsigned _obsNumber;
 		std::vector<double> _normLH;

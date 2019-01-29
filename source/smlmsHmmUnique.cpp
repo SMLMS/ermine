@@ -52,6 +52,7 @@ HMMUnique::HMMUnique(unsigned states, unsigned symbols, unsigned obs):SMLMS::HMM
 /* copy constructor */
 HMMUnique::HMMUnique(const HMMUnique &obj){
 	//std::cout<<"HMMUnique copy constructor called."<<std::endl;
+	_randGen = obj._randGen;
 	_obsNumber = obj._obsNumber;
 	_stateNumber = obj._stateNumber;
 	_symbolNumber  = obj._symbolNumber;

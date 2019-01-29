@@ -17,6 +17,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <thread>
+#include <omp.h>
 #include "header/smlmsHmmBase.hpp"
 #include "header/smlmsHmmUnique.hpp"
 #include "header/smlmsMatrix.hpp"
@@ -26,6 +28,7 @@
 namespace SMLMS{
 class HMMSequence: public HMMBase{
 	private:
+		unsigned _numberOfCores;
 		unsigned _traceNumber;
 		bool _fbSeqDone;
 		bool _modelAdjustInd;

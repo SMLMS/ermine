@@ -14,23 +14,10 @@
 #ifndef Matrix_hpp
 #define Matrix_hpp
 #include <vector>
-#include <boost/mpi.hpp>
-#include <boost/mpi/collectives.hpp>
-
-namespace mpi = boost::mpi;
 
 namespace SMLMS{
 class Matrix{
-	private:
-		// user defined data type for serialization via boost::mpi
-		friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version){
-				ar & _numberOfRows;
-				ar & _numberOfColumns;
-				ar & _numberOfElements;
-				ar & _entries;
-			}
+	private:		
 		// private members
 		unsigned _numberOfRows;
 		unsigned _numberOfColumns;

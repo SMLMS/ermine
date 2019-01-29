@@ -20,6 +20,10 @@
 namespace SMLMS{
 
 SMLMSRandom::SMLMSRandom(){
+	updateSeed();
+}
+
+void SMLMS::SMLMSRandom::updateSeed(){
 	boost::random::mt19937 seed(std::time(0));
 	_seed = seed;
 }
