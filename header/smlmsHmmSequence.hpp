@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmSequence.hpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 23.02.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef SmlmsHmmSequence_hpp
-#define SmlmsHmmSequence_hpp
+#ifndef SMLMSHMMSEQUENCE_HPP
+#define SMLMSHMMSEQUENCE_HPP
 
 #include <vector>
 #include <string>
@@ -43,7 +43,7 @@ class HMMSequence: public HMMBase{
 		HMMSequence(unsigned states, unsigned symbols);	
 		HMMSequence(unsigned states, unsigned symbols, unsigned trace);	
 		/* Destructor */
-		~HMMSequence(){std::cout<<"HMM removed from Heap!"<<std::endl;}
+		~HMMSequence(){}
 		/* copy Constructor */
 		HMMSequence(const HMMSequence &);
 		/* elementary functions */
@@ -56,6 +56,7 @@ class HMMSequence: public HMMBase{
 		void checkTraceNumber();
 		void checkSimulationDimension(const SMLMS::JumpDistanceList &judi, unsigned obsVal);
 		/* init functions */
+		void initNumberOfCores();
 		void initSeqLogLikelihood();
 		void initEquiPDFNumer();
 		void initTransPDFNumer();

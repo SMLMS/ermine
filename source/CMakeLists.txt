@@ -1,0 +1,18 @@
+file(GLOB SMLMS_HEADERS
+	"${PROJECT_SOURCE_DIR}/header/*.hpp"
+)
+
+file(GLOB SMLMS_SOURCES
+	"${PROJECT_SOURCE_DIR}/source/*.cpp"
+)
+
+set(LIBRARYNAME
+	smlms
+)
+
+add_library(
+	${LIBRARYNAME} STATIC
+	${SMLMS_HEADERS}
+	${SMLMS_SOURCES}
+)
+

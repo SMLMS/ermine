@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: matrix.cpp
-* Project: SMLMS
-* Version: 18.09
+* File Name: smlmMatrix.cpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 21.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>

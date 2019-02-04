@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmSequence.cpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 23.02.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -29,34 +29,34 @@
 namespace SMLMS{
 /* constructor */
 HMMSequence::HMMSequence():SMLMS::HMMBase(){
-	std::cout<<"HMM constructor called."<<std::endl;
+	//std::cout<<"HMM constructor called."<<std::endl;
 	setTraceNumber(0);
 	_seqLogLikelihood = 0.0;
 	_fbSeqDone = false;
-	_numberOfCores = 8;
+	initNumberOfCores();
 }
 
 HMMSequence::HMMSequence(unsigned states, unsigned symbols):SMLMS::HMMBase(states, symbols){
-	std::cout<<"HMM constructor called"<<std::endl;
+	//std::cout<<"HMM constructor called"<<std::endl;
 	//set everytging
 	setTraceNumber(0);
 	_seqLogLikelihood = 0.0;
 	_fbSeqDone = false;
-	_numberOfCores = 8;
+	initNumberOfCores();
 }
 
 HMMSequence::HMMSequence(unsigned states, unsigned symbols, unsigned trace):SMLMS::HMMBase(states, symbols){
-	std::cout<<"HMM constructor called"<<std::endl;
+	//std::cout<<"HMM constructor called"<<std::endl;
 	//set everytging
 	setTraceNumber(trace);
 	_seqLogLikelihood = 0.0;
 	_fbSeqDone = false;
-	_numberOfCores = 8;
+	initNumberOfCores();
 }
 
 /* copy constructor */
 HMMSequence::HMMSequence(const HMMSequence &obj){
-	std::cout<<"HMM copy constructor called."<<std::endl;
+	//std::cout<<"HMM copy constructor called."<<std::endl;
 	_traceNumber = obj._traceNumber;
 	_stateNumber = obj._stateNumber;
 	_modelAdjustInd = obj._modelAdjustInd;
@@ -104,7 +104,7 @@ double HMMSequence::seqLogLikelihood(){
 void HMMSequence::checkTraceNumber(){
 	if(_traceNumber<1){
 		std::stringstream errorMessage;
-		errorMessage<<"Cannot setup a hmm sequence without a definite number of traces!"<<std::endl;
+		errorMessage<<"Cannot setup an hmm sequence without a definite number of traces!"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -115,13 +115,18 @@ void HMMSequence::checkSimulationDimension(const SMLMS::JumpDistanceList &judi, 
 	unsigned judiLength = judi.getNumberOfJumps();
 	if (judiLength != seqLength){
 		std::stringstream errorMessage;
-		errorMessage<<"Cannot simulate an hmm sequence: Dimension Mismatch!"<<std::endl;
+		errorMessage<<"Cannot simulate an hmm sequence: Dimension mismatch!"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 }
 
 /* init functions */
+void HMMSequence::initNumberOfCores(){
+	_numberOfCores = std::thread::hardware_concurrency();
+	std::cout<<"Number of cores: "<<_numberOfCores<<std::endl;
+}
+
 void HMMSequence::initSeqLogLikelihood(){
 	_seqLogLikelihood = 0.0;
 }
@@ -305,6 +310,9 @@ void HMMSequence::reestimateHMM(){
 bool HMMSequence::benchmarkTrainingsResult(double llResult, int itStep){
 	if(llResult<_stopCrit){
 		std::cout<<std::endl<<"Reached stop criteium after "<<itStep<<" iterations."<<std::endl;
+		if (llResult<0){
+			std::cout<<"A local minimum was reached. "<<std::endl;
+		}
 		return false;
 	}
 	if(itStep>_maxIt){
@@ -364,7 +372,7 @@ void HMMSequence::simulateSequence(unsigned obsNumber, SMLMS::JumpDistanceList &
 	judi.calcTraceNumber();
 }
 
-/*
+
 void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
 	// test length
 	checkStateNumber();
@@ -388,35 +396,6 @@ void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
 	calcModelSelection(cummulativeObsNumber);
 	//estimateSeqBic(cummulativeObsNumber);
 	//estimateSeqAic();
-}
-*/
-
-void HMMSequence::estimateSeqLikelihood(const SMLMS::JumpDistanceList &judi){
-	// test length
-	checkStateNumber();
-	judi.checkTraceNumber();
-	// init
-	initTrainingSequences();
-	std::vector<double> obs;
-	SMLMS::HMMUnique tempHMM(_stateNumber, _symbolNumber);
-	unsigned obsNumber = 0;
-	unsigned cummulativeObsNumber = 0;
-	boost::progress_display show_progress(_traceNumber+1);	
-	// evaluate Seq Likelihood in parallel
-	#pragma omp parallel for firstprivate(obs, tempHMM, obsNumber) num_threads(_numberOfCores)
-	for (unsigned i=1; i<judi.traceNumber()+1; i++){
-		obs = judi.getTraceJumps(i);
-		obsNumber = obs.size();
-		cummulativeObsNumber += obsNumber;
-		initHelpUniqueHMM(tempHMM, obsNumber);
-		tempHMM.forwardBackward(obs);
-		tempHMM.estimateLikelihood();
-		_seqLogLikelihood += tempHMM.logLikelihood();
-		#pragma omp critical
-		++show_progress;
-	}
-	_logLikelihood = _seqLogLikelihood;
-	calcModelSelection(cummulativeObsNumber);
 }
 
 /*
@@ -478,9 +457,6 @@ void HMMSequence::baumWelchSequence(const SMLMS::JumpDistanceList &judi){
 		_obsPDFNumer += tempHMM.obsPDFNumer();
 		_pdfDenominator += tempHMM.pdfDenominator();
 		_seqLogLikelihood += tempHMM.logLikelihood();
-		auto id = omp_get_thread_num();
-		auto total = omp_get_num_threads();
-    		printf("Greetings from process %d out of %d\n", id, total);
 	}
 }
 

@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: Molecules
-* Project: SMLMS
-* Version: 18.09
+* File Name: smlmsMolecules.cpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 01.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -23,15 +23,15 @@
 namespace SMLMS{
 /* Constructor */
 MoleculeList::MoleculeList(){
-	std::cout<<"MoleculeList Constructor called."<<std::endl;
+	//std::cout<<"MoleculeList Constructor called."<<std::endl;
 }
 /* Destructor */
 MoleculeList::~MoleculeList(){
-	std::cout<<"MoleculeList removed from Heap!"<<std::endl;
+	//std::cout<<"MoleculeList removed from Heap!"<<std::endl;
 }
 /* Copy Constructor */
 MoleculeList::MoleculeList(const MoleculeList &obj){
-	std::cout<<"Copy Constructor called."<<std::endl;
+	//std::cout<<"Copy Constructor called."<<std::endl;
 	_roi = obj._roi;
 	_moleculeList = obj._moleculeList;
 }
@@ -171,7 +171,7 @@ void MoleculeList::readLocList(const std::string& name){
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"Unable to red molecule list form: "<<name<<std::endl;
+		errorMessage<<"Unable to read molecule list from: "<<name<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -227,7 +227,7 @@ void MoleculeList::writeLocList(const std::string &folderName){
 	outFile<<std::scientific;
 	outFile<<std::setprecision(6);
 	/* header lines*/
-	outFile<<"# ERMINE TRC file"<<std::endl;
+	outFile<<"# Ermine TRC File"<<std::endl;
 	outFile<<"# trace\tframe\tx\ty\tstate\tintensity"<<std::endl;
 	for(unsigned i=0; i<_moleculeList.size(); i++){
 		mol=getMolecule(i);
@@ -243,7 +243,7 @@ void MoleculeList::writeROI(const std::string &folderName){
 	outFile.open(name.data());
 	outFile<<std::scientific;
 	outFile<<std::setprecision(6);
-	outFile<<"# ERMINE ROI file"<<std::endl;
+	outFile<<"# Ermine ROI File"<<std::endl;
 	outFile<<"# min\tmax"<<std::endl;
 	outFile<<"# x"<<std::endl;
 	outFile<<_roi.minX<<"\t"<<_roi.maxX<<std::endl;
@@ -270,7 +270,7 @@ void MoleculeList::reserveMemory(const std::string &name){
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"Unable to read molecule list form: "<<name<<std::endl;
+		errorMessage<<"Unable to read molecule list from: "<<name<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 
@@ -313,7 +313,6 @@ void MoleculeList::filterMoleculeList(){
 		||(tempMol.intensity<_roi.minIntensity)
 		||(tempMol.intensity>_roi.maxIntensity)) j+=1;
 		if(j>0){
-			//std::cout<<"molecule ("<<i<<") should be deleted"<<std::endl;
 			deleteMolecule(i);
 		}
 	}

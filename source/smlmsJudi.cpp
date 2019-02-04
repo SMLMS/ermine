@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: judi.cpp
-* Project: SMLMS
-* Version: 18.09
+* File Name: smlmsJudi.cpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 04.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -26,15 +26,15 @@
 namespace SMLMS{
 /* Constructor */
 JumpDistanceList::JumpDistanceList(){
-	std::cout<<"JumpDistanceListConstructor called"<<std::endl;
+	//std::cout<<"JumpDistanceListConstructor called"<<std::endl;
 };
 /* Destructor */
 JumpDistanceList::~JumpDistanceList(){
-	std::cout<<"JumpDistanceList removed from Heap!"<<std::endl;
+	//std::cout<<"JumpDistanceList removed from Heap!"<<std::endl;
 };
 /* Copy Constructor */
 JumpDistanceList::JumpDistanceList(const JumpDistanceList &obj){
-	std::cout<<"JumpDistanceList copy constructor called."<<std::endl;
+	//std::cout<<"JumpDistanceList copy constructor called."<<std::endl;
 	_jumpDistanceList=obj._jumpDistanceList;
 	_traceStatList = obj._traceStatList;
 	_traceNumber = obj._traceNumber;
@@ -75,7 +75,7 @@ unsigned JumpDistanceList::traceNumber()const{
 void JumpDistanceList::checkTraceNumber(){
 	if(_traceNumber < 1 ){
 		std::stringstream errorMessage;
-		errorMessage<<"Jump Distance List has a length of 0 traces. Did you forget to calculate the trace length?"<<std::endl;
+		errorMessage<<"Jump distance list has a length of 0 traces. Did you forget to calculate the trace length?"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -84,7 +84,7 @@ void JumpDistanceList::checkTraceNumber(){
 void JumpDistanceList::checkTraceNumber() const{
 	if(_traceNumber < 1 ){
 		std::stringstream errorMessage;
-		errorMessage<<"Jump Distance List has a length of 0 traces. Did you forget to calculate the trace length?"<<std::endl;
+		errorMessage<<"Jump distance list has a length of 0 traces. Did you forget to calculate the trace length?"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -93,7 +93,7 @@ void JumpDistanceList::checkTraceNumber() const{
 void JumpDistanceList::checkTraceNumber(unsigned tempTrace){
 	if(tempTrace == 0 ){
 		std::stringstream errorMessage;
-		errorMessage<<"Jump Distance List has no trace of index 0. Please type a valid trace number >0 !"<<std::endl;
+		errorMessage<<"Jump distance list has no trace of index 0. Please type a valid trace number >0 !"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -108,7 +108,7 @@ void JumpDistanceList::checkTraceNumber(unsigned tempTrace){
 void JumpDistanceList::checkTraceNumber(unsigned tempTrace)const{
 	if(tempTrace == 0 ){
 		std::stringstream errorMessage;
-		errorMessage<<"Jump Distance List has no trace of index 0. Please type a valid trace number >0 !"<<std::endl;
+		errorMessage<<"Jump distance list has no trace of index 0. Please type a valid trace number >0 !"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -169,15 +169,6 @@ Jump JumpDistanceList::getJump(int position) const{
 }
 
 std::vector<double> JumpDistanceList::getTraceJumps(unsigned traceNumber){
-	/*
-	std::vector<double> traceJumps;
-	for(unsigned i=0; i<_jumpDistanceList.size(); i++){
-		if (_jumpDistanceList.at(i).trace==traceNumber){
-			traceJumps.push_back(_jumpDistanceList.at(i).jumpDistance);
-		}
-	}
-	return traceJumps;
-	*/
 	checkTraceNumber(traceNumber);
 	int i = 0;
 	while (_traceStatList.at(i).index != traceNumber){
@@ -193,15 +184,6 @@ std::vector<double> JumpDistanceList::getTraceJumps(unsigned traceNumber){
 }
 
 std::vector<double> JumpDistanceList::getTraceJumps(unsigned traceNumber) const{
-	/*
-	std::vector<double> traceJumps;
-	for(unsigned i=0; i<_jumpDistanceList.size(); i++){
-		if (_jumpDistanceList.at(i).trace==traceNumber){
-			traceJumps.push_back(_jumpDistanceList.at(i).jumpDistance);
-		}
-	}
-	return traceJumps;
-	*/
 	checkTraceNumber(traceNumber);
 	int i = 0;
 	while (_traceStatList.at(i).index != traceNumber){
@@ -227,7 +209,7 @@ void JumpDistanceList::setTraceStates(unsigned traceNumber, std::vector<int> &st
 		}
 	}
 	if (traceLength != jumpsPerTrace){
-		std::cout<<"Error stateTrace length ("<<traceLength<<") and jumpTrace length("<<jumpsPerTrace<<") do not match!"<<std::endl;
+		std::cout<<"Error stateTrace length ("<<traceLength<<") and jumpTrace length ("<<jumpsPerTrace<<") do not match!"<<std::endl;
 	}	
 	else{
 		for (unsigned i=0; i<traceLength; i++){
@@ -251,15 +233,6 @@ std::vector<int> JumpDistanceList::getTraceStates(unsigned traceNumber){
 }
 
 std::vector<int> JumpDistanceList::getTraceStates(unsigned traceNumber) const{
-	/*
-	std::vector<int> traceStates;
-	for(unsigned i=0; i<_jumpDistanceList.size(); i++){
-		if (_jumpDistanceList.at(i).trace==traceNumber){
-			traceStates.push_back(_jumpDistanceList.at(i).state);
-		}
-	}
-	return traceStates;
-	*/
 	checkTraceNumber(traceNumber);
 	int n = 0;
 	while (_traceStatList.at(n).index != traceNumber){
@@ -370,7 +343,7 @@ void JumpDistanceList::reserveMemory(const std::string &name){
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"Unable to read molecule list form: "<<name<<std::endl;
+		errorMessage<<"Unable to read molecule list from: "<<name<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 
@@ -399,7 +372,7 @@ void JumpDistanceList::readJumpDistanceList(const std::string &name){
 	}
 	else{
 	std::stringstream errorMessage;
-	errorMessage<<"unable to read jumpdistance list from:"<<name<<std::endl;
+	errorMessage<<"unable to read jump fistance list from:"<<name<<std::endl;
 	SMLMS::SmlmsError error(errorMessage.str());
 	throw error;
 	}
@@ -454,12 +427,12 @@ void JumpDistanceList::transferStatesToMoleculeList(SMLMS::MoleculeList &molList
 	for (i=1; i<maxTrace+1; i++){
 		if (molList.getTraceIndices(i, start, stop)){
 			if((stop-start)==0){
-				std::cout<<"warning: ermine cannot determine any state information on trace "<<i<<" of length 1."<<std::endl;
+				std::cout<<"Warning: The ermine cannot determine any state information on trace "<<i<<" of length 1."<<std::endl;
 			}
 			states = getTraceStates(i);
 			if(unsigned(stop-start) != states.size()){
 				std::stringstream errorMessage;
-				errorMessage<<"error: trace: "<<i<<" from judi does not fit the molecule lists correspondent."<<std::endl;
+				errorMessage<<"Error: trace: "<<i<<" of judi does fit to the corresponding molecule list."<<std::endl;
 				SMLMS::SmlmsError error(errorMessage.str());
 				throw error;
 			}

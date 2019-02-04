@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: ermineParser.hpp
-* Project: SMLMS
-* Version: 1611
+* Project: ermine
+* Version: 19.03
 * Creation Date: 04.11.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Parser_hpp
-#define Parser_hpp
+#ifndef ERMINEPARSER_HPP
+#define ERMINEPARSER_HPP
 #include <string>
 #include <map>
 #include <boost/program_options.hpp>

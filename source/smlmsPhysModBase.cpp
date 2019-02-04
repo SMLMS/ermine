@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsPhysModBase.cpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 28.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -33,11 +33,11 @@
 namespace SMLMS{
 /* constructor */
 PhysicalModelBase::PhysicalModelBase(){
-	std::cout<<"Physical Model Base constructor called"<<std::endl;
+	//std::cout<<"Physical Model Base constructor called"<<std::endl;
 }
 
 PhysicalModelBase::PhysicalModelBase(const std::vector<double> &xVal, int stateVal){
-	std::cout<<"Physical Model Base constructor called"<<std::endl;
+	//std::cout<<"Physical Model Base constructor called"<<std::endl;
 	_alphabet = xVal;
 	_stateNumber = stateVal;
 	initModelByAlphabet();
@@ -45,7 +45,7 @@ PhysicalModelBase::PhysicalModelBase(const std::vector<double> &xVal, int stateV
 
 
 PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, double incVal, int stateVal){
-	std::cout<<"Physical Model Base constructor called"<<std::endl;
+	//std::cout<<"Physical Model Base constructor called"<<std::endl;
 	_minValue = minVal;
 	_maxValue = maxVal;
 	_incNumber = incVal;
@@ -55,12 +55,12 @@ PhysicalModelBase::PhysicalModelBase(double minVal, double maxVal, double incVal
 
 /* Destructor */
 PhysicalModelBase::~PhysicalModelBase(){
-	std::cout<<"Physical Model Base destructor called"<<std::endl;
+	//std::cout<<"Physical Model Base destructor called"<<std::endl;
 }
 
 /* Copy Constructor */
 PhysicalModelBase::PhysicalModelBase(const PhysicalModelBase &obj){
-	std::cout<<"Physical Model Base copy constructor called"<<std::endl;
+	//std::cout<<"Physical Model Base copy constructor called"<<std::endl;
 	_minValue = obj._minValue;
 	_maxValue = obj._maxValue;
 	_binSize = obj._binSize;
@@ -298,7 +298,7 @@ void PhysicalModelBase::printAreaFit(){
 
 void PhysicalModelBase::printPdfMatrix(){
 	unsigned i,j;
-	std::cout<<"pdf Matrix: "<<std::endl;
+	std::cout<<"pdf matrix: "<<std::endl;
 	for (i=0; i<_incNumber; i++){
 		for (j=0; j<_stateNumber; j++)std::cout<<_pdfMatrix.at(j,i)<<"\t";
 		std::cout<<std::endl;
@@ -307,7 +307,7 @@ void PhysicalModelBase::printPdfMatrix(){
 
 void PhysicalModelBase::printFitMatrix(){
 	unsigned i,j;
-	std::cout<<"pdf fit Matrix: "<<std::endl;
+	std::cout<<"pdf fit matrix: "<<std::endl;
 	for (i=0; i<_incNumber; i++){
 		for (j=0; j<_stateNumber; j++)std::cout<<_fitMatrix.at(j,i)<<"\t";
 		std::cout<<std::endl;
@@ -316,7 +316,7 @@ void PhysicalModelBase::printFitMatrix(){
 
 void PhysicalModelBase::printResMatrix(){
 	unsigned i,j;
-	std::cout<<"residues Matrix: "<<std::endl;
+	std::cout<<"residues matrix: "<<std::endl;
 	for (i=0; i<_incNumber; i++){
 		for (j=0; j<_stateNumber; j++)std::cout<<_resMatrix.at(j,i)<<"\t";
 		std::cout<<std::endl;
@@ -341,7 +341,7 @@ void PhysicalModelBase::printPdfWeight(){
 void PhysicalModelBase::checkMinValue(){
 	if (_minValue>=_maxValue){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"minValue needs to be smaller than maxValue."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -351,7 +351,7 @@ void PhysicalModelBase::checkMinValue(){
 void PhysicalModelBase::checkMaxValue(){
 	if (_maxValue<=_minValue){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"minValue needs to be smaller than maxValue."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -361,7 +361,7 @@ void PhysicalModelBase::checkMaxValue(){
 void PhysicalModelBase::checkBinSize(){
 	if (_binSize<=0.0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"BinSize needs to be a positive float."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -371,7 +371,7 @@ void PhysicalModelBase::checkBinSize(){
 	double rest = std::modf(doubleIncNumber, &tempIncNumber); 
 	if(rest >  0.0){
 		std::stringstream errorMessage;
-		errorMessage<<"BinSize does not match the observation interval to receive a valid observation number!!"<<std::endl;
+		errorMessage<<"The container size does not correspond to the observation interval. Thus, no valid observation number can be calculated.!"<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -380,7 +380,7 @@ void PhysicalModelBase::checkBinSize(){
 void PhysicalModelBase::checkIncNumber(){
 	if (_incNumber<=0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"incNumber needs to be a positive integer."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -390,7 +390,7 @@ void PhysicalModelBase::checkIncNumber(){
 void PhysicalModelBase::checkStateNumber(){
 	if (_stateNumber<=0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"stateNumber needs to be a positive integer."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -400,7 +400,7 @@ void PhysicalModelBase::checkStateNumber(){
 void PhysicalModelBase::checkAlphabetSize(){
 	if (_alphabet.size()!=_incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"incNumber differs from alphabet size."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -414,7 +414,7 @@ void PhysicalModelBase::checkAlphabetInc(){
 		inc = std::abs(_alphabet.at(size-1)-_alphabet.at(size-2));
 		if (inc!=_binSize){
 			std::stringstream errorMessage;
-			errorMessage<<"Physical Model Base instance:"<<std::endl;
+			errorMessage<<"Physical model base instance:"<<std::endl;
 			errorMessage<<"alphabet bin size differs from binSize."<<std::endl;
 			SMLMS::SmlmsError error(errorMessage.str());
 			throw error;
@@ -427,7 +427,7 @@ void PhysicalModelBase::checkAreaPdfSuperPos(){
 	prec = -1 * std::numeric_limits<double>::max_digits10;
 	if ((_areaPdfSuperPos < 1.0-std::pow(1,prec)) or (_areaPdfSuperPos > 1.0 + std::pow(1,prec))){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"areaPdfSuperPos needs to be normalized to 1."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -439,7 +439,7 @@ void PhysicalModelBase::checkAreaFitSuperPos(){
 	prec = -1 * std::numeric_limits<double>::max_digits10;
 	if ((_areaFitSuperPos < 1.0-std::pow(1,prec)) or (_areaFitSuperPos > 1.0 + pow(1,prec))){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"areaFitSuperPos needs to be normalized to 1."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -449,7 +449,7 @@ void PhysicalModelBase::checkAreaFitSuperPos(){
 void PhysicalModelBase::checkPdfSuperPos(){
 	if(_pdfSuperPos.size() != _incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"size of pdfSuperPos differs from incNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -459,7 +459,7 @@ void PhysicalModelBase::checkPdfSuperPos(){
 void PhysicalModelBase::checkFitSuperPos(){
 	if(_fitSuperPos.size() != _incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"size of fitSuperPos differs from incNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -469,7 +469,7 @@ void PhysicalModelBase::checkFitSuperPos(){
 void PhysicalModelBase::checkResSuperPos(){
 	if(_resSuperPos.size() != _incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"size of resSuperPos differs from incNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -479,8 +479,8 @@ void PhysicalModelBase::checkResSuperPos(){
 void PhysicalModelBase::checkChiSquareSuperPos(){
 	if(_chiSquareSuperPos < 0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
-		errorMessage<<"chi square of super position pdf needs to be an unsigned integerr."<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
+		errorMessage<<"chi square of super position pdf needs to be an unsigned integer."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -489,7 +489,7 @@ void PhysicalModelBase::checkChiSquareSuperPos(){
 void PhysicalModelBase::checkAreaPdfSize(){
 	if(_areaPdf.size() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"size of areaPdf differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -502,7 +502,7 @@ void PhysicalModelBase::checkAreaPdf(){
 	for (i=0; i<_stateNumber; i++){
 		if((_areaPdf.at(i) < 1.0 - std::pow(1,prec)) or (_areaPdf.at(i) > 1.0 + std::pow(1,prec))){
 			std::stringstream errorMessage;
-			errorMessage<<"Physical Model Base insatnce:"<<std::endl;
+			errorMessage<<"Physical model base insatnce:"<<std::endl;
 			errorMessage<<"at least one member of areaPdf indicates that pdfMatrix is not normalized to 1."<<std::endl;
 			SMLMS::SmlmsError error(errorMessage.str());
 			throw error;
@@ -513,7 +513,7 @@ void PhysicalModelBase::checkAreaPdf(){
 void PhysicalModelBase::checkAreaFitSize(){
 	if(_areaFit.size() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"size of areaFit differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -526,7 +526,7 @@ void PhysicalModelBase::checkAreaFit(){
 	for (i=0; i<_stateNumber; i++){
 		if((_areaFit.at(i) < 1.0 - std::pow(1,prec)) or (_areaFit.at(i) > 1.0 + std::pow(1,prec))){
 			std::stringstream errorMessage;
-			errorMessage<<"Physical Model Base insatnce:"<<std::endl;
+			errorMessage<<"Physical model base insatnce:"<<std::endl;
 			errorMessage<<"at least one member of areaFit indicates that fitMatrix is not normalized to 1."<<std::endl;
 			SMLMS::SmlmsError error(errorMessage.str());
 			throw error;
@@ -537,14 +537,14 @@ void PhysicalModelBase::checkAreaFit(){
 void PhysicalModelBase::checkPdfMatrix(){
 	if(_pdfMatrix.numberOfRows() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"row number of pdf matrix  differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 	if(_pdfMatrix.numberOfColumns() != _incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"column number of pdf matrix differs from incNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -554,14 +554,14 @@ void PhysicalModelBase::checkPdfMatrix(){
 void PhysicalModelBase::checkFitMatrix(){
 	if(_fitMatrix.numberOfRows() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"row number of fit matrix  differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 	if(_fitMatrix.numberOfColumns() != _incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"column number of fit matrix differs from incNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -571,14 +571,14 @@ void PhysicalModelBase::checkFitMatrix(){
 void PhysicalModelBase::checkResMatrix(){
 	if(_resMatrix.numberOfRows() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"row number of res matrix  differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 	if(_resMatrix.numberOfColumns() != _incNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"column number of res matrix differs from incNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -588,7 +588,7 @@ void PhysicalModelBase::checkResMatrix(){
 void PhysicalModelBase::checkChiSquare(){
 	if(_chiSquare.size() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"number of chi square values differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -598,7 +598,7 @@ void PhysicalModelBase::checkChiSquare(){
 void PhysicalModelBase::checkPdfWeight(){
 	if(_pdfWeight.size() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Base instance:"<<std::endl;
+		errorMessage<<"Physical model base instance:"<<std::endl;
 		errorMessage<<"number of pdf weight factors differs from stateNumber."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
@@ -880,7 +880,6 @@ void PhysicalModelBase::intPdfSuperPos(double &area, const std::vector<double> &
 	unsigned i;
 	area = 0.0;
 	for (i=0; i<_incNumber; i++) area += pdf.at(i);
-	//for (i=1; i<_incNumber; i++) area += (pdf.at(i)+pdf.at(i-1))/2.0;
 	area *= _binSize; 
 }
 
@@ -896,7 +895,6 @@ void PhysicalModelBase::intPdfMatrix(std::vector<double> &area, const SMLMS::Mat
 	for (j=0; j<_stateNumber; j++){
 		area.at(j)=0.0;
 		for (i=0; i<_incNumber; i++) area.at(j) += pdf.at(j,i);
-		//for (i=1; i<_incNumber; i++) area.at(j) += (pdf.at(j,i-1)+pdf.at(j,i))/2.0;
 		area.at(j) *= _binSize;
 	}
 }

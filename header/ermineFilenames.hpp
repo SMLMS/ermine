@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: filenames.hpp
-* Project: SMLMS
-* Version: 1602
+* File Name: ermineFilenames.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 15.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef ErmineFilenames_hpp
-#define ErmineFilenames_hpp
+#ifndef ERMINEFILENAMES_HPP
+#define ERMINEFILENAMES_HPP
 #include <vector>
 #include <string>
 

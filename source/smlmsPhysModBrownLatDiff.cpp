@@ -1,6 +1,7 @@
 /* ######################################################################
-* File Name: smlmsPhysModBrownLatDiff.cpp* Project: SMLMS
-* Version: 18.09
+* File Name: smlmsPhysModBrownLatDiff.cpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 30.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -34,28 +35,28 @@
 namespace SMLMS{
 /* Constructor */
 PhysicalModelBLD::PhysicalModelBLD(): SMLMS::PhysicalModelBase(){
-	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
+	//std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 }
 
 PhysicalModelBLD::PhysicalModelBLD(const std::vector<double> &xVal, int stateVal, SMLMS::Microscope microscope): SMLMS::PhysicalModelBase(xVal, stateVal){
-	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
+	//std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 	_microscope = microscope;
 }
 
 
 PhysicalModelBLD::PhysicalModelBLD(double minVal, double maxVal, int incVal, int stateVal, SMLMS::Microscope microscope): SMLMS::PhysicalModelBase(minVal, maxVal, incVal, stateVal){
-	std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
+	//std::cout<<"Physical Model (brownian lateral diffusion) constructor called."<<std::endl;
 	_microscope = microscope;
 }
 
 /* Destructor */
 PhysicalModelBLD::~PhysicalModelBLD(){
-	std::cout<<"Physical Model (brownian lateral diffusion) removed from Heap!"<<std::endl;
+	//std::cout<<"Physical Model (brownian lateral diffusion) removed from Heap!"<<std::endl;
 }
 
 /* Copy Constructor */
 PhysicalModelBLD::PhysicalModelBLD(const PhysicalModelBLD &obj){
-	std::cout<<"Physical Model (brownian lateral diffusion) copy constructor called"<<std::endl;
+	//std::cout<<"Physical Model (brownian lateral diffusion) copy constructor called"<<std::endl;
 	_minValue = obj._minValue;
 	_maxValue = obj._maxValue;
 	_binSize = obj._binSize;
@@ -149,19 +150,19 @@ void PhysicalModelBLD::initContArea(){
 void PhysicalModelBLD::checkMicroscope(){
 	if (_microscope.pxlSize() <= 0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Pixel size in microscope class needs to be > 0."<<std::endl;
+		errorMessage<<"Physical model error: Pixel size in microscope class needs to be > 0."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 	if (_microscope.intTime() <= 0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Integreation time in microscope class needs to be > 0."<<std::endl;
+		errorMessage<<"Physical model error: Integration time in microscope class needs to be > 0."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 	if (_microscope.locPrec() <= 0){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Localization precision in microscope class needs to be > 0."<<std::endl;
+		errorMessage<<"Physical model error: Localization precision in microscope class needs to be > 0."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -170,13 +171,13 @@ void PhysicalModelBLD::checkMicroscope(){
 void PhysicalModelBLD::checkParaMat(){
 	if(_paraMat.numberOfRows() != _stateNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Number of states in brownian lateral diffusion parameter Matrix is not consistent with HMM state Number."<<std::endl;
+		errorMessage<<"Physical model error: Number of states in brownian lateral diffusion parameter matrix is not consistent with HMM state Number."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
 	if(_paraMat.numberOfColumns() != 8){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Brownial lateral diffusion parameter matrix needs 8 entries for each state."<<std::endl;
+		errorMessage<<"Physical model error: Brownial lateral diffusion parameter matrix needs 8 entries for each state."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -185,7 +186,7 @@ void PhysicalModelBLD::checkParaMat(){
 void PhysicalModelBLD::checkParaVect(){
 	if(_paraVect.size() != (2*_stateNumber)+1){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Parmeter vector is of insufficient size."<<std::endl;
+		errorMessage<<"Physical model error: Parmeter vector is of insufficient size."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -194,7 +195,7 @@ void PhysicalModelBLD::checkParaVect(){
 void PhysicalModelBLD::checkContArea(){
 	if(_contArea.size() != (_stateNumber)){
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: Cont area vector is of insufficient size."<<std::endl;
+		errorMessage<<"Physical model error: Cont area vector is of insufficient size."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -206,7 +207,7 @@ void PhysicalModelBLD::printParaMat(){
 	unsigned i,j;
 	std::cout<<"\nBrownian lateral diffusion parameter matrix:"<<std::endl;
 	std::cout<<"Number of states: "<<_stateNumber<<std::endl<<_stateNumber<<std::endl;;
-	std::cout<<"Weight\tfix\tmin\tmax\tD[nm^2/s]\tfix\tmin\tmax"<<std::endl;
+	std::cout<<"weight\tfix\tmin\tmax\tD[nm^2/s]\tfix\tmin\tmax"<<std::endl;
 	for (j=0; j<_stateNumber; j++){
 		for (i=0; i<8; i++)std::cout<<_paraMat.at(j,i)<<"\t";
 		std::cout<<std::endl;
@@ -245,8 +246,8 @@ void PhysicalModelBLD::writePhysMod(const std::string &folderName){
 		outFile<<std::scientific;
 		outFile<<std::setprecision(6);
 		/* header line */
-		outFile<<"# Physical Model for Probaility Density Function:"<<std::endl;
-		outFile<<"# Lateral Brownian Diffusion"<<std::endl;
+		outFile<<"# Physical model parameters for probaility density function:"<<std::endl;
+		outFile<<"# Lateral brownian diffusion"<<std::endl;
 		/* state Number */
 		outFile<<"# Number of states:"<<std::endl;
 		outFile<<_stateNumber<<std::endl;
@@ -260,7 +261,7 @@ void PhysicalModelBLD::writePhysMod(const std::string &folderName){
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: The ermine can not write physMod to file."<<std::endl;
+		errorMessage<<"Physical model error: The ermine can not write physMod to file."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -297,7 +298,7 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"Physical Model Error: The ermine could not read physMod from file."<<std::endl;
+		errorMessage<<"Physical model error: The ermine could not read physMod from file."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -308,12 +309,6 @@ void PhysicalModelBLD::readPhysMod(const std::string &name){
 void PhysicalModelBLD::contIntSuperPos(double &area, const std::vector<double> &pdf){
 	unsigned i;
 	area=0.0;
- 	// integrate TrapZ way
- 	/*
-	for (i=0; i<_incNumber-1; i++){
-		 area+= (pdf.at(i)*_binSize) - (0.5*_binSize*(pdf.at(i)-pdf.at(i+1)));
-	}
-	*/
 	for(i=1; i<_incNumber; i++){
 		area += 0.5*_binSize*(pdf.at(i-1)+pdf.at(i));
 	}
@@ -330,12 +325,6 @@ void PhysicalModelBLD::contIntPdfMat(std::vector<double> &area, const SMLMS::Mat
 	unsigned i,j;
 	for (j=0; j<_stateNumber; j++){
 		area.at(j)=0.0;
- 		// integrate TrapZ way
- 		/*
-		for (i=0; i<_incNumber-1; i++){
-		 	area.at(j)+= (pdf.at(j,i)*_binSize) - (0.5*_binSize*(pdf.at(j,i)-pdf.at(j,i+1)));
-		}
-		*/
 		for(i=1; i<_incNumber; i++){
 			area.at(j) += 0.5*_binSize*(pdf.at(j,i-1)+pdf.at(j,i));
 		}

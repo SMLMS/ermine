@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: ermineExceptions.hpp
 * Project: ermine
-* Version: 16.12
+* Version: 19.02
 * Creation Date: 02.12.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef ermineExceptions_hpp
-#define ermineExceptions_hpp
+#ifndef ERMINEEXCEPTIONS_HPP
+#define ERMINEEXCEPTIONS_HPP
 #include <string>
 
 namespace SMLMS{

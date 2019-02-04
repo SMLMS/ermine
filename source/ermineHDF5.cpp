@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: ermineHDF5.cpp
 * Project: ermine
-* Version: 1809
+* Version: 19.02
 * Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -28,7 +28,7 @@ namespace SMLMS{
 
 /* constructor */
 HDF5::HDF5(){
-	std::cout<<"HDF5 constructor called."<<std::endl;
+	//std::cout<<"HDF5 constructor called."<<std::endl;
 	/* group names */
 	_gnData = H5std_string("data");
 	_gnHmm = H5std_string("hmm");
@@ -65,20 +65,12 @@ HDF5::HDF5(){
 /* destructor */
 HDF5::~HDF5(){
 	tidy();
-	/*
-	_file = nullptr;
-	_group = nullptr;
-	_data = nullptr;
-	_space = nullptr;
-	_memSpace = nullptr;
-	_compType = nullptr;
-	*/
-	std::cout<<"HDF5 removed from Heap!"<<std::endl;
+	//std::cout<<"HDF5 removed from Heap!"<<std::endl;
 }
 
 /* Copy Contructor */
 HDF5::HDF5(const HDF5 &obj){
-	std::cout<<"HDF5 copy constructor called."<<std::endl;
+	//std::cout<<"HDF5 copy constructor called."<<std::endl;
 	_fileName = obj._fileName;
 	_folderName = obj._folderName;
 	/* group names */
@@ -293,11 +285,11 @@ int HDF5::writeMicroscopeData(const SMLMS::Microscope &microscope){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
+		std::cout<<"could not open group "<<_gnSettings<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write data to dataset "<<_dsMicroscope<<std::endl;;
+		std::cout<<"could not write data to data set "<<_dsMicroscope<<std::endl;;
 		return -1;
 	}
 	return 0;
@@ -319,11 +311,11 @@ int HDF5::writeRoiData(const SMLMS::ROI &roi){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
+		std::cout<<"could not open group "<<_gnSettings<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write data to dataset "<<_dsRoi<<std::endl;
+		std::cout<<"could not write data to data set "<<_dsRoi<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -352,11 +344,11 @@ int HDF5::writeMolData(const SMLMS::MoleculeList &mol){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		std::cout<<"could not open group "<<_gnData<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write data to dataset "<<_dsMol<<std::endl;
+		std::cout<<"could not write data to data set "<<_dsMol<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -385,11 +377,11 @@ int HDF5::writeJudiData(const SMLMS::JumpDistanceList &judi){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		std::cout<<"could not open group "<<_gnData<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write data to dataset "<<_dsJudi<<std::endl;
+		std::cout<<"could not write data to data set "<<_dsJudi<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -418,11 +410,11 @@ int HDF5::writeStatisticData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsHmmStatistics<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsHmmStatistics<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -446,11 +438,11 @@ int HDF5::writeEquiMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write to dataset "<<_dsEquiMat<<std::endl;
+		std::cout<<"could not write to data set "<<_dsEquiMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -474,11 +466,11 @@ int HDF5::writeTransMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write to dataset "<<_dsTransMat<<std::endl;
+		std::cout<<"could not write to data set "<<_dsTransMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -502,11 +494,11 @@ int HDF5::writeObsMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write to dataset "<<_dsObsMat<<std::endl;
+		std::cout<<"could not write to data set "<<_dsObsMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -530,11 +522,11 @@ int HDF5::writeAlphabetData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write to dataset "<<_dsAlphabet<<std::endl;
+		std::cout<<"could not write to data set "<<_dsAlphabet<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -605,11 +597,11 @@ int HDF5::writePhysModData(SMLMS::PhysicalModelBLD& pMod){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnModel<<std::endl;
+		std::cout<<"could not open group "<<_gnModel<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not write data to datasets "<<_dsModelWeight<<" and "<<_dsModelDiff<<std::endl;
+		std::cout<<"could not write data to data sets "<<_dsModelWeight<<" and "<<_dsModelDiff<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -637,11 +629,11 @@ int HDF5::readMicroscopeData(SMLMS::Microscope &microscope){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
+		std::cout<<"could not open group "<<_gnSettings<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsMicroscope<<std::endl;;
+		std::cout<<"could not read data from data set "<<_dsMicroscope<<std::endl;;
 		return -1;
 	}
 	return 0;
@@ -663,11 +655,11 @@ int HDF5::readRoiData(SMLMS::ROI &roi){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnSettings<<std::endl;
+		std::cout<<"could not open group "<<_gnSettings<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsRoi<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsRoi<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -697,11 +689,11 @@ int HDF5::readMolData(SMLMS::MoleculeList &mol){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		std::cout<<"could not open group "<<_gnData<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read  data from dataset "<<_dsMol<<std::endl;
+		std::cout<<"could not read  data from data set "<<_dsMol<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -731,11 +723,11 @@ int HDF5::readJudiData(SMLMS::JumpDistanceList &judi){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnData<<std::endl;
+		std::cout<<"could not open group "<<_gnData<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from data Set "<<_dsJudi<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsJudi<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -764,11 +756,11 @@ int HDF5::readStatisticData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsHmmStatistics<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsHmmStatistics<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -797,11 +789,11 @@ int HDF5::readEquiMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsEquiMat<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsEquiMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -832,11 +824,11 @@ int HDF5::readTransMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsTransMat<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsTransMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -867,11 +859,11 @@ int HDF5::readObsMatData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsObsMat<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsObsMat<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -896,11 +888,11 @@ int HDF5::readAlphabetData(SMLMS::HMMSequence& hmm){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnHmm<<std::endl;
+		std::cout<<"could not open group "<<_gnHmm<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from dataset "<<_dsAlphabet<<std::endl;
+		std::cout<<"could not read data from data set "<<_dsAlphabet<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -977,11 +969,11 @@ int HDF5::readPhysModData(SMLMS::PhysicalModelBLD& pMod){
 		return -1;
 	}
 	catch(H5::GroupIException& error){
-		std::cout<<"could not open Group "<<_gnModel<<std::endl;
+		std::cout<<"could not open group "<<_gnModel<<std::endl;
 		return -1;
 	}
 	catch(H5::DataSetIException& error){
-		std::cout<<"could not read data from data Sets "<<_dsModelWeight<<" and "<<_dsModelDiff<<std::endl;
+		std::cout<<"could not read data from data sets "<<_dsModelWeight<<" and "<<_dsModelDiff<<std::endl;
 		return -1;
 	}
 	return 0;
@@ -1001,7 +993,6 @@ int HDF5::createFile(void){
  		* tidy
  		*/
 		tidy();
-		//_file->close();
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"could not create file "<<_fileName<<std::endl;
@@ -1020,18 +1011,14 @@ int HDF5::createGroup(std::string &groupName){
  		* tidy
  		*/
 		tidy();
-		//_group->close();
-		//_file->close();
-		std::cout<<"Created Group "<<groupName<<" in HDF5 file "<<_fileName<<std::endl;
+		std::cout<<"Created group "<<groupName<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
 		std::cout<<"could not open file "<<_fileName<<std::endl;
-		//error.printError();
 		return -1;
 	}
 	catch(H5::FileIException& error){
 		std::cout<<"Group "<<groupName<<"  already exists in "<<_fileName<<std::endl;
-		//error.printError();
 		return -1;
 	}
 	return 0;
@@ -1090,17 +1077,9 @@ int HDF5::createStatisticData(void){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsHmmStatistics<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsHmmStatistics<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsHmmStatistics<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1138,17 +1117,9 @@ int HDF5::createJudiData(const SMLMS::JumpDistanceList &judi){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsJudi<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsJudi<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsJudi<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1185,18 +1156,10 @@ int HDF5::createMicroscopeData(void){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsMicroscope<<"  in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsMicroscope<<"  in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
-		std::cout<<"dataset "<<_dsMicroscope<<" already exists in "<<_fileName<<std::endl;
+		std::cout<<"data set "<<_dsMicroscope<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
 	
@@ -1218,8 +1181,8 @@ int HDF5::createMolData(const SMLMS::MoleculeList &mol){
 	_compType->insertMember("x [nm]", HOFFSET(SMLMS::Molecule, x), H5::PredType::NATIVE_DOUBLE);
 	_compType->insertMember("y [nm]", HOFFSET(SMLMS::Molecule, y), H5::PredType::NATIVE_DOUBLE);
 	_compType->insertMember("state", HOFFSET(SMLMS::Molecule, state), H5::PredType::NATIVE_INT);
-	_compType->insertMember("Intensity", HOFFSET(SMLMS::Molecule, intensity), H5::PredType::NATIVE_DOUBLE);
-	_compType->insertMember("Precision [nm]", HOFFSET(SMLMS::Molecule, precision), H5::PredType::NATIVE_DOUBLE);
+	_compType->insertMember("intensity", HOFFSET(SMLMS::Molecule, intensity), H5::PredType::NATIVE_DOUBLE);
+	_compType->insertMember("precision [nm]", HOFFSET(SMLMS::Molecule, precision), H5::PredType::NATIVE_DOUBLE);
 	/*
  	* set dataset dimensions
  	*/
@@ -1237,17 +1200,9 @@ int HDF5::createMolData(const SMLMS::MoleculeList &mol){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsMol<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsMol<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsMol<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1279,16 +1234,9 @@ int HDF5::createObsMatData(SMLMS::HMMSequence &hmm){
  	* tidy
  	*/
 	tidy();
-	/*
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsObsMat<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsObsMat<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsObsMat<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1330,17 +1278,9 @@ int HDF5::createRoiData(void){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsRoi<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsRoi<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsRoi<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1371,16 +1311,9 @@ int HDF5::createTransMatData(SMLMS::HMMSequence &hmm){
  	* tidy
  	*/
 	tidy();
-	/*
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsTransMat<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsTransMat<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsTransMat<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1411,16 +1344,9 @@ int HDF5::createEquiMatData(SMLMS::HMMSequence &hmm){
  	* tidy
  	*/
 	tidy();
-	/*
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsEquiMat<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsEquiMat<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsEquiMat<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1451,16 +1377,9 @@ int HDF5::createAlphabetData(SMLMS::HMMSequence &hmm){
  	* tidy
  	*/
 	tidy();
-	/*
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsAlphabet<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsAlphabet<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsAlphabet<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1499,17 +1418,9 @@ int HDF5::createModelWeightData(SMLMS::PhysicalModelBLD &model){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsModelWeight<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsModelWeight<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsModelWeight<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}
@@ -1547,17 +1458,9 @@ int HDF5::createModelDiffData(SMLMS::PhysicalModelBLD &model){
  	* tidy
  	*/
 	tidy();
-	/*
-	_compType->close();
-	_data->close();
-	_space->close();
-	_group->close();
-	_file->close();
-	*/
-	std::cout<<"Created dataset "<<_dsModelDiff<<" in HDF5 file "<<_fileName<<std::endl;
+	std::cout<<"Created data set "<<_dsModelDiff<<" in HDF5 file "<<_fileName<<std::endl;
 	}
 	catch(H5::GroupIException& error){
-		//error.printError();
 		std::cout<<"data set "<<_dsModelWeight<<" already exists in "<<_fileName<<std::endl;
 		return -1;
 	}

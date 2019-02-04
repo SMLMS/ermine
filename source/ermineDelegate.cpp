@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: ermineDelegate.cpp
-* Project: SMLMS
-* Version: 16.03
+* Project: ermine
+* Version: 19.02
 * Creation Date: 25.04.2018
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -22,24 +22,24 @@ namespace po=boost::program_options;
 namespace SMLMS{
 /* Constructor */
 Delegate::Delegate(void){
-	std::cout<<"Delegate constructor called."<<std::endl;
+	//std::cout<<"Delegate constructor called."<<std::endl;
 	_errors = 0;
 }
 
 Delegate::Delegate(po::variables_map &vm){
-	std::cout<<"Delegate constructor called."<<std::endl;
+	//std::cout<<"Delegate constructor called."<<std::endl;
 	_errors = 0;
 	initDelegate(vm);
 }
 
 /* Destructor */
 Delegate::~Delegate(){
-	std::cout<<"Delegate removed from heap."<<std::endl;
+	//std::cout<<"Delegate removed from heap."<<std::endl;
 }
 
 /* Copy Constructor */
 Delegate::Delegate(const Delegate &obj){
-	std::cout<<"Delegate copy constructor called."<<std::endl;
+	//std::cout<<"Delegate copy constructor called."<<std::endl;
 	_errors = obj._errors;
 	_eVar = obj._eVar;
 	_fileNames = obj._fileNames;
@@ -68,7 +68,7 @@ int Delegate::initDelegate(po::variables_map &vm){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch (...){
-		std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during argument parsing and is going to rest."<<std::endl;
 		_errors += 1;
 		return SMLMS::SMLMS_FAILURE;
 	}
@@ -89,7 +89,7 @@ int Delegate::loadFileNames(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error during parsing of fileName file."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during parsing of fileName file."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	return SMLMS::SMLMS_SUCCESS;
@@ -105,7 +105,7 @@ int Delegate::loadMicroscope(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error during argument parsing and is going to rest"<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during argument parsing and is going to rest."<<std::endl;
 	return SMLMS::SMLMS_FAILURE;
 	}
 	std::cout<<"int time: "<<_microscope.intTime()<<std::endl;
@@ -127,7 +127,7 @@ int Delegate::loadTrcList(void){
 			return SMLMS::SMLMS_FAILURE;
 		}
 		catch(...){
-			std::cout<<"oops, the ermine discovered an unexpected error while loading molecues."<<std::endl;
+			std::cout<<"Oops, the ermine discovered an unexpected error while loading molecues."<<std::endl;
 			return SMLMS::SMLMS_FAILURE;
 		}
 		/* load trc and append files */
@@ -141,7 +141,7 @@ int Delegate::loadTrcList(void){
 				return SMLMS::SMLMS_FAILURE;
 			}
 			catch(...){
-				std::cout<<"oops, the ermine discovered an unexpected error while loading molecules."<<std::endl;
+				std::cout<<"Oops, the ermine discovered an unexpected error while loading molecules."<<std::endl;
 				return SMLMS::SMLMS_FAILURE;
 			}
 			_molList.addMoleculeList(tempList);
@@ -161,7 +161,7 @@ int Delegate::loadMoleculeList(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while loading molecules."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while loading molecules."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	_molList.filterMoleculeList();
@@ -178,7 +178,7 @@ int Delegate::loadJumpDistanceList(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while loading judi."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while loading judi."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	return SMLMS::SMLMS_SUCCESS;
@@ -191,7 +191,7 @@ int Delegate::loadPhysMod(void){
 	_physMod.setMicroscope(_microscope);
 	try{
 		/* loading Model */
-		std::cout<<"reading physical model."<<std::endl;
+		std::cout<<"reading probability density function parameters."<<std::endl;
 		_physMod.readPhysMod(_fileNames.modelName());
 	}
 	catch(SMLMS::SmlmsError &error){
@@ -199,7 +199,7 @@ int Delegate::loadPhysMod(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while loading the physical model."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while loading probability density function parameters."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	return SMLMS::SMLMS_SUCCESS;
@@ -219,7 +219,7 @@ int Delegate::loadHmm(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while loading hidden markov model."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while loading hidden markov model."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	_hmm.setStopCrit(_eVar.stopCritArgument());
@@ -240,7 +240,7 @@ int Delegate::createFolder(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error during destination folder creation."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during destination folder creation."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	return SMLMS::SMLMS_SUCCESS;
@@ -252,7 +252,7 @@ int Delegate::writeParser(void){
 		_eVar.writeErmineParser();
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while writing the parser arguments."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while writing the parser arguments."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 	return SMLMS::SMLMS_SUCCESS;
@@ -267,7 +267,7 @@ int Delegate::writeMicroscope(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while saving the microscope."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while saving the microscope."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 
@@ -283,7 +283,7 @@ int Delegate::writeMoleculeList(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while saving the molecule list."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while saving the molecule list."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 
@@ -299,7 +299,7 @@ int Delegate::writeJumpDistanceList(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while saving the jump distance list."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while saving the jump distance list."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 
@@ -317,7 +317,7 @@ int Delegate::writePhysMod(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while saving the physical model."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while saving the probability density function parameter."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 
@@ -337,30 +337,12 @@ int Delegate::writeHmm(void){
 		return SMLMS::SMLMS_FAILURE;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while saving the physical model."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error while saving the hidden markov model."<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
 
 	return SMLMS::SMLMS_SUCCESS;
 }
-
-/*
-int Delegate::writeDwellTime(void){
-	try{
-		_dwellTime.writeDwellTime(_fileNames.folderName());
-		_dwellTime.plotDwellTime(_fileNames.folderName());
-	}
-	catch(SMLMS::SmlmsError& error){
-		std::cout<<error.what()<<std::endl;
-		return SMLMS::SMLMS_FAILURE;
-	}
-	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while saving the dwell times."<<std::endl;
-		return SMLMS::SMLMS_FAILURE;
-	}
-	return SMLMS::SMLMS_SUCCESS;	
-}
-*/
 
 /* run algorithm functions */
 int Delegate::run(void){
@@ -434,14 +416,6 @@ int Delegate::run(void){
 		statement.printExtract();
 		runExtractAlgorithm();
 	}
-	/*
-	else if(_eVar.algorithmArgument()=="dwellTime"){
-		statement.printDwellTime();
-		createFolder();
-		_eVar.writeErmineParser();
-		runDwellTimeAlgorithm();
-	}
-	*/
 	else if(_eVar.algorithmArgument()=="simulate"){
 		statement.printSimulate();
 		createFolder();
@@ -460,7 +434,7 @@ int Delegate::run(void){
 		_errors += 1;
 	}
 	statement.printFinished();
-	std::cout<<"Result:\nProcceding of "<<_eVar.algorithmArgument()<<" analysis completed with "<<_errors<<" errors."<<std::endl;
+	std::cout<<"Result:\nProceeding of "<<_eVar.algorithmArgument()<<" analysis completed with "<<_errors<<" errors."<<std::endl;
 	statement.printTidy(); 
 	return SMLMS::SMLMS_SUCCESS;
 }
@@ -520,7 +494,7 @@ int Delegate::runInitPhysModAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while initializing the physical model."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the initialization of the PDF parameters."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -606,7 +580,7 @@ int Delegate::runInitHmmAlgorithm(void){
 		_errors += 1;;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while initializing the HMM."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the initialization of the HMM."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -636,7 +610,7 @@ int Delegate::runEvaluateAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while evaluating the HMM."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the evaluation of the HMM."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -658,6 +632,7 @@ int Delegate::runTrainWithPhysModAlgorithm(void){
 	try{
 		_physMod.calcPdf(_judi);
 		_hmm.trainPhysModSequence(_judi, _physMod);
+		_hmm.printHMM();
 	}
 	catch(SMLMS::SmlmsError &error){
 		std::cout<<error.what()<<std::endl;
@@ -668,7 +643,7 @@ int Delegate::runTrainWithPhysModAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while training the HMM."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the training of the HMM."<<std::endl;
 		_errors +=  1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -716,7 +691,7 @@ int Delegate::runBestPathAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while optimizing the state sequence."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the optimization of the state sequence."<<std::endl;
 		_errors +=  1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -741,7 +716,7 @@ int Delegate::runTransferStatesAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while transfering state sequence."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the transfer of the state sequence."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -802,7 +777,7 @@ int Delegate::runExtractAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while initializing the physical model."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during the initialization of the PDF parameters."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -829,40 +804,12 @@ int Delegate::runExtractAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while extracting data from archive."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during archive extraction."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
 	return SMLMS::SMLMS_SUCCESS;
 }
-/*
-int Delegate::runDwellTimeAlgorithm(void){
-	// load functions
-	_errors += loadJumpDistanceList();
-	_errors += loadHmm();
-	if(_errors){return SMLMS::SMLMS_FAILURE;}
-	// analysis functions 
-	SMLMS::DwellTimeAnalysis dwellTime;
-	dwellTime.setDt(_eVar.jumpIntervalArgument());
-	try{
-		dwellTime.analyzeJudi(_hmm, _judi, _eVar.folderNameArgument());
-	}
-	catch(SMLMS::SmlmsError &error){
-		std::cout<<error.what()<<std::endl;
-		_errors += 1;
-	}
-	catch(std::out_of_range &error){
-		std::cout<<error.what()<<std::endl;
-		_errors += 1;
-	}
-	catch(...){
-		std::cout<<"unkown error!"<<std::endl;
-		_errors += 1;
-	}
-	if(_errors){return SMLMS::SMLMS_FAILURE;}
-	return SMLMS::SMLMS_SUCCESS;
-}
-*/
 
 int Delegate::runSimulateAlgorithm(void){
 	/* load functions */
@@ -882,7 +829,7 @@ int Delegate::runSimulateAlgorithm(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"unkown error!"<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unknown error!"<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -916,7 +863,7 @@ int Delegate::runWholeCellAnalysis(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while training the HMM."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during HMM training."<<std::endl;
 		_errors +=  1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -948,7 +895,7 @@ int Delegate::runWholeCellAnalysis(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while evaluating the HMM."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during HMM evaluation."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -961,7 +908,7 @@ int Delegate::runWholeCellAnalysis(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while optimizing the state sequence."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during state sequence optimization."<<std::endl;
 		_errors +=  1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -975,7 +922,7 @@ int Delegate::runWholeCellAnalysis(void){
 		_errors += 1;
 	}
 	catch(...){
-		std::cout<<"oops, the ermine discovered an unexpected error while transfering state sequence."<<std::endl;
+		std::cout<<"Oops, the ermine discovered an unexpected error during state sequence transfer."<<std::endl;
 		_errors += 1;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -1005,27 +952,6 @@ int Delegate::runWholeCellAnalysis(void){
 	_errors += writePhysMod();
 	_errors += writeHmm();
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
-	/*
-	// Dwell Time
-	SMLMS::DwellTimeAnalysis dwellTime;
-	dwellTime.setDt(_eVar.jumpIntervalArgument());
-	try{
-		dwellTime.analyzeJudi(_hmm, _judi, _eVar.folderNameArgument());
-	}
-	catch(SMLMS::SmlmsError &error){
-		std::cout<<error.what()<<std::endl;
-		_errors += 1;
-	}
-	catch(std::out_of_range &error){
-		std::cout<<error.what()<<std::endl;
-		_errors += 1;
-	}
-	catch(...){
-		std::cout<<"unkown error!"<<std::endl;
-		_errors += 1;
-	}
-	if(_errors){return SMLMS::SMLMS_FAILURE;}
-	*/
 	return SMLMS::SMLMS_SUCCESS;
 }
 } /* SMLMS */

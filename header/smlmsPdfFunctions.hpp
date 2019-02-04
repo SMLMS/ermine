@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsPdfFunctions.hpp
-* Project: SMLMS
-* Version: 16.03
+* Project: ermine
+* Version: 19.02
 * Creation Date: 31.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef SmlmsPdfFunctions_hpp
-#define SmlmsPdfFunctions_hpp
+#ifndef SMLMSPDFFUNCTIONS_HPP
+#define SMLMSPDFFUNCTIONS_HPP
 namespace SMLMS{
 /* jump Distance Distribution */
 double judiPdf(double *val, double *para);

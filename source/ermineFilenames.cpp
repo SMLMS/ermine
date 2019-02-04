@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: filenames.cpp
-* Project: SMLMS
-* Version:1602
+* Project: ermine
+* Version: 19.02
 * Creation Date: 16.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -24,16 +24,16 @@ namespace SMLMS{
 
 /* constructor */
 FileNames::FileNames(){
-	std::cout<<"FileName constructor called."<<std::endl;
+	//std::cout<<"FileName constructor called."<<std::endl;
 }
 
 /* destructor */
 FileNames::~FileNames(){
-	std::cout<<"FileNames removed from Heap!"<<std::endl;
+	//std::cout<<"FileNames removed from Heap!"<<std::endl;
 }
 /* copy-constructor*/
 FileNames::FileNames(const FileNames &obj){
-	std::cout<<"FileNames copy-constructor called."<<std::endl;
+	//std::cout<<"FileNames copy-constructor called."<<std::endl;
 	setSourceFileName(obj._sourceFileName);
 	setFolderName(obj._folderName);
 	setMicroscopeName(obj._microscopeName);

@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: ermineExceptions.cpp
 * Project: ermine
-* Version: 16.12
+* Version: 19.02
 * Creation Date: 02.12.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -16,7 +16,7 @@
 #include "header/ermineExceptions.hpp"
 namespace SMLMS{
 ErmineError::ErmineError(std::string errorMessage){
-	_errorMessage = "Ermine Parser Error: ";
+	_errorMessage = "Oops, an ermine parser error occurred: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\ntype './ermine --help (-h)' for help!\n");
 }
@@ -26,7 +26,7 @@ std::string ErmineError::what(){
 } 
 
 ErmineParserError::ErmineParserError(std::string errorMessage){
-	_errorMessage = "Ermine Parser Error: ";
+	_errorMessage = "Oops, an ermine parser error occurred: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\ntype './ermine --help (-h)' for help!\n");
 }
@@ -36,7 +36,7 @@ std::string ErmineParserError::what(){
 }
 
 SMLMSFolderError::SMLMSFolderError(std::string errorMessage){
-	_errorMessage = "SMLMS Folder Error: ";
+	_errorMessage = "Oops, an ermine folder error occurred: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\n");
 }
@@ -46,7 +46,7 @@ std::string SMLMSFolderError::what(){
 }
 
 ErmineFileNameError::ErmineFileNameError(std::string errorMessage){
-	_errorMessage = "Ermine File Name Error: ";
+	_errorMessage = "Oops, an ermine file name error occurred: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\n");
 }
@@ -56,7 +56,7 @@ std::string ErmineFileNameError::what(){
 }
 
 SMLMSMicroscopeError::SMLMSMicroscopeError(std::string errorMessage){
-	_errorMessage = "SMLMS Microscope Error: ";
+	_errorMessage = "Oops an ermine microscope error occurred: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\n");
 }
@@ -66,7 +66,7 @@ std::string SMLMSMicroscopeError::what(){
 }
 
 SMLMSMoleculesError::SMLMSMoleculesError(std::string errorMessage){
-	_errorMessage = "SMLMS Molecule List Error: ";
+	_errorMessage = "Oops, an ermine molecule list error occurred: ";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\n");
 }
@@ -76,7 +76,7 @@ std::string SMLMSMoleculesError::what(){
 }
 
 ErmineJudiError::ErmineJudiError(std::string errorMessage){
-	_errorMessage = "Ermine Jump Distribution Error";
+	_errorMessage = "Oops, an ermine jump distance distribution error occurred:";
 	_errorMessage.append(errorMessage);
 	_errorMessage.append("\n");
 }

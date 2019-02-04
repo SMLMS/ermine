@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: statement.cpp
-* Project: SMLMS
-* Version: 1602
+* Project: ermine
+* Version: 19.02
 * Creation Date: 16.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -68,7 +68,7 @@ void Statement::setStart(){
 
 void Statement::setFinished(){
 	_finished.clear();
-	_finished.append("The ermine got the job done and is going to sleep.");	
+	_finished.append("The ermine got the job done and is going to rest.");	
 }
 
 void Statement::setBatch(){
@@ -133,7 +133,7 @@ void Statement::setWholeCell(){
 
 void Statement::setArchive(){
 	_archive.clear();
-	_archive.append("The ermine archives the given model to a hdf5 file..");
+	_archive.append("The ermine archives the given model to an hdf5 file.");
 }
 
 void Statement::setExtract(){
@@ -143,7 +143,7 @@ void Statement::setExtract(){
 
 void Statement::setTidy(){
 	_tidy.clear();
-	_tidy.append("\nThe ermine is clearing the heap.\n");
+	_tidy.append("The ermine is clearing the heap.");
 }
 /* print functions */
 void Statement::printStart(){

@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: container.hpp
-* Project: SMLMS
-* Version:16.02
+* File Name: smlmsContainer.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date:03.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Smlms_hpp
-#define Smlms_hpp
+#ifndef SMLMSCONTAINER_HPP
+#define SMLMSCONTAINER_HPP
 
 namespace SMLMS{
 	struct Molecule{

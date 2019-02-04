@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
-* Creation Date:
+* File Name: smlmsFolder.cpp
+* Project: ermine
+* Version: 19.02
+* Creation Date: 01.12.2016 
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt
@@ -25,12 +25,12 @@ namespace SMLMS{
 
 // Constructor
 SMLMSFolder::SMLMSFolder(){
-	std::cout<<"SMLMSFolder created"<<std::endl;
+	//std::cout<<"SMLMSFolder created"<<std::endl;
 }
 
 // Destructor
 SMLMSFolder::~SMLMSFolder(){
-	std::cout<<"SMLMSFolder removed from heap!"<<std::endl;
+	//std::cout<<"SMLMSFolder removed from heap!"<<std::endl;
 }
 
 //Assessor functions of class folder
@@ -92,11 +92,11 @@ void SMLMSFolder::createFolder(){
 	fs::path p (_folderName.c_str());   // p reads clearer than argv[1] in the following code
 	if (checkFolder()<1){
 	 	if(create_directory(p)){
-			std::cout<<p<<" has been cerated"<<std::endl;
+			std::cout<<p<<" has been created"<<std::endl;
     	}
 		else{
 			std::stringstream errorMessage;
-			errorMessage<<"oops! The ermine was not able to create "<<_folderName<<std::endl;
+			errorMessage<<"Oops, the ermine was not able to create "<<_folderName<<std::endl;
 			SMLMS::SMLMSFolderError smlmsFolderError(errorMessage.str());
 			throw smlmsFolderError;
 		}

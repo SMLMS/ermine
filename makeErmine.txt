@@ -1,5 +1,5 @@
 # Define required macros here
-CXXFLAGS = -Wall -fPIC -std=c++11 -g  -fopenmp
+CXXFLAGS = -Wall -fPIC -std=c++11 -O2  -fopenmp
 CXX = g++
 INCLUDES = -I$(HOME)/Dokumente/Code/ermine
 LIBS = -L$(HOME)/Dokumente/Code/ermine/source
