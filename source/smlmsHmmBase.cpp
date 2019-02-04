@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmBase.cpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 23.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -361,7 +361,7 @@ void HMMBase::checkSymbolNumber(){
 void HMMBase::checkEqui(){
 	if ((_stateNumber != _equiPDF.numberOfColumns()) || (_equiPDF.numberOfRows()!=1)){
 		std::stringstream errorMessage;
-		errorMessage<<"equilibrum Matrix Mismatch: Matrix needs to be: "<<_stateNumber<<" x "<<1<<std::endl;
+		errorMessage<<"equilibrum matrix mismatch: Matrix needs to be: "<<_stateNumber<<" x "<<1<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -371,7 +371,7 @@ void HMMBase::checkEqui(){
 void HMMBase::checkTrans(){
 	if ((_stateNumber != _transPDF.numberOfColumns()) ||(_stateNumber != _transPDF.numberOfRows())){
 		std::stringstream errorMessage;
-		errorMessage<<"transition Matrix Mismatch: Matrix needs to be: "<<_stateNumber<<" x "<<_stateNumber<<std::endl;
+		errorMessage<<"transition matrix mismatch: Matrix needs to be: "<<_stateNumber<<" x "<<_stateNumber<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -380,7 +380,7 @@ void HMMBase::checkTrans(){
 void HMMBase::checkObs(){
 	if ((_symbolNumber != _obsPDF.numberOfColumns()) ||(_stateNumber != _obsPDF.numberOfRows())){
 		std::stringstream errorMessage;
-		errorMessage<<"observation Matrix Mismatch: Matrix needs to be: "<<_stateNumber<<" x "<<_symbolNumber<<std::endl;
+		errorMessage<<"observation matrix mismatch: Matrix needs to be: "<<_stateNumber<<" x "<<_symbolNumber<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -389,7 +389,7 @@ void HMMBase::checkObs(){
 void HMMBase::checkAlphabet(){
 	if (_obsAlphabet.size() != _symbolNumber){
 		std::stringstream errorMessage;
-		errorMessage<<"observation Alphabet Error: no Observation Alphabet given!"<<_stateNumber<<" x "<<_symbolNumber<<std::endl;
+		errorMessage<<"observation alphabet error: no observation alphabet given!"<<_stateNumber<<" x "<<_symbolNumber<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}
@@ -403,7 +403,7 @@ void HMMBase::checkProbDen(SMLMS::Matrix & mat){
 			prob += mat.at(i,j);
 		}
 		if ((prob < 0.99) || (prob > 1.01)){
-			std::cout<<"probabilty desnity warning: pdf integral is not normalized to unity."<<std::endl;
+			std::cout<<"probabilty desnity warning: PDF integral is not normalized to unity."<<std::endl;
 		}
 	}
 }
@@ -781,9 +781,9 @@ void HMMBase::printHMM(){
 	printSymbolNumber();
 	printEquiPDF();
 	printTransPDF();
-	printObsPDF();
-	printSymbolInterval();
-	printObsAlphabet();
+	//printObsPDF();
+	//printSymbolInterval();
+	//printObsAlphabet();
 	printLogLikelihood();
 	printDof();
 	printAic();

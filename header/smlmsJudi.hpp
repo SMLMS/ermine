@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: judi.hpp
-* Project: SMLMS
-* Version: 18.09
+* File Name: smlmsJudi.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 03.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Judi_hpp
-#define Judi_hpp
+#ifndef SMLMSJUDI_HPP
+#define SMLMSJUDI_HPP
 #include <vector>
 #include <string>
 #include "header/smlmsMolecules.hpp"

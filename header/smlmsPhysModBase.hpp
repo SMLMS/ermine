@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsPhysModBase.hpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 22.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>

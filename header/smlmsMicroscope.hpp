@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: microscope.hpp
-* Project: SMLMS
-* Version: 16.02.
+* File Name: smlmsMicroscope.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 29.02.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Microscope_hpp
-#define Microscope_hpp
+#ifndef SMLMSMICROSCOPE_HPP
+#define SMLMSMICROSCOPE_HPP
 #include <string>
 
 namespace SMLMS{

@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: ermineParser.cpp
-* Project: SMLMS
-* Version: 1611
+* Project: ermine
+* Version: 19.02
 * Creation Date: 04.11.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -30,7 +30,7 @@ namespace SMLMS{
 // constructors
 // default constructor
 ErmineParser::ErmineParser(){
-	std::cout<<"Ermine Parser created"<<std::endl;
+	//std::cout<<"Ermine Parser created"<<std::endl;
 	// Initialize default parser arguments
 	std::map<std::string, int> alphabet;
 	//batch, mol2judi, initialize, simulate, likelihood, train, viterbi
@@ -63,7 +63,7 @@ ErmineParser::ErmineParser(){
 
 // Destructor
 ErmineParser::~ErmineParser(){
-	std::cout<< "ErmineParser removed from heap." <<std::endl;
+	//std::cout<< "Ermine Parser removed from heap." <<std::endl;
 }// ~ErmineParser
 
 // Assessor functions for ErmineParser arguments
@@ -185,15 +185,15 @@ void ErmineParser::printAlgorithmHelp(){
 	<<"initPhysMod:\treturns an initial .mod file.\t\t\t\t\t\t\t\t\t(mic)"<<std::endl
 	<<"fitPhysMod:\tfits a physical model to a given judi.\t\t\t\t\t\t\t\t(mic, judi, mod)"<<std::endl
 	<<"initHMM:\treturns an initial guess for a hmm.\t\t\t\t\t\t\t\t(mic, mod)"<<std::endl
-	<<"evaluate:\tevaluates how well a given model fits a distinct data set\t\t\t\t\t(judi, hmm)"<<std::endl
+	<<"evaluate:\tevaluates how well a given model fits a distinct data set.\t\t\t\t\t(judi, hmm)"<<std::endl
 	<<"train:\t\ttrains a hmm on a given data set by Baum-Welch.\t\t\t\t\t\t\t(mic, judi, mod, hmm)"<<std::endl
-	<<"bestPath:\testimates the most likely path of hidden states by Viterbi.\t\t\t\t\t(judi, hmm)"<<std::endl
+	<<"bestPath:\testimates the most likely sequence of hidden states by Viterbi.\t\t\t\t\t(judi, hmm)"<<std::endl
 	<<"transferStates:\tretransfers states from a judi to a matching trc file.\t\t\t\t\t\t(mol, judi)"<<std::endl
-	<<"wholeCell:\ttrains a model n a single cell data set, calculates the best path and archives the result.\t(mic, mol, judi, mod, hmm)"<<std::endl
+	<<"wholeCell:\ttrains a model in a single cell data set, calculates the best path and archives the result.\t(mic, mol, judi, mod, hmm)"<<std::endl
 	<<"archive:\tsave a complete model to an hdf5 file.\t\t\t\t\t\t\t\t(mic, mol, judi, mod, hmm)"<<std::endl
 	<<"extract:\textract an archived model from an hdf5 file.\t\t\t\t\t\t\t(HDF5)"<<std::endl
 	//<<"dwellTime:\tretimates the model transition rates form an optimized path.\t\t\t\t\t(judi, hmm)"<<std::endl
-	<<"simulate:\tcalculates a mchmm simulation.\t\t\t\t\t\t\t\t\t(hmm)"<<std::endl
+	<<"simulate:\tperforms a mchmm simulation.\t\t\t\t\t\t\t\t\t(hmm)"<<std::endl
 	<<std::endl;
 
 	std::cout<<line<<message.str()<<std::endl;
@@ -215,7 +215,7 @@ void ErmineParser::printAlgorithmHelp(){
 void ErmineParser::proofFilename(po::variables_map &vm){
 	if(vm.count("file")<1){
 		std::stringstream errorMessage;
-		errorMessage<<"No filename was given!"<<std::endl;;
+		errorMessage<<" No filename was given!"<<std::endl;;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 	}
@@ -232,7 +232,7 @@ void ErmineParser::proofFilename(po::variables_map &vm){
 void ErmineParser::proofAlgorithm(po::variables_map &vm){
 	if(vm.count("algorithm")<1){
 		std::stringstream errorMessage;
-		errorMessage<<"No algorithm was given!"<<std::endl;
+		errorMessage<<" No algorithm was given!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 	}
@@ -250,7 +250,7 @@ void ErmineParser::proofAlgorithmArgument(){
 void ErmineParser::proofStopCrit(po::variables_map &vm){
 	if ((vm.count("stopCrit")>0) && (vm["stopCrit"].as<double>()<0.0)){
 		std::stringstream errorMessage;
-		errorMessage<<"stopCrit needs to be a positive floating point number!"<<std::endl;
+		errorMessage<<" stopCrit needs to be a positive floating point number!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 	}
@@ -259,7 +259,7 @@ void ErmineParser::proofStopCrit(po::variables_map &vm){
 void ErmineParser::proofMaxIt(po::variables_map &vm){
 	if ((vm.count("maxIt")>0) && (vm["maxIt"].as<int>()<0)){
 		std::stringstream errorMessage;
-		errorMessage<<"maxIt needs to be a positive integer!"<<std::endl;
+		errorMessage<<" maxIt needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 	}
@@ -268,7 +268,7 @@ void ErmineParser::proofMaxIt(po::variables_map &vm){
 void ErmineParser::proofJumpInterval(po::variables_map &vm){
 	if ((vm.count("jumpInterval")>0) && (vm["jumpInterval"].as<double>()<0)){
 		std::stringstream errorMessage;
-		errorMessage<<"jumpInterval needs to be a positive integer!"<<std::endl;
+		errorMessage<<" jumpInterval needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -277,7 +277,7 @@ void ErmineParser::proofJumpInterval(po::variables_map &vm){
 void ErmineParser::proofMinDist(po::variables_map &vm){
 	if ((vm.count("minDist")>0) && (vm["minDist"].as<double>()<0.0)){
 		std::stringstream errorMessage;
-		errorMessage<<"minDist needs to be a positive integer!"<<std::endl;
+		errorMessage<<" minDist needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -286,7 +286,7 @@ void ErmineParser::proofMinDist(po::variables_map &vm){
 void ErmineParser::proofMaxDist(po::variables_map &vm){
 	if ((vm.count("maxDist")>0) && (vm["maxDist"].as<double>()<0)){
 		std::stringstream errorMessage;
-		errorMessage<<"maxDist needs to be a positive integer!"<<std::endl;
+		errorMessage<<" maxDist needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -295,7 +295,7 @@ void ErmineParser::proofMaxDist(po::variables_map &vm){
 void ErmineParser::proofTime(po::variables_map &vm){
 	if ((vm.count("time")>0) && (vm["time"].as<double>()<0)){
 		std::stringstream errorMessage;
-		errorMessage<<"time needs to be a positive floating point number!"<<std::endl;
+		errorMessage<<" time needs to be a positive floating point number!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -304,7 +304,7 @@ void ErmineParser::proofTime(po::variables_map &vm){
 void ErmineParser::proofDuration(po::variables_map &vm){
 	if ((vm.count("duration")>0) && (vm["duration"].as<double>()<0)){
 		std::stringstream errorMessage;
-		errorMessage<<"duration needs to be a positive floating point number!"<<std::endl;
+		errorMessage<<" duration needs to be a positive floating point number!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -313,7 +313,7 @@ void ErmineParser::proofDuration(po::variables_map &vm){
 void ErmineParser::proofTraceLengthRest(double rest){
 	if ((rest != 0.0)){
 		std::stringstream errorMessage;
-		errorMessage<<"Given time and Duration do not match!"<<std::endl;
+		errorMessage<<" Given time and duration do not match!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -323,7 +323,7 @@ void ErmineParser::proofTraceLengthRest(double rest){
 void ErmineParser::proofParticles(po::variables_map &vm){
 	if ((vm.count("particles")>0) && (vm["particles"].as<int>()<0)){
 		std::stringstream errorMessage;
-		errorMessage<<"particles needs to be a positive integer!"<<std::endl;
+		errorMessage<<" number of particles needs to be a positive integer!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 		}
@@ -335,7 +335,7 @@ void ErmineParser::proofJumpIntervalValidity(){
 	double rest = std::modf(interval, &length); 
 	if ((rest != 0.0)){
 		std::stringstream errorMessage;
-		errorMessage<<"Given observation interval (min max) and jump distance interval do not match!"<<std::endl;
+		errorMessage<<" Given observation interval (min max) and jump distance interval do not match!"<<std::endl;
 		SMLMS::ErmineParserError ermineParserError(errorMessage.str());
 		throw ermineParserError;
 	}
@@ -404,7 +404,7 @@ void ErmineParser::extractFolderName(){
 	}
 	else{
 		std::stringstream errorMessage;
-		errorMessage<<"Input file needs the suffix '.txt'!"<<std::endl;
+		errorMessage<<" Input file needs the suffix '.txt'!"<<std::endl;
 		SMLMS::SMLMSFolderError smlmsFolderError(errorMessage.str());
 		throw smlmsFolderError;
 	}

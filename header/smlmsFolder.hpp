@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
-* Creation Date:
+* File Name: smlmsFolder.hpp
+* Project: ermine
+* Version: 19.02
+* Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef smlmsFolder_hpp
-#define smlmsFolder_hpp
+#ifndef SMLMSFOLDER_HPP
+#define SMLMSFOLDER_HPP
 
 #include<string>
 

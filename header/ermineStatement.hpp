@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
+* File Name: ermineStatement.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date:
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Name_hpp
-#define Name_hpp
+#ifndef ERMINESTATEMENT_HPP
+#define ERMINESTATEMENT_HPP
 #include <string>
 
 namespace SMLMS{

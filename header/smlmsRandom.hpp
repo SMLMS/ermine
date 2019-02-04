@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
-* Creation Date:
+* File Name: smlmsRandom.hpp
+* Project: ermine
+* Version: 19.02
+* Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef smlmsRandom_hpp
-#define smlmsRandom_hpp
+#ifndef SMLMSRANDOM_HPP
+#define SMLMSRANDOM_HPP
 
 #include <boost/random/mersenne_twister.hpp>
 

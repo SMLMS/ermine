@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: Molecules
-* Project: SMLMS
-* Version:18.09
+* File Name: smlmsMolecules.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date:29.02.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Molecules_hpp
-#define Molecules_hpp
+#ifndef SMLMSMOLECULES_HPP
+#define SMLMSMOLECULES_HPP
 #include <vector>
 #include <string>
 #include "header/smlmsContainer.hpp"

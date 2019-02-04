@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
-* Creation Date:
+* File Name: ermineDelegate.hpp
+* Project: ermine
+* Version: 19.02
+* Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt
@@ -22,7 +22,6 @@
 #include "header/smlmsJudi.hpp"
 #include "header/smlmsPhysModBrownLatDiff.hpp"
 #include "header/smlmsHmmSequence.hpp"
-//#include "header/smlmsDwellTime.hpp"
 
 
 namespace po=boost::program_options;
@@ -37,7 +36,6 @@ class Delegate{
 		SMLMS::JumpDistanceList _judi;
 		SMLMS::PhysicalModelBLD _physMod;
 		SMLMS::HMMSequence _hmm;
-		//SMLMS::DwellTimeAnalysis _dwellTime;
 	public:
 		/* Constructor */
 		Delegate();
@@ -65,7 +63,6 @@ class Delegate{
 		int writeJumpDistanceList(void);
 		int writePhysMod(void);
 		int writeHmm(void);
-		//int writeDwellTime(void);
 		/* proof functions */
 		/* run algorithm functions */
 		int run(void);
@@ -82,7 +79,6 @@ class Delegate{
 		int runTransferStatesAlgorithm(void);
 		int runArchiveAlgorithm(void);
 		int runExtractAlgorithm(void);
-		//int runDwellTimeAlgorithm(void);
 		int runWholeCellAnalysis(void);
 		int runSimulateAlgorithm(void);
 }; /* Delegate*/

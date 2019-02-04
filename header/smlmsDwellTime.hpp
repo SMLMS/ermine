@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsDwellTime.hpp
-* Project: smlms
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef SMLMSDWELLTIME_hpp
-#define SMLMSDWELLTIME_hpp
+#ifndef SMLMSDWELLTIME_HPP
+#define SMLMSDWELLTIME_HPP
 
 #include <vector>
 #include <string>

@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmBase.hpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 22.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef SmlmsHmmBase_hpp
-#define SmlmsHmmBase_hpp
+#ifndef SMLMSHMMBASE_HPP
+#define SMLMSHMMBASE_HPP
 
 #include <vector>
 #include <string>

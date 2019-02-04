@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsPhysModBrownLat.hpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 30.03.2017
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef smlmsPhysModBrownLatDiff_hpp
-#define smlmsPhysModBrownLatDiff_hpp
+#ifndef SMLMSPHYSMODBROWNLATDIFF_HPP
+#define SMLMSPHYSMODBROWNLATDIFF_HPP
 
 #include <string>
 #include <vector>

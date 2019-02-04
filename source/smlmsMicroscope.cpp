@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: Microscope
-* Project: SMLMS
-* Version:16.02
+* File Name: smlmsMicroscope.cpp
+* Project: ermine
+* Version: 19.02
 * Creation Date:11.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -22,7 +22,7 @@
 namespace SMLMS{
 /* Constructor */
 Microscope::Microscope(){
-	std::cout<<"Microscope Constructor called."<<std::endl;
+	//std::cout<<"Microscope Constructor called."<<std::endl;
 }
 
 Microscope::Microscope(double initPxlSize, double initIntTime, double initLocPrec){
@@ -32,12 +32,12 @@ Microscope::Microscope(double initPxlSize, double initIntTime, double initLocPre
 }
 /* Destructor */
 Microscope::~Microscope(){
-	std::cout<<"Microscope removed from Heap!"<<std::endl;
+	//std::cout<<"Microscope removed from Heap!"<<std::endl;
 }
 
 /* Copy Constructor*/
 Microscope::Microscope(const Microscope &obj){
-	std::cout<<"Microscope Copy Constructor Called."<<std::endl;
+	//std::cout<<"Microscope Copy Constructor Called."<<std::endl;
 	setPxlSize(obj._pxlSize);
 	setIntTime(obj._intTime);
 	setLocPrec(obj._locPrec);
@@ -121,9 +121,9 @@ void Microscope::saveMicroscope(const std::string &folderName){
 	outFile<<std::scientific;
 	outFile<<std::setprecision(6);
 	/* header line */
-	outFile<<"# SMLMS Microscope File"<<std::endl;
-	outFile<<"# pxl Size[nm]"<<std::endl;
-	outFile<<"# integration Time [s]"<<std::endl;
+	outFile<<"# Ermine Microscope File"<<std::endl;
+	outFile<<"# pxl size[nm]"<<std::endl;
+	outFile<<"# integration time [s]"<<std::endl;
 	outFile<<"# localization precision [nm]"<<std::endl;
 	/* data */
 	outFile<<pxlSize()<<std::endl;

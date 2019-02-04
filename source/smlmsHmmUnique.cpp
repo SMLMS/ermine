@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmUnique.cpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 23.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -282,12 +282,12 @@ void HMMUnique::resetAnalysis(){
 
 /* print functions */
 void HMMUnique::printObsNumber(){
-	std::cout<<std::endl<<"Number of Observations: "<<_obsNumber<<std::endl;
+	std::cout<<std::endl<<"Number of observations: "<<_obsNumber<<std::endl;
 }
 
 void HMMUnique::printNormLH(){
 	unsigned t;
-	std::cout<<std::endl<<"Normalization Factor: "<<std::endl;
+	std::cout<<std::endl<<"Normalization factor: "<<std::endl;
 	for (t=0; t<_obsNumber; t++) std::cout<<_normLH.at(t)<<std::endl;
 	std::cout<<std::endl;
 }
@@ -336,7 +336,7 @@ void HMMUnique::printGamma(){
 
 void HMMUnique::printTransPDFNumer(){
 	unsigned i,j;
-	std::cout<<std::endl<<"Transition Matrix Numer:"<<std::endl;
+	std::cout<<std::endl<<"Transition matrix numer:"<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_stateNumber; j++) std::cout<<_transPDFNumer.at(i,j)<<"\t";
 		std::cout<<std::endl;
@@ -346,7 +346,7 @@ void HMMUnique::printTransPDFNumer(){
 
 void HMMUnique::printObsPDFNumer(){
 	unsigned i,j;
-	std::cout<<std::endl<<"Observation Matrix Numer:"<<std::endl;
+	std::cout<<std::endl<<"Observation matrix numer:"<<std::endl;
 	for (i=0; i<_stateNumber; i++){
 		for (j=0; j<_symbolNumber; j++) std::cout<<_obsPDFNumer.at(i,j)<<"\t";
 		std::cout<<std::endl;
@@ -356,7 +356,7 @@ void HMMUnique::printObsPDFNumer(){
 
 void HMMUnique::printPDFDenominator(){
 	unsigned i;
-	std::cout<<std::endl<<"Transition/Observation Matrix Denominator:"<<std::endl;
+	std::cout<<std::endl<<"Transition/Observation matrix denominator:"<<std::endl;
 	for (i=0; i<_stateNumber; i++) std::cout<<_pdfDenominator.at(0,i)<<"\t";
 	std::cout<<std::endl;
 }
@@ -364,24 +364,6 @@ void HMMUnique::printPDFDenominator(){
 int HMMUnique::findMatch(const SMLMS::Matrix& cdf, int state, double event){
 	int eventPdfPosition=0;
 	unsigned i;
-	/*
-	if (event<=cdf.at(state,0)){
-		eventPdfPosition=0;
-	}
-	else{
-		for (i=1; i<cdf.numberOfColumns(); i++){
-			if ((event>cdf.at(state,i-1)) && (event<=cdf.at(state,i))){
-				eventPdfPosition=i;
-			}
-		}
-	}
-	if (event>cdf.at(state, cdf.numberOfColumns()-1)){
-		std::stringstream errorMessage;
-		errorMessage<<"Out of range error in probability density function while claculating event probability: "<<event<<"exceeds number of columns = "<<cdf.numberOfColumns()<<std::endl;
-		SMLMS::SmlmsError error(errorMessage.str());
-		throw error;
-	}
-	*/
 	// binary search
 	std::vector<double> cdfState(cdf.numberOfColumns());
 	for (i=0; i<cdf.numberOfColumns(); i++) cdfState.at(i) = cdf.at(state,i);
@@ -392,25 +374,6 @@ int HMMUnique::findMatch(const SMLMS::Matrix& cdf, int state, double event){
 
 int HMMUnique::obsPDFMatch(double event){
 	int eventPdfPosition=0;
-	/*
-	unsigned i;
-	if (event<=_obsAlphabet.at(0)){
-		eventPdfPosition=0;
-	}
-	else{
-		for (i=1; i<_obsAlphabet.size(); i++){
-			if ((event>_obsAlphabet.at(i-1)) && (event<=_obsAlphabet.at(i))){
-				eventPdfPosition=i;
-			}
-		}
-	}
-	if (event>_obsAlphabet.at(_obsAlphabet.size()-1)){
-		std::stringstream errorMessage;
-		errorMessage<<"Out of range error in probability density function while claculating event probability: "<<event<<"exceeds number of columns = "<<_obsAlphabet.size()<<std::endl;
-		SMLMS::SmlmsError error(errorMessage.str());
-		throw error;
-	}
-	*/
 	// binary search
 	auto lb = std::lower_bound(_obsAlphabet.begin(), _obsAlphabet.end(), event);
 	eventPdfPosition = lb - _obsAlphabet.begin();
@@ -472,23 +435,6 @@ void HMMUnique::estimateTransPDFNumer(){
 	}
 }
 
-/*
-void HMMUnique::reestimateTransPDF02(){
-	int i,j,t;
-	double enumerator, denominator;
-	for (i=0; i<_stateNumber; i++){
-		for (j=0;j<_stateNumber; j++){
-			enumerator=0;
-			denominator=0;
-			for (t=1; t<_obsNumber; t++){
-				enumerator += (_xi.at(t)).at(i,j);
-				denominator += _gamma.at(i,t);
-			}
-			_transPDF(i,j) = enumerator/denominator;
-		}
-	}
-}
-*/
 void HMMUnique::reestimateTransPDF(){
 	unsigned i,j;
 	estimateTransPDFNumer();
@@ -497,23 +443,7 @@ void HMMUnique::reestimateTransPDF(){
 		for (j=0;j<_stateNumber; j++) _transPDF(i,j) = _transPDFNumer.at(i,j)/_pdfDenominator.at(0,i);
 	}
 }
-/*
-void HMMUnique::reestimateObsPDF02(const std::vector<double> &obsSeq){
-	int i,j,t;
-	double enumerator, denominator;
-	for (i=0; i<_stateNumber; i++){
-		for (j=0;j<_symbolNumber; j++){
-			enumerator=0;
-			denominator=0;
-			for (t=1; t<_obsNumber; t++){
-				if (obsSymbolMatch(j, obsSeq.at(t))) enumerator += _gamma.at(i,t);
-				denominator += _gamma.at(i,t);
-			}
-			_obsPDF(i,j) = enumerator/denominator;
-		}
-	}
-}
-*/
+
 void HMMUnique::estimateObsPDFNumer(const std::vector<double> &obsSeq){
 	unsigned i,j,t;
 	resetObsPDFNumer();
@@ -548,7 +478,7 @@ void HMMUnique::reestimateObsPDF(const std::vector<double> &obsSeq){
 void HMMUnique::simulate(std::vector<double> &obsSeq, std::vector<int> &stateSeq){
 	if (obsSeq.size() != stateSeq.size()){
 		std::stringstream errorMessage;
-		errorMessage<<"dimension error: observation vector and states vector must have the same dimensions."<<std::endl;
+		errorMessage<<"Dimension error: Observation vector and states vector must have the same dimensions."<<std::endl;
 		SMLMS::SmlmsError error(errorMessage.str());
 		throw error;
 	}	
@@ -668,21 +598,7 @@ void HMMUnique::estimateLikelihood(){
 	}
 	_logLikelihood = -1*llc;
 	calcModelSelection(_obsNumber);
-	//estimateAic();
-	//estimateBic();
 }
-
-/*
-void HMMUnique::estimateBic(){
-	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
-	_bic = (-2.0 * _logLikelihood) + p * log(_obsNumber);
-}
-
-void HMMUnique::estimateAic(){
-	int p = (_stateNumber * (_stateNumber -1)) + (_stateNumber-1) + (_stateNumber * (_symbolNumber - 1));
-	_aic = (-2.0 * _logLikelihood) + p * 2.0;
-}
-*/
 
 void HMMUnique::baumWelch(const std::vector<double> &obsSeq){
 	checkHMM();
@@ -779,9 +695,6 @@ void HMMUnique::viterbi(std::vector<int> &stateSeq, const std::vector<double> &o
 	}
 	stateSeq.at(_obsNumber-1)=maxInd;
 	for (t=_obsNumber-1; t>1; t--) stateSeq.at(t-1)=psi.at(stateSeq.at(t),t);
-	// test
-	//std::cout<<"delta at 0: "<<delta.at(0,0)<<"\t"<<delta.at(1,0)<<std::endl;
-	//std::cout<<"delta at 1: "<<delta.at(0,1)<<"\t"<<delta.at(1,1)<<std::endl;
 }
 		
 }/* SMLMS */

@@ -1,8 +1,8 @@
 /* ######################################################################
-* File Name:
-* Project: 
-* Version:
-* Creation Date:
+* File Name: smlmsRandom.cpp
+* Project: ermine
+* Version: 19.02
+* Creation Date: 2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
 * Goethe University of Frankfurt

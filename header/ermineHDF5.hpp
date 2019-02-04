@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name:ermineHDF5.hpp
+* File Name: ermineHDF5.hpp
 * Project: ermine
-* Version: 1809
+* Version: 19.02
 * Creation Date: 2016 
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef ERMINEHDF5_hpp
-#define ERMINEHDF5_hpp
+#ifndef ERMINEHDF5_HPP
+#define ERMINEHDF5_HPP
 
 #include <string>
 #include "header/smlmsContainer.hpp"

@@ -1,7 +1,7 @@
 /* ######################################################################
 * File Name: smlmsHmmUnique.hpp
-* Project: SMLMS
-* Version: 18.09
+* Project: ermine
+* Version: 19.02
 * Creation Date: 22.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef SmlmsHmmUnique_hpp
-#define SmlmsHmmUnique_hpp
+#ifndef SMLMSHMMUNIQUE_HPP
+#define SMLMSHMMUNIQUE_HPP
 
 #include <vector>
 #include <string>

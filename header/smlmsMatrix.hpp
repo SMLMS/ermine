@@ -1,7 +1,7 @@
 /* ######################################################################
-* File Name: matrix.hpp
-* Project: SMLMS
-* Version: 18.10
+* File Name: smlmsMatrix.hpp
+* Project: ermine
+* Version: 19.02
 * Creation Date: 21.03.2016
 * Created By Sebastian Malkusch
 * <malkusch@chemie.uni-frankfurt.de>
@@ -11,8 +11,8 @@
 ###################################################################### */
 
 
-#ifndef Matrix_hpp
-#define Matrix_hpp
+#ifndef SMLMSMATRIX_HPP
+#define SMLMSMATRIX_HPP
 #include <vector>
 
 namespace SMLMS{
