@@ -514,7 +514,7 @@ void PhysicalModelBLD::fitPdfSuperPos(){
 			fitFcn.SetParLimits(2+(i*2), minDist, maxDist);
 		}
 	}
-	pdfHist.Fit("fitFcn", "I,WL,M,Q");
+	pdfHist.Fit("fitFcn", "I,L,M,Q");
 	/* parse fit parameter to new rf1 */
 	TF1 fit = *pdfHist.GetFunction("fitFcn");
 	for (i=0; i<_paraVect.size(); i++){
@@ -575,7 +575,7 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 		fitFcn.SetParLimits(2+(j*2), minDist, maxDist);
 	}
 	/* fit */
-	pdfHist.Fit("fitFcn", "I,WL,Q");
+	pdfHist.Fit("fitFcn", "I,L,Q");
 	/* parse fit parameter to new rf1 */
 	TF1 fit = *pdfHist.GetFunction("fitFcn");
 	_paraVect.at(2+(j*2)) = fit.GetParameter(1);
