@@ -126,6 +126,10 @@ int Delegate::loadTrcList(void){
 			std::cout<<error.what()<<std::endl;
 			return SMLMS::SMLMS_FAILURE;
 		}
+		catch(std::out_of_range &error){
+			std::cout<<error.what()<<std::endl;
+			return SMLMS::SMLMS_FAILURE;
+		}
 		catch(...){
 			std::cout<<"Oops, the ermine discovered an unexpected error while loading molecues."<<std::endl;
 			return SMLMS::SMLMS_FAILURE;
@@ -137,6 +141,10 @@ int Delegate::loadTrcList(void){
 				tempList.readTrcList(_microscope, _fileNames.getTrcName(i));
 			}
 			catch(SMLMS::SmlmsError& error){
+				std::cout<<error.what()<<std::endl;
+				return SMLMS::SMLMS_FAILURE;
+			}
+			catch(std::out_of_range &error){
 				std::cout<<error.what()<<std::endl;
 				return SMLMS::SMLMS_FAILURE;
 			}
@@ -154,9 +162,14 @@ int Delegate::loadTrcList(void){
 
 int Delegate::loadMoleculeList(void){
 	try{
+		std::cout<<"reading molecules."<<std::endl;
 		_molList.readMoleculeList(_fileNames.molListName(), _fileNames.roiName());
 	}
 	catch(SMLMS::SmlmsError& error){
+		std::cout<<error.what()<<std::endl;
+		return SMLMS::SMLMS_FAILURE;
+	}
+	catch(std::out_of_range &error){
 		std::cout<<error.what()<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}
@@ -174,6 +187,10 @@ int Delegate::loadJumpDistanceList(void){
 		_judi.readJumpDistanceList(_fileNames.judiName());
 	}
 	catch(SMLMS::SmlmsError &error){
+		std::cout<<error.what()<<std::endl;
+		return SMLMS::SMLMS_FAILURE;
+	}
+	catch(std::out_of_range &error){
 		std::cout<<error.what()<<std::endl;
 		return SMLMS::SMLMS_FAILURE;
 	}

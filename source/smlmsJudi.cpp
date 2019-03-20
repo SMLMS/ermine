@@ -402,7 +402,7 @@ void JumpDistanceList::calcJumpDistanceList(SMLMS::MoleculeList &molList){
 	SMLMS::Molecule initMol, finalMol;
 	int jumpNumber;
 	clearJumpDistanceList();
-	finalMol = molList.getMolecule(molList.getNumberOfMolecules());
+	finalMol = molList.getMolecule(molList.getNumberOfMolecules()-1);
 	jumpNumber = molList.getNumberOfMolecules()-finalMol.trace;
 	_jumpDistanceList.reserve(jumpNumber);
 	for (int i=1; i<molList.getNumberOfMolecules(); i++){
