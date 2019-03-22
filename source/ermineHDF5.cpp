@@ -1437,10 +1437,16 @@ int HDF5::createModelDiffData(SMLMS::PhysicalModelBLD &model){
  	* create CompType
  	*/
 	_compType = new H5::CompType(sizeof(SMLMS::ModelState));
+	/*
 	_compType->insertMember("D [nm^2 s^-1]", HOFFSET(SMLMS::ModelState, value), H5::PredType::NATIVE_DOUBLE);
 	_compType->insertMember("fix", HOFFSET(SMLMS::ModelState, fix), H5::PredType::NATIVE_INT);
 	_compType->insertMember("min D [nm^2 s^-1]", HOFFSET(SMLMS::ModelState, min), H5::PredType::NATIVE_DOUBLE);
 	_compType->insertMember("max D [nm^2 s^-1]", HOFFSET(SMLMS::ModelState, max), H5::PredType::NATIVE_DOUBLE);
+	*/
+	_compType->insertMember("D [nm\u00B2 s\u207B\u00B9]", HOFFSET(SMLMS::ModelState, value), H5::PredType::NATIVE_DOUBLE);
+	_compType->insertMember("fix", HOFFSET(SMLMS::ModelState, fix), H5::PredType::NATIVE_INT);
+	_compType->insertMember("min D [nm\u00B2 s\u207B\u00B9]", HOFFSET(SMLMS::ModelState, min), H5::PredType::NATIVE_DOUBLE);
+	_compType->insertMember("max D [nm\u00B2 s\u207B\u00B9]", HOFFSET(SMLMS::ModelState, max), H5::PredType::NATIVE_DOUBLE);
 	/*
  	* set dataset dimensions
  	*/
