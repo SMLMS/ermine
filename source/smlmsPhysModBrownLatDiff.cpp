@@ -572,7 +572,8 @@ void PhysicalModelBLD::fitPdfMatState(int j, SMLMS::Matrix &pdf){
 		fitFcn.SetParameter(1,_paraVect.at(2+(j*2)));
 		minDist = SMLMS::expectedDistance(_paraMat(j,6), _microscope.intTime(), _microscope.locPrec()); 
 		maxDist = SMLMS::expectedDistance(_paraMat(j,7), _microscope.intTime(), _microscope.locPrec()); 
-		fitFcn.SetParLimits(2+(j*2), minDist, maxDist);
+		//fitFcn.SetParLimits(2+(j*2), minDist, maxDist);
+		fitFcn.SetParLimits(1, minDist, maxDist);
 	}
 	/* fit */
 	pdfHist.Fit("fitFcn", "I,L,Q");
