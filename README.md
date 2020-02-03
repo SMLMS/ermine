@@ -2,15 +2,21 @@
 Estimate Reaction-rates by Markov-based Investigation of Nanoscopy Experiments (ermine):
 
 ## requirements
-BOOST v. 1_72_0\n
-ROOT 6_18\n
+BOOST v. 1_72_0
+
+ROOT 6_18
+
 HDF5 hdf5_devel
 
 ## install
-cd ermine\n
-mkdir build\n
-cd build\n
-cmake ..\n
+cd ermine
+
+mkdir build
+
+cd build
+
+cmake ..
+
 cmake
 
 ## common issues
