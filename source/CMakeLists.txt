@@ -7,6 +7,10 @@
 # Define Sources of SMLMS
 ##########
 
+include_directories(
+	${PROJECT_SOURCE_DIR}
+)
+
 file(GLOB SMLMS_HEADERS
 	"${PROJECT_SOURCE_DIR}/header/*.hpp"
 )

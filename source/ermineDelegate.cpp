@@ -759,15 +759,15 @@ int Delegate::runArchiveAlgorithm(void){
 		archive.archiveModel(_microscope, _molList, _judi, _hmm, _physMod);
 	}
 	catch(H5::FileIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;
 	}
 	catch(H5::GroupIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;
 	}
 	catch(H5::DataSetIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}
@@ -805,15 +805,15 @@ int Delegate::runExtractAlgorithm(void){
 		archive.extractModel(_microscope, _molList, _judi, _hmm, _physMod);
 	}
 	catch(H5::FileIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors +=1;
 	}
 	catch(H5::GroupIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;
 	}
 	catch(H5::DataSetIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;
 	}
 	catch(SMLMS::SmlmsError& error){
@@ -950,15 +950,15 @@ int Delegate::runWholeCellAnalysis(void){
 		archive.archiveModel(_microscope, _molList, _judi, _hmm, _physMod);
 	}
 	catch(H5::FileIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;
 	}
 	catch(H5::GroupIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;
 	}
 	catch(H5::DataSetIException& error){
-		error.printError();
+		error.printErrorStack();
 		_errors += 1;;
 	}
 	if(_errors){return SMLMS::SMLMS_FAILURE;}

@@ -1,20 +1,20 @@
 # Define required macros here
-CXXFLAGS = -Wall -fPIC -std=c++11 -O2  -fopenmp
+CXXFLAGS = -Wall -fPIC -std=c++11 -O2 -fopenmp
 CXX = g++
-INCLUDES = -I$(HOME)/Dokumente/Code/ermine
-LIBS = -L$(HOME)/Dokumente/Code/ermine/source
+INCLUDES = -I$(HOME)/code/c++/ermine
+LIBS = -L$(HOME)/code/c++/ermine/source
 LFLAGS := -shared
 
-BOOSTLIBS = -I/usr/include
-BOOSTSOURCE = -L/usr/include/boost
+BOOSTLIBS = -I/usr/local/include
+BOOSTSOURCE = -L/usr/local/include/boost
 BOOSTFLAG = -lboost_program_options
 BOOSTFLAG += -lboost_system
 BOOSTFLAG += -lboost_filesystem
 BOOSTFLAG += -lboost_random
 
-ROOTCFLAGS   := $(shell /opt/root6/bin/root-config --cflags)
-ROOTLIBS     := $(shell /opt/root6/bin/root-config --libs)
-ROOTGLIBS    := $(shell /opt/root6/bin/root-config --glibs)
+ROOTCFLAGS   := $(shell /usr/bin/root-config --cflags)
+ROOTLIBS     := $(shell /usr/bin/root-config --libs)
+ROOTGLIBS    := $(shell /usr/bin/root-config --glibs)
 
 HDFFLAGS  = -lhdf5
 HDFFLAGS  += -lhdf5_cpp
@@ -39,7 +39,7 @@ SOURCES += source/smlmsPhysModBrownLatDiff.cpp
 SOURCES += source/smlmsHmmBase.cpp
 SOURCES += source/smlmsHmmUnique.cpp
 SOURCES += source/smlmsHmmSequence.cpp
-SOURCES += source/smlmsDwellTime.cpp
+#SOURCES += source/smlmsDwellTime.cpp
 OBJECTS = $(SOURCES: .cpp=.o)
 
 
@@ -49,7 +49,7 @@ EXECUTABLE := prog/ermine_cli
 all:$(OBJECTS) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(ROOTCFLAGS) $(ROOTGLIBS) $(HDFFLAGS) $(LIBS) $(INCLUDES) -o $@
+	$(CXX) $(CXXFLAGS) $? $(BOOSTLIBS) $(BOOSTSOURCE) $(BOOSTFLAG) $(ROOTCFLAGS) $(ROOTGLIBS) $(HDFFLAGS) $(LIBS) $(INCLUDES) $(LFLAGS) -o $@
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(ROOTCFLAGS)  -c $<
